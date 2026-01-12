@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary: #64748b;
-  --surface: #f8fafc;
-  --border: #e2e8f0;
-  --text-muted: #64748b;
+  --background: #0f0f0f;
+  --foreground: #ffffff;
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --secondary: #6b7280;
+  --surface: #1a1a1a;
+  --surface-hover: #252525;
+  --border: #333333;
+  --text-muted: #a1a1aa;
+  --gradient-1: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  --gradient-2: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -33,15 +39,33 @@ body {
 }
 
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500;
+  @apply bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500 shadow-lg;
 }
 
 .btn-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500;
+  @apply bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 focus:ring-gray-500 shadow-lg;
 }
 
 .card {
-  @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
+  @apply bg-gray-900 rounded-2xl p-8 border transition-all duration-300;
+  border-color: var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+  background: var(--surface-hover);
+  border-color: #404040;
+}
+
+.gradient-bg {
+  background: var(--gradient-1);
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 50%, #1a1a1a 100%);
 }
 
 .input {
