@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { api } from '@/lib/api'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function JsonFormatterPage() {
+  const { t } = useLanguage()
   const [input, setInput] = useState('')
   const [output, setOutput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -23,7 +25,7 @@ export default function JsonFormatterPage() {
       if (response.success) {
         setOutput(response.data.formatted)
       } else {
-        setError(response.error || 'JSON 포맷팅 실패')
+        setError(response.error || t('json.error.invalid'))
       }
     } catch (err) {
       setError('서버 연결 오류')
@@ -43,8 +45,8 @@ export default function JsonFormatterPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">JSON 포맷터</h1>
-          <p className="text-gray-400">JSON 데이터를 깔끔하게 정리하고 검증합니다</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('tools.json.title')}</h1>
+          <p className="text-gray-400">{t('tools.json.subtitle')}</p>
         </div>
 
         {/* Controls */}

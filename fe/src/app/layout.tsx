@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from '@/components/common/Header'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 
 export const metadata: Metadata = {
   title: "MyTools - 개인 웹 도구 모음",
@@ -15,10 +16,12 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="min-h-screen antialiased">
-        <Header />
-        <main>
-          {children}
-        </main>
+        <LanguageProvider>
+          <Header />
+          <main>
+            {children}
+          </main>
+        </LanguageProvider>
       </body>
     </html>
   );
