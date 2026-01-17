@@ -21,10 +21,10 @@ export const toolsController = {
   },
 
   // Variable Generator
-  async generateVariable(request: FastifyRequest<{ Body: { text: string; style: string } }>, reply: FastifyReply) {
+  async generateVariable(request: FastifyRequest<{ Body: { text: string } }>, reply: FastifyReply) {
     try {
-      const { text, style } = request.body
-      const result = await toolsService.generateVariable(text, style)
+      const { text } = request.body
+      const result = await toolsService.generateVariable(text)
       
       return reply.send({
         success: true,

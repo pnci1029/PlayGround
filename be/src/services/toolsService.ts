@@ -18,26 +18,27 @@ export const toolsService = {
   },
 
   // Variable Generator 로직
-  async generateVariable(text: string, style: string) {
+  async generateVariable(text: string) {
     const cleanText = text.trim().toLowerCase()
     
-    const generators = {
-      camelCase: () => cleanText.replace(/[^a-zA-Z0-9]+(.)/g, (_, char) => char.toUpperCase()),
-      PascalCase: () => cleanText.replace(/[^a-zA-Z0-9]+(.)/g, (_, char) => char.toUpperCase()).replace(/^(.)/, (_, char) => char.toUpperCase()),
-      snake_case: () => cleanText.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, ''),
-      'kebab-case': () => cleanText.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, ''),
-      UPPER_SNAKE_CASE: () => cleanText.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '').toUpperCase()
-    }
-
-    const generator = generators[style as keyof typeof generators]
-    if (!generator) {
-      throw new Error('Unsupported style')
-    }
-
+    // Remove special characters and split into words
+    const words = cleanText.split(/[^a-zA-Z0-9]+/).filter(word => word.length > 0)
+    
     return {
       original: text,
-      result: generator(),
-      style
+      variables: {
+        camelCase: words.map((word, index) => 
+          index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(''),
+        PascalCase: words.map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(''),
+        snake_case: words.join('_'),
+        'kebab-case': words.join('-'),
+        UPPER_SNAKE_CASE: words.join('_').toUpperCase(),
+        lowercase: words.join('').toLowerCase(),
+        UPPERCASE: words.join('').toUpperCase()
+      }
     }
   },
 
