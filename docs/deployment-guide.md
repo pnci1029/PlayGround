@@ -1,5 +1,32 @@
 # 🚀 배포 가이드 (2025)
 
+## 💡 최선책 종합 가이드
+
+| 구분 | 1순위 | 2순위 | 3순위 |
+|------|-------|-------|-------|
+| **Frontend** | Cloudflare Pages | Vercel | Netlify |
+| **Backend** | Koyeb | Render | Cloudflare Workers |
+| **Database** | Neon | Supabase | MongoDB Atlas |
+| **Images** | Cloudflare R2 | Supabase Storage | - |
+
+### 🥇 최고 조합 (완전 무료)
+```
+✅ Frontend: Cloudflare Pages (무제한)
+✅ Backend: Koyeb (512MB, PostgreSQL 포함)
+✅ Database: Neon (3GB)
+✅ Images: Cloudflare R2 (10GB)
+✅ DNS: Cloudflare (서브도메인 무료)
+```
+
+### 🥈 간편 조합 (Next.js)
+```
+✅ All-in-One: Vercel (Frontend + Backend API)
+✅ Database: Supabase (500MB, Auth 포함)
+✅ Images: Supabase Storage (1GB)
+```
+
+---
+
 ## 백엔드 호스팅 추천 순위
 
 ### 1위. Koyeb ⭐⭐⭐⭐⭐
