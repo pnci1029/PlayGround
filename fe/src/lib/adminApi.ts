@@ -1,7 +1,7 @@
 // 관리자 API 클라이언트
 const API_BASE = process.env.NODE_ENV === 'production' 
   ? 'https://api.yourdomain.com' 
-  : 'http://localhost:8082'
+  : 'http://localhost:8085'
 
 export class AdminAPI {
   private static getToken(): string | null {
