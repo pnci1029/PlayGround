@@ -47,7 +47,6 @@ export default function CanvasPage() {
 
       ws.onopen = () => {
         setConnectionStatus('connected')
-        console.log('Canvas WebSocket connected')
       }
 
       ws.onmessage = (event) => {
@@ -61,7 +60,6 @@ export default function CanvasPage() {
 
       ws.onclose = () => {
         setConnectionStatus('disconnected')
-        console.log('Canvas WebSocket disconnected')
         
         // 자동 재연결 (5초 후)
         setTimeout(() => {
