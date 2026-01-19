@@ -46,7 +46,6 @@ export default function ChatPage() {
 
       ws.onopen = () => {
         setConnectionStatus('connected')
-        console.log('Chat WebSocket connected')
       }
 
       ws.onmessage = (event) => {
@@ -60,7 +59,6 @@ export default function ChatPage() {
 
       ws.onclose = () => {
         setConnectionStatus('disconnected')
-        console.log('Chat WebSocket disconnected')
         
         // 자동 재연결 (5초 후)
         setTimeout(() => {
