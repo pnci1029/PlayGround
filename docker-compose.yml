@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL 데이터베이스만 Docker로 실행
+  # PostgreSQL 데이터베이스
   postgres:
     image: postgres:15-alpine
     container_name: playground_postgres
@@ -13,6 +13,53 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    networks:
+      - playground_network
+
+  # 백엔드 서비스
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    container_name: playground_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=playground
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - JWT_EXPIRES_IN=24h
+      - PORT=8000
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # 프론트엔드 서비스
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    container_name: playground_frontend
+    ports:
+      - "3000:3002"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - playground_network
 
 volumes:
   postgres_data:
+
+networks:
+  playground_network:
+    driver: bridge
