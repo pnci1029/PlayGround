@@ -7,6 +7,13 @@ node_modules/
 .env.*
 !.env.example
 
+# Database secrets & credentials
+*.pem
+*.key
+*.crt
+jwt-secret*
+secrets/
+
 # Build outputs
 dist/
 build/

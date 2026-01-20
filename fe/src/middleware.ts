@@ -58,7 +58,7 @@ export function middleware(request: NextRequest) {
 
   // API 요청은 백엔드로 프록시
   if (pathname.startsWith('/api')) {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8082'
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8085'
     return NextResponse.rewrite(new URL(pathname, backendUrl))
   }
 
