@@ -21,6 +21,7 @@ services:
     build:
       context: ./be
       dockerfile: Dockerfile
+    image: playground-backend:latest
     container_name: playground_backend
     ports:
       - "8000:8000"
@@ -45,9 +46,10 @@ services:
     build:
       context: ./fe
       dockerfile: Dockerfile
+    image: playground-frontend:latest
     container_name: playground_frontend
     ports:
-      - "3000:3002"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:8000
