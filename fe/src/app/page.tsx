@@ -2,157 +2,460 @@
 
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useState, useEffect } from 'react'
+
+const TypewriterText = ({ texts, speed = 100, pause = 2000 }: { texts: string[], speed?: number, pause?: number }) => {
+  const [displayedText, setDisplayedText] = useState('')
+  const [currentTextIndex, setCurrentTextIndex] = useState(0)
+  const [currentCharIndex, setCurrentCharIndex] = useState(0)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const currentText = texts[currentTextIndex]
+    
+    const timeout = setTimeout(() => {
+      if (!isDeleting && currentCharIndex < currentText.length) {
+        setDisplayedText(currentText.substring(0, currentCharIndex + 1))
+        setCurrentCharIndex(currentCharIndex + 1)
+      } else if (isDeleting && currentCharIndex > 0) {
+        setDisplayedText(currentText.substring(0, currentCharIndex - 1))
+        setCurrentCharIndex(currentCharIndex - 1)
+      } else if (!isDeleting && currentCharIndex === currentText.length) {
+        setTimeout(() => setIsDeleting(true), pause)
+      } else if (isDeleting && currentCharIndex === 0) {
+        setIsDeleting(false)
+        setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length)
+      }
+    }, isDeleting ? speed / 2 : speed)
+
+    return () => clearTimeout(timeout)
+  }, [currentCharIndex, currentTextIndex, isDeleting, texts, speed, pause])
+
+  return (
+    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">
+      {displayedText}
+      <span className="animate-pulse text-primary">|</span>
+    </span>
+  )
+}
+
+const FloatingPreview = ({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) => {
+  return (
+    <div 
+      className={`floating-element opacity-20 hover:opacity-60 transition-opacity duration-500 ${className}`}
+      style={{ animationDelay: `${delay}s` }}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function HomePage() {
   const { t } = useLanguage()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  
+  const typingTexts = [
+    'JSON을 깔끔하게 정리하고',
+    '변수명을 자동으로 생성하고', 
+    'QR코드를 빠르게 만들고',
+    '해시값을 간편하게 계산하고',
+    'Base64를 쉽게 변환하고',
+    '캔버스에서 자유롭게 그리고'
+  ]
+
+  // 도구 데이터
+  const tools = [
+    { name: 'JSON 포맷터', href: '/tools/json-formatter', category: '개발', keywords: ['json', 'format', '포맷', '정리'] },
+    { name: '변수명 생성기', href: '/tools/variable-generator', category: '개발', keywords: ['variable', '변수', 'naming', '네이밍'] },
+    { name: '디지털 캔버스', href: '/canvas', category: '크리에이티브', keywords: ['canvas', '캔버스', 'draw', '그리기'] },
+    { name: '스마트 채팅', href: '/chat', category: 'AI', keywords: ['chat', '채팅', 'ai', '대화'] },
+    { name: 'URL 인코더', href: '/tools/url-encoder', category: '유틸', keywords: ['url', 'encode', '인코딩', '변환'] },
+    { name: 'Base64', href: '/tools/base64', category: '유틸', keywords: ['base64', '인코딩', 'encoding'] },
+    { name: '해시 생성기', href: '/tools/hash', category: '보안', keywords: ['hash', '해시', 'sha', 'md5'] },
+    { name: 'QR 생성기', href: '/tools/qr-generator', category: '유틸', keywords: ['qr', 'code', '코드', '생성'] }
+  ]
+
+  // 필터링된 도구들
+  const filteredTools = tools.filter(tool => 
+    searchTerm === '' || 
+    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tool.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    
+    // 키보드 단축키 핸들러
+    const handleKeyDown = (e: any) => {
+      // "/" 키로 검색 포커스
+      if (e.key === '/' && !isSearchFocused) {
+        e.preventDefault()
+        const searchInput = document.querySelector('.search-input') as HTMLInputElement
+        searchInput?.focus()
+      }
+      // Escape로 검색 해제
+      if (e.key === 'Escape') {
+        setSearchTerm('')
+        const searchInput = document.querySelector('.search-input') as HTMLInputElement
+        searchInput?.blur()
+      }
+    }
+    
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isSearchFocused])
+
   return (
-    <div className="min-h-screen" style={{background: 'var(--background)'}}>
+    <div className="min-h-screen relative">
+      {/* 동적 배경 */}
+      <div 
+        className="fixed inset-0 opacity-30 transition-all duration-500 ease-out"
+        style={{
+          background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 212, 170, 0.1), transparent 80%)`
+        }}
+      />
+      
       {/* Hero Section */}
-      <section className="relative py-28 overflow-hidden">
-        <div className="absolute inset-0 hero-gradient opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-10 leading-tight">
-              {t('home.title')}
-            </h1>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="hero-gradient absolute inset-0"></div>
+        
+        {/* 떠다니는 프리뷰 요소들 */}
+        <FloatingPreview delay={0} className="absolute top-20 left-10 md:left-20">
+          <div className="card card-small w-48 h-32">
+            <div className="text-xs text-text-muted mb-2">JSON Formatter</div>
+            <div className="font-mono text-xs text-primary">{`{
+  "name": "user",
+  "tools": [...]
+}`}</div>
+          </div>
+        </FloatingPreview>
+        
+        <FloatingPreview delay={1} className="absolute top-32 right-10 md:right-20">
+          <div className="card card-small w-40 h-24">
+            <div className="text-xs text-text-muted mb-2">QR Generator</div>
+            <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px">
+              {Array.from({length: 16}).map((_, i) => (
+                <div key={i} className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} rounded-sm`} />
+              ))}
+            </div>
+          </div>
+        </FloatingPreview>
+        
+        <FloatingPreview delay={2} className="absolute bottom-32 left-16">
+          <div className="card card-small w-44 h-28">
+            <div className="text-xs text-text-muted mb-2">Hash Generator</div>
+            <div className="font-mono text-xs text-tertiary">SHA256: a1b2c3d4...</div>
+            <div className="font-mono text-xs text-accent mt-1">MD5: 5e6f7g8h...</div>
+          </div>
+        </FloatingPreview>
+        
+        <FloatingPreview delay={1.5} className="absolute bottom-20 right-16">
+          <div className="card card-small w-36 h-24">
+            <div className="text-xs text-text-muted mb-2">Canvas</div>
+            <div className="w-full h-12 bg-gradient-to-r from-primary to-secondary rounded opacity-50" />
+          </div>
+        </FloatingPreview>
+        
+        {/* 메인 콘텐츠 */}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-4xl mx-auto">
+            {/* 브랜드명 */}
+            <div className="mb-8">
+              <h1 className="text-6xl md:text-8xl font-black gradient-text mb-4 sparkle">
+                DEVFORGE
+              </h1>
+              <div className="w-32 h-1 bg-gradient-primary mx-auto rounded-full neon-border" />
+            </div>
+            
+            {/* 타이핑 애니메이션 */}
+            <div className="mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+                <TypewriterText texts={typingTexts} speed={80} pause={1500} />
+              </h2>
+              <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto">
+                개발자를 위한 필수 도구들을 한곳에서. 빠르고, 직관적이고, 강력하게.
+              </p>
+            </div>
+            
+            {/* 검색바 */}
+            <div className="search-container mb-12">
+              <input
+                type="text"
+                placeholder="무엇을 도와드릴까요? (/ 키를 눌러 빠른 검색)"
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+              />
+              <div className="search-icon">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              
+              {/* 검색 결과 드롭다운 */}
+              {searchTerm && isSearchFocused && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-border-bright rounded-2xl backdrop-filter backdrop-blur-20 z-50">
+                  <div className="p-4">
+                    <div className="text-sm text-text-muted mb-3">
+                      "{searchTerm}" 검색 결과 ({filteredTools.length}개)
+                    </div>
+                    {filteredTools.length > 0 ? (
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {filteredTools.map((tool, index) => (
+                          <Link 
+                            key={tool.href} 
+                            href={tool.href}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-hover transition-colors group"
+                          >
+                            <div className="w-2 h-2 bg-primary rounded-full opacity-60 group-hover:opacity-100" />
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">{tool.name}</div>
+                              <div className="text-xs text-text-secondary">{tool.category}</div>
+                            </div>
+                            <div className="text-primary text-xs group-hover:text-accent">→</div>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-text-muted">
+                        <div className="text-2xl mb-2">🔍</div>
+                        <div>검색 결과가 없습니다</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* CTA 버튼들 */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="btn btn-primary px-8 py-4 text-lg ripple-effect scale-on-hover">
+                🚀 도구 탐색하기
+              </button>
+              <button className="btn btn-secondary px-8 py-4 text-lg ripple-effect scale-on-hover">
+                ⭐ 즐겨찾기 보기
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20" style={{background: 'var(--background)'}}>
+      {/* 카테고리별 도구 섹션 */}
+      <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          {/* 섹션 헤더 */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              🛠️ <span className="text-transparent bg-clip-text bg-gradient-primary">개발 도구</span>
+            </h2>
+            <p className="text-text-secondary text-lg">매일 사용하는 핵심 도구들을 한눈에</p>
+          </div>
+          
+          {/* Bento Box 그리드 레이아웃 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
             
-            {/* JSON Formatter */}
-            <Link href="/tools/json-formatter" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+            {/* JSON Formatter - Large Card */}
+            <Link href="/tools/json-formatter" className="group md:col-span-2 lg:row-span-2">
+              <div className="card card-large relative overflow-hidden group-hover:scale-105">
+                <div className="absolute top-4 right-4 text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
+                  🔥 인기
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{t('tools.json.title')}</h3>
-                <p className="text-gray-400 text-sm mb-4">{t('tools.json.subtitle')}</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-tertiary rounded-2xl flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">JSON 포맷터</h3>
+                    <p className="text-text-secondary">가장 많이 사용되는 도구</p>
+                  </div>
+                </div>
+                
+                {/* Live Preview */}
+                <div className="bg-surface-elevated rounded-lg p-4 mb-4 font-mono text-sm">
+                  <div className="text-text-muted mb-2">실시간 미리보기:</div>
+                  <div className="text-primary">{`{`}
+                    <div><span className="text-secondary">"name"</span>: <span className="text-accent">"developer"</span>,</div>
+                    <div><span className="text-secondary">"tools"</span>: [<span className="text-tertiary">"awesome"</span>]</div>
+                  {`}`}</div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="text-text-muted text-sm">오늘 247번 사용됨</div>
+                  <div className="flex items-center text-primary font-semibold group-hover:text-accent transition-colors">
+                    사용하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
                 </div>
               </div>
             </Link>
 
-            {/* Variable Generator */}
-            <Link href="/tools/variable-generator" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
+            {/* Variable Generator - Medium Card */}
+            <Link href="/tools/variable-generator" className="group md:col-span-2">
+              <div className="card card-medium">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-secondary to-accent rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">변수명 생성기</h3>
+                    <p className="text-text-secondary text-sm">더 이상 네이밍으로 고민하지 마세요</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{t('tools.variable.title')}</h3>
-                <p className="text-gray-400 text-sm mb-4">{t('tools.variable.subtitle')}</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
+                
+                <div className="bg-surface-elevated rounded-lg p-3 mb-3 font-mono text-sm">
+                  <div className="text-accent">userAccountData → user_account_data</div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-text-muted text-xs">오늘 89번 사용</span>
+                  <span className="text-primary text-sm font-medium group-hover:text-accent">시도해보기 →</span>
                 </div>
               </div>
             </Link>
-
-            {/* Canvas */}
+            
+            {/* Canvas - Small Card */}
             <Link href="/canvas" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card card-small">
+                <div className="w-10 h-10 bg-gradient-to-br from-tertiary to-primary rounded-lg flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{t('home.canvas.title')}</h3>
-                <p className="text-gray-400 text-sm mb-4">{t('home.canvas.subtitle')}</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
-                </div>
+                <h3 className="text-md font-semibold text-white mb-2">디지털 캔버스</h3>
+                <p className="text-text-secondary text-xs mb-3">자유로운 그리기</p>
+                <div className="w-full h-8 bg-gradient-to-r from-primary/30 to-secondary/30 rounded opacity-60" />
+                <div className="text-primary text-xs mt-2 group-hover:text-accent">그리기 →</div>
               </div>
             </Link>
 
-            {/* Chat */}
+            {/* Chat - Small Card */}
             <Link href="/chat" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card card-small">
+                <div className="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{t('home.chat.title')}</h3>
-                <p className="text-gray-400 text-sm mb-4">{t('home.chat.subtitle')}</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
+                <h3 className="text-md font-semibold text-white mb-2">스마트 채팅</h3>
+                <p className="text-text-secondary text-xs mb-3">AI와 대화하기</p>
+                <div className="flex gap-1 mb-2">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                  <div className="w-2 h-2 bg-tertiary rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
+                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
                 </div>
+                <div className="text-primary text-xs group-hover:text-accent">채팅하기 →</div>
               </div>
             </Link>
-
-            {/* URL Encoder */}
-            <Link href="/tools/url-encoder" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
+            
+            {/* URL Encoder - Medium Card */}
+            <Link href="/tools/url-encoder" className="group md:col-span-2">
+              <div className="card card-medium">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">URL 인코더/디코더</h3>
+                    <p className="text-text-secondary text-sm">URL을 안전하게 변환</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">URL 인코더</h3>
-                <p className="text-gray-400 text-sm mb-4">URL을 안전하게 인코딩/디코딩</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
+                
+                <div className="bg-surface-elevated rounded-lg p-3 mb-3 font-mono text-xs">
+                  <div className="text-text-muted mb-1">Before:</div>
+                  <div className="text-secondary">hello world!</div>
+                  <div className="text-text-muted mb-1 mt-2">After:</div>
+                  <div className="text-primary">hello%20world%21</div>
                 </div>
+                
+                <div className="text-primary text-sm group-hover:text-accent">인코딩하기 →</div>
               </div>
             </Link>
-
-            {/* Base64 */}
+            
+            {/* Base64 - Small Card */}
             <Link href="/tools/base64" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card card-small">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Base64</h3>
-                <p className="text-gray-400 text-sm mb-4">Base64 인코딩/디코딩</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
-                </div>
+                <h3 className="text-md font-semibold text-white mb-2">Base64</h3>
+                <p className="text-text-secondary text-xs mb-3">인코딩/디코딩</p>
+                <div className="font-mono text-xs text-tertiary mb-2">SGVsbG8gV29ybGQh</div>
+                <div className="text-primary text-xs group-hover:text-accent">변환하기 →</div>
               </div>
             </Link>
 
-            {/* Hash Generator */}
+            {/* Hash Generator - Small Card */}
             <Link href="/tools/hash" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card card-small">
+                <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">해시 생성기</h3>
-                <p className="text-gray-400 text-sm mb-4">SHA-1, SHA-256, SHA-512 해시</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
-                </div>
+                <h3 className="text-md font-semibold text-white mb-2">해시 생성기</h3>
+                <p className="text-text-secondary text-xs mb-3">SHA, MD5 해시</p>
+                <div className="font-mono text-xs text-secondary mb-2">a1b2c3d4...</div>
+                <div className="text-primary text-xs group-hover:text-accent">생성하기 →</div>
               </div>
             </Link>
 
-            {/* QR Generator */}
+            {/* QR Generator - Small Card */}
             <Link href="/tools/qr-generator" className="group">
-              <div className="card group-hover:shadow-lg">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="card card-small">
+                <div className="w-10 h-10 bg-gradient-to-br from-tertiary to-accent rounded-lg flex items-center justify-center mb-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">QR 생성기</h3>
-                <p className="text-gray-400 text-sm mb-4">텍스트를 QR 코드로 변환</p>
-                <div className="flex items-center text-purple-400 font-medium group-hover:text-purple-300 text-sm">
-                  {t('home.tools.subtitle')} →
+                <h3 className="text-md font-semibold text-white mb-2">QR 생성기</h3>
+                <p className="text-text-secondary text-xs mb-3">QR 코드 생성</p>
+                <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px mb-2">
+                  {Array.from({length: 16}).map((_, i) => (
+                    <div key={i} className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} rounded-sm`} />
+                  ))}
                 </div>
+                <div className="text-primary text-xs group-hover:text-accent">생성하기 →</div>
               </div>
             </Link>
-
+            
           </div>
+          
+          {/* 통계 섹션 */}
+          <div className="mt-16 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">8</div>
+                <div className="text-text-secondary">강력한 도구</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-secondary mb-2">1,247</div>
+                <div className="text-text-secondary">오늘 사용 횟수</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-accent mb-2">⚡</div>
+                <div className="text-text-secondary">빠른 처리</div>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </section>
 
