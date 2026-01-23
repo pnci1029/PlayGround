@@ -152,10 +152,10 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto">
             {/* 브랜드명 */}
             <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-black gradient-text mb-4 sparkle">
+              <h1 className="text-6xl md:text-8xl font-black text-text-primary mb-4">
                 DEVFORGE
               </h1>
-              <div className="w-32 h-1 bg-gradient-primary mx-auto rounded-full neon-border" />
+              <div className="w-32 h-1 bg-gradient-to-r from-primary to-primary-light mx-auto rounded-full" />
             </div>
             
             {/* 가치 제안 */}

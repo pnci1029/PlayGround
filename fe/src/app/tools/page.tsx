@@ -65,15 +65,15 @@ export default function ToolsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ background: 'var(--gradient-bg)' }}>
       {/* Header */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16" style={{ background: 'var(--surface)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            개발 도구 모음
+          <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+            DEVFORGE 도구 모음
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            개발 작업에 필요한 다양한 도구들을 사용할 수 있습니다.
+          <p className="text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
+            개발 생산성을 높이는 전문 도구들
           </p>
         </div>
       </section>
