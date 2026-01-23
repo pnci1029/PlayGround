@@ -45,7 +45,7 @@ services:
   frontend:
     build:
       context: ./fe
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  
     image: playground-frontend:latest
     container_name: playground_frontend
     ports:
