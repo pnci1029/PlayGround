@@ -69,10 +69,10 @@ export default function AIAssistant() {
             </svg>
           </div>
           <div>
-            <h4 className="text-text-primary font-semibold text-sm">AI 어시스턴트</h4>
+            <h4 className="text-text-primary font-semibold text-sm">도구 추천</h4>
             <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-accent-success rounded-full animate-pulse"></div>
-              <span className="text-text-muted text-xs">활성화됨</span>
+              <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+              <span className="text-text-muted text-xs">프로토타입</span>
             </div>
           </div>
           <button 
@@ -88,12 +88,12 @@ export default function AIAssistant() {
         {/* Suggestion Card */}
         <div className="bg-surface rounded-xl p-3 border border-border mb-3">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-              {Math.round(currentSug.confidence * 100)}% 일치
+            <span className="text-xs bg-surface-elevated text-text-muted px-2 py-1 rounded-full">
+              추천
             </span>
           </div>
           <p className="text-text-secondary text-sm mb-2">{currentSug.reason}</p>
-          <h5 className="text-text-primary font-semibold">{currentSug.tool} 추천</h5>
+          <h5 className="text-text-primary font-semibold">{currentSug.tool} 사용해보기</h5>
         </div>
 
         {/* Action Buttons */}
