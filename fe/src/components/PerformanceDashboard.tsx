@@ -29,25 +29,13 @@ export default function PerformanceDashboard() {
   }, [])
 
   const animateMetrics = () => {
-    // 실제 사용 패턴을 시뮬레이션한 메트릭
-    let efficiency = 0
-    let bugs = 0
-    
-    const interval = setInterval(() => {
-      efficiency += Math.random() * 2
-      bugs += Math.random() * 1.5
-      
-      setMetrics({
-        codeEfficiency: Math.min(efficiency, 94),
-        timesSaved: `${Math.floor(efficiency * 0.5)}h`,
-        bugsReduced: Math.floor(Math.min(bugs, 67)),
-        productivityGain: `${Math.floor(efficiency * 1.2)}%`
-      })
-      
-      if (efficiency >= 94) {
-        clearInterval(interval)
-      }
-    }, 50)
+    // 사용 시작 후 실제 데이터가 누적됩니다
+    setMetrics({
+      codeEfficiency: 0,
+      timesSaved: '0h',
+      bugsReduced: 0,
+      productivityGain: '0%'
+    })
   }
 
   if (!isVisible) return null
@@ -58,10 +46,10 @@ export default function PerformanceDashboard() {
         
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-            📊 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-success">실시간 성과 지표</span>
+            📊 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">개발 도구 사용 현황</span>
           </h2>
           <p className="text-text-secondary text-lg">
-            AI가 분석한 당신의 개발 생산성 향상 지표
+            도구 사용을 시작하면 개인화된 생산성 지표가 표시됩니다
           </p>
         </div>
 
@@ -75,10 +63,10 @@ export default function PerformanceDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-text-primary mb-1">
-              {metrics.codeEfficiency.toFixed(1)}%
+            <h3 className="text-2xl font-bold text-text-muted mb-1">
+              --
             </h3>
-            <p className="text-text-secondary text-sm">코드 효율성</p>
+            <p className="text-text-secondary text-sm">효율성 지표</p>
           </div>
 
           {/* Time Saved */}
@@ -88,36 +76,36 @@ export default function PerformanceDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-text-primary mb-1">
-              {metrics.timesSaved}
+            <h3 className="text-2xl font-bold text-text-muted mb-1">
+              --
             </h3>
             <p className="text-text-secondary text-sm">절약된 시간</p>
           </div>
 
-          {/* Bugs Reduced */}
+          {/* Tool Usage */}
           <div className="card text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-accent-warning to-accent-success rounded-2xl flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-text-primary mb-1">
-              {metrics.bugsReduced}
+            <h3 className="text-2xl font-bold text-text-muted mb-1">
+              0
             </h3>
-            <p className="text-text-secondary text-sm">버그 감소</p>
+            <p className="text-text-secondary text-sm">도구 사용 횟수</p>
           </div>
 
-          {/* Productivity Gain */}
+          {/* Success Rate */}
           <div className="card text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-accent-warning rounded-2xl flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-text-primary mb-1">
-              +{metrics.productivityGain}
+            <h3 className="text-2xl font-bold text-text-muted mb-1">
+              --
             </h3>
-            <p className="text-text-secondary text-sm">생산성 향상</p>
+            <p className="text-text-secondary text-sm">성공률</p>
           </div>
 
         </div>
