@@ -4,8 +4,8 @@ import Header from '@/components/common/Header'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 
 export const metadata: Metadata = {
-  title: "MyTools - 개인 웹 도구 모음",
-  description: "다양한 웹 도구들을 한곳에서 사용할 수 있는 개인 플랫폼",
+  title: "DEVFORGE - AI-Powered Developer Tools",
+  description: "차세대 AI 기반 개발자 도구 플랫폼. 코딩 워크플로우를 혁신하는 스마트 도구들",
 };
 
 export default function RootLayout({

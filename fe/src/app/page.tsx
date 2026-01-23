@@ -3,38 +3,23 @@
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
+import AIAssistant from '@/components/AIAssistant'
+import WorkflowChain from '@/components/WorkflowChain'
+import PerformanceDashboard from '@/components/PerformanceDashboard'
 
-const TypewriterText = ({ texts, speed = 100, pause = 2000 }: { texts: string[], speed?: number, pause?: number }) => {
-  const [displayedText, setDisplayedText] = useState('')
-  const [currentTextIndex, setCurrentTextIndex] = useState(0)
-  const [currentCharIndex, setCurrentCharIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
+const AnimatedText = ({ texts }: { texts: string[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
-    const currentText = texts[currentTextIndex]
-    
-    const timeout = setTimeout(() => {
-      if (!isDeleting && currentCharIndex < currentText.length) {
-        setDisplayedText(currentText.substring(0, currentCharIndex + 1))
-        setCurrentCharIndex(currentCharIndex + 1)
-      } else if (isDeleting && currentCharIndex > 0) {
-        setDisplayedText(currentText.substring(0, currentCharIndex - 1))
-        setCurrentCharIndex(currentCharIndex - 1)
-      } else if (!isDeleting && currentCharIndex === currentText.length) {
-        setTimeout(() => setIsDeleting(true), pause)
-      } else if (isDeleting && currentCharIndex === 0) {
-        setIsDeleting(false)
-        setCurrentTextIndex((prevIndex) => (prevIndex + 1) % texts.length)
-      }
-    }, isDeleting ? speed / 2 : speed)
-
-    return () => clearTimeout(timeout)
-  }, [currentCharIndex, currentTextIndex, isDeleting, texts, speed, pause])
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % texts.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [texts.length])
 
   return (
-    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">
-      {displayedText}
-      <span className="animate-pulse text-primary">|</span>
+    <span className="text-primary font-bold transition-all duration-1000 ease-in-out">
+      {texts[currentIndex]}
     </span>
   )
 }
@@ -56,13 +41,11 @@ export default function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   
-  const typingTexts = [
-    'JSON을 깔끔하게 정리하고',
-    '변수명을 자동으로 생성하고', 
-    'QR코드를 빠르게 만들고',
-    '해시값을 간편하게 계산하고',
-    'Base64를 쉽게 변환하고',
-    '캔버스에서 자유롭게 그리고'
+  const valueTexts = [
+    'AI로 코딩 워크플로우를 혁신하세요',
+    '개발 생산성을 10배 향상시키세요', 
+    '스마트한 도구로 시간을 절약하세요',
+    '차세대 개발자 경험을 만나보세요'
   ]
 
   // 도구 데이터
@@ -175,13 +158,13 @@ export default function HomePage() {
               <div className="w-32 h-1 bg-gradient-primary mx-auto rounded-full neon-border" />
             </div>
             
-            {/* 타이핑 애니메이션 */}
+            {/* 가치 제안 */}
             <div className="mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
-                <TypewriterText texts={typingTexts} speed={80} pause={1500} />
+              <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4">
+                <AnimatedText texts={valueTexts} />
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto">
-                개발자를 위한 필수 도구들을 한곳에서. 빠르고, 직관적이고, 강력하게.
+                AI 기반 차세대 개발도구로 당신의 워크플로우를 혁신하세요
               </p>
             </div>
             
@@ -239,12 +222,12 @@ export default function HomePage() {
             
             {/* CTA 버튼들 */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="btn btn-primary px-8 py-4 text-lg ripple-effect scale-on-hover">
-                🚀 도구 탐색하기
-              </button>
-              <button className="btn btn-secondary px-8 py-4 text-lg ripple-effect scale-on-hover">
-                ⭐ 즐겨찾기 보기
-              </button>
+              <Link href="/tools/json-formatter" className="btn btn-primary px-8 py-4 text-lg ripple-effect scale-on-hover">
+                JSON 포맷터 시작하기
+              </Link>
+              <Link href="/tools" className="btn btn-secondary px-8 py-4 text-lg ripple-effect scale-on-hover">
+                모든 도구 보기
+              </Link>
             </div>
           </div>
         </div>
@@ -256,73 +239,103 @@ export default function HomePage() {
           
           {/* 섹션 헤더 */}
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              🛠️ <span className="text-transparent bg-clip-text bg-gradient-primary">개발 도구</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">AI-Powered</span> Developer Tools
             </h2>
-            <p className="text-text-secondary text-lg">매일 사용하는 핵심 도구들을 한눈에</p>
+            <p className="text-text-secondary text-lg max-w-3xl mx-auto">
+              워크플로우를 혁신하는 차세대 개발도구. 인공지능이 당신의 생산성을 10배 향상시킵니다.
+            </p>
           </div>
           
           {/* Bento Box 그리드 레이아웃 */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
             
-            {/* JSON Formatter - Large Card */}
+            {/* JSON AI Formatter - Flagship Tool */}
             <Link href="/tools/json-formatter" className="group md:col-span-2 lg:row-span-2">
-              <div className="card card-large relative overflow-hidden group-hover:scale-105">
-                <div className="absolute top-4 right-4 text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-                  🔥 인기
+              <div className="card card-large relative overflow-hidden group-hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute top-4 right-4 text-xs bg-gradient-to-r from-accent-success to-primary px-3 py-1 rounded-full text-white font-semibold">
+                  🚀 AI Enhanced
                 </div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-tertiary rounded-2xl flex items-center justify-center">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-lg">
                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">JSON 포맷터</h3>
-                    <p className="text-text-secondary">가장 많이 사용되는 도구</p>
+                    <h3 className="text-2xl font-bold text-text-primary mb-2">AI JSON 포맷터</h3>
+                    <p className="text-text-secondary mb-3">자동 오류 감지 및 스마트 구조 개선</p>
+                    <div className="flex gap-2">
+                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-accent-success">자동완성</span>
+                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-primary">실시간 검증</span>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Live Preview */}
-                <div className="bg-surface-elevated rounded-lg p-4 mb-4 font-mono text-sm">
-                  <div className="text-text-muted mb-2">실시간 미리보기:</div>
-                  <div className="text-primary">{`{`}
-                    <div><span className="text-secondary">"name"</span>: <span className="text-accent">"developer"</span>,</div>
-                    <div><span className="text-secondary">"tools"</span>: [<span className="text-tertiary">"awesome"</span>]</div>
-                  {`}`}</div>
+                {/* AI Features Preview */}
+                <div className="bg-surface-elevated rounded-xl p-4 mb-4 border border-border-bright">
+                  <div className="text-text-muted text-sm mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-success rounded-full animate-pulse"></div>
+                    AI 스마트 기능
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-accent-success">✓</span>
+                      <span className="text-text-secondary">자동 구문 오류 수정</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-accent-success">✓</span>
+                      <span className="text-text-secondary">스키마 자동 생성</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-accent-success">✓</span>
+                      <span className="text-text-secondary">최적화된 구조 제안</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="text-text-muted text-sm">오늘 247번 사용됨</div>
-                  <div className="flex items-center text-primary font-semibold group-hover:text-accent transition-colors">
-                    사용하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-success rounded-full animate-pulse"></div>
+                    <span className="text-text-muted text-sm">AI 활성화</span>
+                  </div>
+                  <div className="flex items-center text-primary font-semibold group-hover:text-accent-success transition-colors">
+                    체험하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>
               </div>
             </Link>
 
-            {/* Variable Generator - Medium Card */}
+            {/* AI Variable Generator - Medium Card */}
             <Link href="/tools/variable-generator" className="group md:col-span-2">
-              <div className="card card-medium">
+              <div className="card card-medium group-hover:border-primary transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-secondary to-accent rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center shadow-md">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">변수명 생성기</h3>
-                    <p className="text-text-secondary text-sm">더 이상 네이밍으로 고민하지 마세요</p>
+                    <h3 className="text-lg font-semibold text-text-primary">AI 변수명 생성기</h3>
+                    <p className="text-text-secondary text-sm">컨텍스트 기반 스마트 네이밍</p>
                   </div>
                 </div>
                 
-                <div className="bg-surface-elevated rounded-lg p-3 mb-3 font-mono text-sm">
-                  <div className="text-accent">userAccountData → user_account_data</div>
+                <div className="bg-surface-elevated rounded-lg p-3 mb-3 border border-border">
+                  <div className="font-mono text-sm space-y-1">
+                    <div className="text-text-muted text-xs">입력: "사용자 계정 정보"</div>
+                    <div className="text-accent-success">✓ userAccountInfo</div>
+                    <div className="text-accent-success">✓ user_account_data</div>
+                    <div className="text-accent-success">✓ accountDetails</div>
+                  </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-text-muted text-xs">오늘 89번 사용</span>
-                  <span className="text-primary text-sm font-medium group-hover:text-accent">시도해보기 →</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-text-muted text-xs">AI 다중 제안</span>
+                  </div>
+                  <span className="text-primary text-sm font-medium group-hover:text-accent-success transition-colors">체험하기 →</span>
                 </div>
               </div>
             </Link>
@@ -438,20 +451,20 @@ export default function HomePage() {
             
           </div>
           
-          {/* 통계 섹션 */}
+          {/* 가치 제안 섹션 */}
           <div className="mt-16 text-center">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">8</div>
-                <div className="text-text-secondary">강력한 도구</div>
+                <div className="text-3xl font-bold text-primary mb-2">🔥</div>
+                <div className="text-text-secondary">AI 기반 자동화</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-secondary mb-2">1,247</div>
-                <div className="text-text-secondary">오늘 사용 횟수</div>
+                <div className="text-3xl font-bold text-accent-success mb-2">🚀</div>
+                <div className="text-text-secondary">10x 생산성 향상</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent mb-2">⚡</div>
-                <div className="text-text-secondary">빠른 처리</div>
+                <div className="text-3xl font-bold text-accent-warning mb-2">⚡</div>
+                <div className="text-text-secondary">실시간 처리</div>
               </div>
             </div>
           </div>
@@ -459,6 +472,14 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* AI 워크플로우 체인 섹션 */}
+      <WorkflowChain />
+
+      {/* 성과 측정 대시보드 */}
+      <PerformanceDashboard />
+
+      {/* AI 어시스턴트 */}
+      <AIAssistant />
 
     </div>
   )
