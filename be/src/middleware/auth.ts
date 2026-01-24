@@ -23,7 +23,7 @@ export class AuthMiddleware {
   static generateToken(payload: JWTPayload): string {
     return jwt.sign(payload, JWT_SECRET, { 
       expiresIn: process.env.JWT_EXPIRES_IN || '24h' 
-    })
+    } as jwt.SignOptions)
   }
 
   static verifyToken(token: string): JWTPayload {
