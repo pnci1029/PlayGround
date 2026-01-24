@@ -148,7 +148,7 @@ export class ProjectModel {
   static async delete(id: number): Promise<boolean> {
     const query = 'DELETE FROM projects WHERE id = $1'
     const result = await db.query(query, [id])
-    return result.rowCount > 0
+    return (result.rowCount || 0) > 0
   }
 
   static async updateStatus(id: number, status: Project['status']): Promise<boolean> {
@@ -158,7 +158,7 @@ export class ProjectModel {
       WHERE id = $2
     `
     const result = await db.query(query, [status, id])
-    return result.rowCount > 0
+    return (result.rowCount || 0) > 0
   }
 
   static async getProjectStats(): Promise<{
@@ -184,7 +184,7 @@ export class ProjectModel {
   static async findAvailablePort(): Promise<number> {
     const query = 'SELECT port FROM projects WHERE port IS NOT NULL ORDER BY port'
     const result = await db.query(query)
-    const usedPorts = result.rows.map(row => row.port)
+    const usedPorts = result.rows.map((row: any) => row.port)
     
     // 8000-9000 범위에서 사용 가능한 포트 찾기
     for (let port = 8000; port <= 9000; port++) {

@@ -22,7 +22,7 @@ export function validateSchema(schema: z.ZodSchema) {
         return reply.status(400).send({
           success: false,
           error: 'Validation failed',
-          details: error.errors
+          details: error.issues
         })
       }
       throw error
