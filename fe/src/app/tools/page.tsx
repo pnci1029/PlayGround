@@ -5,106 +5,103 @@ export default function ToolsPage() {
     {
       id: 'json-formatter',
       name: 'JSON 포맷터',
-      description: 'JSON 데이터를 깔끔하게 포맷팅하고 검증',
+      description: 'JSON 데이터 정리 및 검증',
       icon: '🔧',
-      color: 'blue',
-      path: '/tools/json-formatter'
+      href: '/tools/json-formatter',
+      featured: true
     },
     {
       id: 'variable-generator',
       name: '변수명 생성기',
-      description: '다양한 명명 규칙으로 변수명 자동 생성',
-      icon: '📝',
-      color: 'green',
-      path: '/tools/variable-generator'
-    },
-    {
-      id: 'url-encoder',
-      name: 'URL 인코더/디코더',
-      description: 'URL 인코딩 및 디코딩 도구',
-      icon: '🔗',
-      color: 'purple',
-      path: '/tools/url-encoder'
-    },
-    {
-      id: 'base64',
-      name: 'Base64 인코더',
-      description: 'Base64 인코딩/디코딩',
-      icon: '🔐',
-      color: 'orange',
-      path: '/tools/base64'
-    },
-    {
-      id: 'hash-generator',
-      name: '해시 생성기',
-      description: 'MD5, SHA-1, SHA-256 해시 생성',
-      icon: '#️⃣',
-      color: 'red',
-      path: '/tools/hash-generator'
+      description: '다양한 네이밍 컨벤션 변환',
+      icon: '🏷️',
+      href: '/tools/variable-generator',
+      featured: true
     },
     {
       id: 'qr-generator',
-      name: 'QR 코드 생성기',
-      description: '텍스트를 QR 코드로 변환',
+      name: 'QR 생성기',
+      description: 'QR 코드 생성',
       icon: '📱',
-      color: 'indigo',
-      path: '/tools/qr-generator'
+      href: '/tools/qr-generator'
+    },
+    {
+      id: 'base64',
+      name: 'Base64',
+      description: '인코딩/디코딩',
+      icon: '🔄',
+      href: '/tools/base64'
+    },
+    {
+      id: 'hash',
+      name: '해시 생성기',
+      description: 'SHA, MD5 해시',
+      icon: '🔐',
+      href: '/tools/hash'
+    },
+    {
+      id: 'url-encoder',
+      name: 'URL 인코더',
+      description: 'URL 인코딩/디코딩',
+      icon: '🔗',
+      href: '/tools/url-encoder'
     }
   ]
 
-  const getColorClasses = (color: string) => {
-    const colorMap = {
-      blue: 'bg-blue-100 text-blue-600',
-      green: 'bg-green-100 text-green-600',
-      purple: 'bg-purple-100 text-purple-600',
-      orange: 'bg-orange-100 text-orange-600',
-      red: 'bg-red-100 text-red-600',
-      indigo: 'bg-indigo-100 text-indigo-600'
-    }
-    return colorMap[color as keyof typeof colorMap] || 'bg-gray-100 text-gray-600'
-  }
-
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-bg)' }}>
-      {/* Header */}
-      <section className="py-16" style={{ background: 'var(--surface)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-            DEVFORGE 도구 모음
+    <div className="min-h-screen bg-background">
+      
+      {/* Hero Section */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-black text-text-primary mb-6">
+            개발 도구 모음
           </h1>
-          <p className="text-xl max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            개발 생산성을 높이는 전문 도구들
+          <p className="text-xl text-text-secondary max-w-2xl mx-auto mb-12">
+            일상적인 개발 작업을 빠르고 간편하게 처리하는 실용적인 도구들
           </p>
+          
+          {/* Quick Access */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Link href="/tools/json-formatter" className="btn btn-primary px-8 py-4 text-lg">
+              JSON 포맷터 →
+            </Link>
+            <Link href="/tools/variable-generator" className="btn btn-secondary px-8 py-4 text-lg">
+              변수명 생성기 →
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Tools Grid */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="pb-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tools.map((tool) => (
-              <Link
-                key={tool.id}
-                href={tool.path}
-                className="card group cursor-pointer transform hover:scale-105 transition-all duration-200"
+              <Link 
+                key={tool.id} 
+                href={tool.href} 
+                className={`group ${tool.featured ? 'md:col-span-1' : ''}`}
               >
-                <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 ${getColorClasses(tool.color)}`}>
-                  <span className="text-2xl">{tool.icon}</span>
-                </div>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                  {tool.name}
-                </h3>
-                
-                <p className="text-gray-600 mb-6">
-                  {tool.description}
-                </p>
-                
-                <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
-                  사용하기
-                  <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                <div className="card hover:border-primary transition-all duration-300 group-hover:scale-[1.02]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center shadow-md">
+                      <span className="text-xl">{tool.icon}</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-text-primary group-hover:text-primary transition-colors">
+                        {tool.name}
+                      </h3>
+                      <p className="text-text-muted text-sm">{tool.description}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-muted">바로 사용 가능</span>
+                    <span className="text-primary group-hover:text-accent-success transition-colors">
+                      열기 →
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -112,37 +109,41 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* Coming Soon */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            곧 추가될 도구들
+      {/* Benefits Section */}
+      <section className="py-16 bg-surface/50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-8">
+            왜 DEVFORGE 도구를 사용하나요?
           </h2>
-          <p className="text-gray-600 mb-8">
-            더 많은 유용한 도구들이 추가될 예정입니다
-          </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="font-semibold text-gray-700 mb-2">색상 팔레트 생성기</h3>
-              <p className="text-sm text-gray-500">조화로운 색상 조합 생성</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">⚡</span>
+              </div>
+              <h3 className="font-semibold text-text-primary mb-2">즉시 사용</h3>
+              <p className="text-text-muted text-sm">설치나 가입 없이 바로 사용할 수 있습니다</p>
             </div>
             
-            <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6">
-              <div className="text-4xl mb-4">📊</div>
-              <h3 className="font-semibold text-gray-700 mb-2">차트 생성기</h3>
-              <p className="text-sm text-gray-500">데이터 시각화 도구</p>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-success to-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="font-semibold text-text-primary mb-2">단순함</h3>
+              <p className="text-text-muted text-sm">복잡한 설정 없이 핵심 기능만 제공합니다</p>
             </div>
             
-            <div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6">
-              <div className="text-4xl mb-4">🔍</div>
-              <h3 className="font-semibold text-gray-700 mb-2">정규식 테스터</h3>
-              <p className="text-sm text-gray-500">정규표현식 테스트 및 검증</p>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-warning to-accent-success rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🔒</span>
+              </div>
+              <h3 className="font-semibold text-text-primary mb-2">보안</h3>
+              <p className="text-text-muted text-sm">모든 처리는 브라우저에서 로컬로 실행됩니다</p>
             </div>
           </div>
         </div>
       </section>
+
     </div>
   )
 }
