@@ -1,13 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function HashPage() {
-  const { t } = useLanguage()
   const [input, setInput] = useState('')
   const [hashes, setHashes] = useState({
-    md5: '',
     sha1: '',
     sha256: '',
     sha512: ''
@@ -39,7 +36,6 @@ export default function HashPage() {
         .join('')
 
       setHashes({
-        md5: 'MD5는 브라우저에서 지원되지 않습니다',
         sha1: sha1Hash,
         sha256: sha256Hash,
         sha512: sha512Hash
@@ -56,7 +52,6 @@ export default function HashPage() {
   const clearAll = () => {
     setInput('')
     setHashes({
-      md5: '',
       sha1: '',
       sha256: '',
       sha512: ''
@@ -64,95 +59,152 @@ export default function HashPage() {
   }
 
   const hashTypes = [
-    { key: 'sha1' as keyof typeof hashes, name: 'SHA-1', description: '160비트 (40자리)' },
-    { key: 'sha256' as keyof typeof hashes, name: 'SHA-256', description: '256비트 (64자리)' },
-    { key: 'sha512' as keyof typeof hashes, name: 'SHA-512', description: '512비트 (128자리)' },
+    { 
+      key: 'sha1' as keyof typeof hashes, 
+      name: 'SHA-1', 
+      description: '160비트 해시 (40자리 16진수)',
+      icon: '🔓',
+      warning: '보안상 취약하여 새로운 용도로는 권장하지 않음'
+    },
+    { 
+      key: 'sha256' as keyof typeof hashes, 
+      name: 'SHA-256', 
+      description: '256비트 해시 (64자리 16진수)',
+      icon: '🔒',
+      warning: ''
+    },
+    { 
+      key: 'sha512' as keyof typeof hashes, 
+      name: 'SHA-512', 
+      description: '512비트 해시 (128자리 16진수)',
+      icon: '🔐',
+      warning: ''
+    },
   ]
 
   return (
-    <div className="min-h-screen" style={{background: 'var(--background)'}}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">해시 생성기</h1>
-          <p className="text-gray-400">텍스트의 다양한 해시값을 생성합니다</p>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-text-primary mb-4">해시 생성기</h1>
+          <p className="text-text-secondary text-lg">텍스트의 무결성을 검증하는 다양한 해시값을 생성하세요</p>
         </div>
 
-        <div className="space-y-6">
-          {/* Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              입력 텍스트
-            </label>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="해시를 생성할 텍스트를 입력하세요..."
-              className="w-full h-32 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-              style={{ borderColor: 'var(--border)' }}
-            />
-          </div>
-
-          {/* Controls */}
-          <div className="flex gap-4">
-            <button
-              onClick={generateHashes}
-              disabled={!input.trim()}
-              className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-              해시 생성
-            </button>
-            <button
-              onClick={clearAll}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-              지우기
-            </button>
-          </div>
-
-          {/* Hash Results */}
-          <div className="space-y-4">
-            {hashTypes.map(({ key, name, description }) => (
-              <div key={key}>
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300">
-                      {name}
-                    </label>
-                    <p className="text-xs text-gray-500">{description}</p>
-                  </div>
-                  {hashes[key] && (
-                    <button
-                      onClick={() => copyToClipboard(hashes[key])}
-                      className="text-xs text-purple-400 hover:text-purple-300"
-                    >
-                      복사
-                    </button>
-                  )}
-                </div>
-                <textarea
-                  value={hashes[key]}
-                  readOnly
-                  placeholder={`${name} 해시값이 여기에 표시됩니다...`}
-                  className="w-full h-16 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm focus:outline-none resize-none break-all"
-                  style={{ borderColor: 'var(--border)' }}
-                />
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          
+          {/* Input Section */}
+          <div className="space-y-6">
+            <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
+              <h2 className="text-xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+              
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="해시를 생성할 텍스트를 입력하세요..."
+                className="w-full h-32 bg-surface border border-border text-text-primary p-4 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-colors font-mono text-sm"
+              />
+              
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-text-muted text-sm">{input.length} 문자</span>
               </div>
-            ))}
+            </div>
+
+            {/* Controls */}
+            <div className="flex gap-4">
+              <button
+                onClick={generateHashes}
+                disabled={!input.trim()}
+                className="btn btn-primary flex-1"
+              >
+                해시 생성 🔐
+              </button>
+              <button
+                onClick={clearAll}
+                className="btn btn-secondary"
+              >
+                초기화
+              </button>
+            </div>
           </div>
 
-          {/* Info */}
-          <div className="mt-8 p-4 bg-gray-900/50 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
-            <h3 className="text-white font-medium mb-2">해시 함수란?</h3>
-            <ul className="text-gray-400 text-sm space-y-1">
-              <li>• 해시 함수는 임의의 길이 데이터를 고정된 길이의 해시값으로 변환합니다</li>
-              <li>• 같은 입력은 항상 같은 해시값을 생성합니다</li>
-              <li>• 해시값으로부터 원본 데이터를 복원하는 것은 불가능합니다</li>
-              <li>• 파일 무결성 검증, 패스워드 저장 등에 사용됩니다</li>
-              <li>• SHA-256, SHA-512는 현재 안전한 것으로 간주되는 해시 함수입니다</li>
-            </ul>
+          {/* Output Section */}
+          <div className="space-y-6">
+            <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
+              <h2 className="text-xl font-semibold text-text-primary mb-4">해시 결과</h2>
+              
+              <div className="space-y-4">
+                {hashTypes.map(({ key, name, description, icon, warning }) => (
+                  <div key={key} className="bg-surface-elevated rounded-lg p-4 border border-border hover:border-primary transition-all duration-300 hover:scale-[1.01]">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{icon}</span>
+                        <div>
+                          <label className="text-text-secondary text-sm font-medium">{name}</label>
+                          <p className="text-text-muted text-xs">{description}</p>
+                          {warning && <p className="text-accent-warning text-xs mt-1">{warning}</p>}
+                        </div>
+                      </div>
+                      {hashes[key] && (
+                        <button
+                          onClick={() => copyToClipboard(hashes[key])}
+                          className="text-primary hover:text-accent-success text-sm transition-colors"
+                          title="클립보드에 복사"
+                        >
+                          복사 📋
+                        </button>
+                      )}
+                    </div>
+                    <textarea
+                      value={hashes[key]}
+                      readOnly
+                      placeholder={`${name} 해시값이 여기에 표시됩니다...`}
+                      className="w-full h-16 bg-surface border border-border text-text-primary p-3 rounded-lg font-mono text-xs resize-none focus:outline-none break-all"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Info Section */}
+        <div className="mt-12">
+          <div className="card bg-surface/50 hover:bg-surface/70 transition-colors duration-300">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-text-primary">해시 함수의 활용</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">🛡️</span>
+                </div>
+                <h4 className="font-medium text-text-primary mb-2">무결성 검증</h4>
+                <p className="text-text-muted">파일이나 데이터가 변조되지 않았는지 확인</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">🔑</span>
+                </div>
+                <h4 className="font-medium text-text-primary mb-2">패스워드 저장</h4>
+                <p className="text-text-muted">안전한 패스워드 해싱과 검증</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">📊</span>
+                </div>
+                <h4 className="font-medium text-text-primary mb-2">디지털 서명</h4>
+                <p className="text-text-muted">블록체인과 암호화폐에서 거래 검증</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   )
