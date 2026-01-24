@@ -33,21 +33,21 @@ export default function AIAssistant() {
         tool: 'JSON 포맷터',
         reason: '복잡한 API 응답을 정리하시나요?',
         href: '/tools/json-formatter',
-        confidence: 0.95
+        confidence: 1.0
       },
       {
         id: '2', 
-        tool: 'AI 변수명 생성기',
+        tool: '변수명 생성기',
         reason: '변수명 고민하는 시간을 절약해보세요',
         href: '/tools/variable-generator',
-        confidence: 0.88
+        confidence: 1.0
       },
       {
         id: '3',
         tool: 'QR 생성기',
         reason: '프로젝트 배포 링크를 공유하시나요?',
         href: '/tools/qr-generator', 
-        confidence: 0.82
+        confidence: 1.0
       }
     ]
     
@@ -72,7 +72,7 @@ export default function AIAssistant() {
             <h4 className="text-text-primary font-semibold text-sm">도구 추천</h4>
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-              <span className="text-text-muted text-xs">프로토타입</span>
+              <span className="text-text-muted text-xs">베타</span>
             </div>
           </div>
           <button 
