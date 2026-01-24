@@ -119,19 +119,19 @@ export default function PerformanceDashboard() {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">AI 성과 분석</h3>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">도구 사용 가이드</h3>
               <div className="space-y-2 text-sm text-text-secondary">
                 <div className="flex items-center gap-2">
                   <span className="text-accent-success">●</span>
-                  <span>JSON 포맷터 사용으로 구조적 오류 94% 감소</span>
+                  <span>JSON 포맷터: 구조적 정리 및 오류 검증</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-accent-warning">●</span>
-                  <span>AI 변수명 생성기로 네이밍 일관성 97% 향상</span>
+                  <span>변수명 생성기: 일관된 네이밍 규칙 적용</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-primary">●</span>
-                  <span>워크플로우 체인으로 반복 작업 87% 자동화</span>
+                  <span>도구 가이드: 효율적인 작업 순서</span>
                 </div>
               </div>
             </div>
