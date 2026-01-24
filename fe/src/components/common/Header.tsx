@@ -25,6 +25,9 @@ export default function Header() {
               <Link href="/tools" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
                 {t('nav.tools')}
               </Link>
+              <Link href="/workspace" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
+                워크스페이스
+              </Link>
               <Link href="/canvas" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
                 {t('nav.canvas')}
               </Link>

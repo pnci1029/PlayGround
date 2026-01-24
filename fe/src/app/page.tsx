@@ -42,10 +42,10 @@ export default function HomePage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   
   const valueTexts = [
-    'AI로 코딩 워크플로우를 혁신하세요',
-    '개발 생산성을 10배 향상시키세요', 
-    '스마트한 도구로 시간을 절약하세요',
-    '차세대 개발자 경험을 만나보세요'
+    '간단하고 실용적인 개발 도구들',
+    '복잡한 작업을 간단하게 만들어요', 
+    '일상적인 개발 작업을 도와드려요',
+    '신뢰할 수 있는 기본 도구 모음'
   ]
 
   // 도구 데이터
@@ -164,7 +164,7 @@ export default function HomePage() {
                 <AnimatedText texts={valueTexts} />
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto">
-                AI 기반 차세대 개발도구로 당신의 워크플로우를 혁신하세요
+                개발자의 일상을 조금 더 편리하게 만드는 실용적인 도구들
               </p>
             </div>
             
@@ -240,21 +240,21 @@ export default function HomePage() {
           {/* 섹션 헤더 */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">AI-Powered</span> Developer Tools
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">Simple & Practical</span> Developer Tools
             </h2>
             <p className="text-text-secondary text-lg max-w-3xl mx-auto">
-              워크플로우를 혁신하는 차세대 개발도구. 인공지능이 당신의 생산성을 10배 향상시킵니다.
+              일상적인 개발 작업을 도와주는 기본적이지만 신뢰할 수 있는 도구들입니다.
             </p>
           </div>
           
           {/* Bento Box 그리드 레이아웃 */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
             
-            {/* JSON AI Formatter - Flagship Tool */}
+            {/* JSON Formatter - Flagship Tool */}
             <Link href="/tools/json-formatter" className="group md:col-span-2 lg:row-span-2">
               <div className="card card-large relative overflow-hidden group-hover:scale-[1.02] transition-all duration-300">
                 <div className="absolute top-4 right-4 text-xs bg-gradient-to-r from-accent-success to-primary px-3 py-1 rounded-full text-white font-semibold">
-                  🚀 AI Enhanced
+                  ⭐ 인기 도구
                 </div>
                 <div className="flex items-start gap-4 mb-6">
                   <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-lg">
@@ -263,50 +263,50 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-text-primary mb-2">AI JSON 포맷터</h3>
-                    <p className="text-text-secondary mb-3">자동 오류 감지 및 스마트 구조 개선</p>
+                    <h3 className="text-2xl font-bold text-text-primary mb-2">JSON 포맷터</h3>
+                    <p className="text-text-secondary mb-3">JSON 텍스트 정리 및 검증</p>
                     <div className="flex gap-2">
-                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-accent-success">자동완성</span>
-                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-primary">실시간 검증</span>
+                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-accent-success">포맷팅</span>
+                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-primary">문법 검증</span>
                     </div>
                   </div>
                 </div>
                 
-                {/* AI Features Preview */}
+                {/* Basic Features Preview */}
                 <div className="bg-surface-elevated rounded-xl p-4 mb-4 border border-border-bright">
                   <div className="text-text-muted text-sm mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-success rounded-full animate-pulse"></div>
-                    AI 스마트 기능
+                    <div className="w-2 h-2 bg-accent-success rounded-full"></div>
+                    주요 기능
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">자동 구문 오류 수정</span>
+                      <span className="text-text-secondary">JSON 포맷 정리</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">스키마 자동 생성</span>
+                      <span className="text-text-secondary">문법 검증</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">최적화된 구조 제안</span>
+                      <span className="text-text-secondary">압축/확장 변환</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-success rounded-full animate-pulse"></div>
-                    <span className="text-text-muted text-sm">AI 활성화</span>
+                    <div className="w-2 h-2 bg-accent-success rounded-full"></div>
+                    <span className="text-text-muted text-sm">검증됨</span>
                   </div>
                   <div className="flex items-center text-primary font-semibold group-hover:text-accent-success transition-colors">
-                    체험하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                    사용하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>
               </div>
             </Link>
 
-            {/* AI Variable Generator - Medium Card */}
+            {/* Variable Generator - Medium Card */}
             <Link href="/tools/variable-generator" className="group md:col-span-2">
               <div className="card card-medium group-hover:border-primary transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
@@ -316,26 +316,26 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-text-primary">AI 변수명 생성기</h3>
-                    <p className="text-text-secondary text-sm">컨텍스트 기반 스마트 네이밍</p>
+                    <h3 className="text-lg font-semibold text-text-primary">변수명 생성기</h3>
+                    <p className="text-text-secondary text-sm">다양한 네이밍 규칙 변환</p>
                   </div>
                 </div>
                 
                 <div className="bg-surface-elevated rounded-lg p-3 mb-3 border border-border">
                   <div className="font-mono text-sm space-y-1">
-                    <div className="text-text-muted text-xs">입력: "사용자 계정 정보"</div>
+                    <div className="text-text-muted text-xs">입력: "user account info"</div>
                     <div className="text-accent-success">✓ userAccountInfo</div>
-                    <div className="text-accent-success">✓ user_account_data</div>
-                    <div className="text-accent-success">✓ accountDetails</div>
+                    <div className="text-accent-success">✓ user_account_info</div>
+                    <div className="text-accent-success">✓ USER_ACCOUNT_INFO</div>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-text-muted text-xs">AI 다중 제안</span>
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                    <span className="text-text-muted text-xs">규칙 기반</span>
                   </div>
-                  <span className="text-primary text-sm font-medium group-hover:text-accent-success transition-colors">체험하기 →</span>
+                  <span className="text-primary text-sm font-medium group-hover:text-accent-success transition-colors">사용하기 →</span>
                 </div>
               </div>
             </Link>
@@ -363,14 +363,14 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h3 className="text-md font-semibold text-white mb-2">스마트 채팅</h3>
-                <p className="text-text-secondary text-xs mb-3">AI와 대화하기</p>
+                <h3 className="text-md font-semibold text-white mb-2">채팅</h3>
+                <p className="text-text-secondary text-xs mb-3">간단한 채팅 기능</p>
                 <div className="flex gap-1 mb-2">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                   <div className="w-2 h-2 bg-tertiary rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
                   <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
                 </div>
-                <div className="text-primary text-xs group-hover:text-accent">채팅하기 →</div>
+                <div className="text-primary text-xs group-hover:text-accent">시작하기 →</div>
               </div>
             </Link>
             
@@ -455,16 +455,16 @@ export default function HomePage() {
           <div className="mt-16 text-center">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">🔥</div>
-                <div className="text-text-secondary">AI 기반 자동화</div>
+                <div className="text-3xl font-bold text-primary mb-2">🔧</div>
+                <div className="text-text-secondary">실용적인 도구</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-success mb-2">🚀</div>
-                <div className="text-text-secondary">10x 생산성 향상</div>
+                <div className="text-3xl font-bold text-accent-success mb-2">⚡</div>
+                <div className="text-text-secondary">빠른 처리</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-accent-warning mb-2">⚡</div>
-                <div className="text-text-secondary">실시간 처리</div>
+                <div className="text-3xl font-bold text-accent-warning mb-2">🎯</div>
+                <div className="text-text-secondary">신뢰할 수 있는</div>
               </div>
             </div>
           </div>
