@@ -3,9 +3,6 @@
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useState, useEffect } from 'react'
-import AIAssistant from '@/components/AIAssistant'
-import WorkflowChain from '@/components/WorkflowChain'
-import PerformanceDashboard from '@/components/PerformanceDashboard'
 
 const AnimatedText = ({ texts }: { texts: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -125,9 +122,22 @@ export default function HomePage() {
           <div className="card card-small w-40 h-24">
             <div className="text-xs text-text-muted mb-2">QR Generator</div>
             <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px">
-              {Array.from({length: 16}).map((_, i) => (
-                <div key={i} className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} rounded-sm`} />
-              ))}
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-black rounded-sm" />
+              <div className="bg-white rounded-sm" />
             </div>
           </div>
         </FloatingPreview>
@@ -441,9 +451,22 @@ export default function HomePage() {
                 <h3 className="text-md font-semibold text-white mb-2">QR 생성기</h3>
                 <p className="text-text-secondary text-xs mb-3">QR 코드 생성</p>
                 <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px mb-2">
-                  {Array.from({length: 16}).map((_, i) => (
-                    <div key={i} className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'} rounded-sm`} />
-                  ))}
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-black rounded-sm" />
+                  <div className="bg-white rounded-sm" />
                 </div>
                 <div className="text-primary text-xs group-hover:text-accent">생성하기 →</div>
               </div>
@@ -464,7 +487,7 @@ export default function HomePage() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-accent-warning mb-2">🎯</div>
-                <div className="text-text-secondary">신뢰할 수 있는</div>
+                <div className="text-text-secondary">간단한 사용</div>
               </div>
             </div>
           </div>
@@ -472,14 +495,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* AI 워크플로우 체인 섹션 */}
-      <WorkflowChain />
-
-      {/* 성과 측정 대시보드 */}
-      <PerformanceDashboard />
-
-      {/* AI 어시스턴트 */}
-      <AIAssistant />
+      {/* Simple CTA Section */}
+      <section className="py-16 text-center">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4">
+            바로 시작해보세요
+          </h2>
+          <p className="text-text-secondary text-lg mb-8">
+            별도의 설치나 가입 없이 지금 바로 사용할 수 있습니다
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/tools/json-formatter" className="btn btn-primary px-8 py-4 text-lg">
+              JSON 정리하기
+            </Link>
+            <Link href="/tools/variable-generator" className="btn btn-secondary px-8 py-4 text-lg">
+              변수명 생성하기
+            </Link>
+          </div>
+        </div>
+      </section>
 
     </div>
   )
