@@ -11,57 +11,83 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-text-primary">
-              DEVFORGE
+            <Link 
+              href="/" 
+              className="text-2xl font-bold text-text-primary hover:text-primary transition-all duration-300 hover:scale-105 relative group"
+            >
+              <span className="relative z-10">DEVFORGE</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent-success/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -m-2"></div>
             </Link>
           </div>
 
           {/* Navigation & Language Toggle */}
           <div className="hidden md:flex items-center space-x-4">
             <nav className="flex space-x-1">
-              <Link href="/" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
-                {t('nav.home')}
+              <Link 
+                href="/" 
+                className="text-text-muted hover:text-primary hover:bg-surface px-4 py-2 rounded-md font-medium transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10">{t('nav.home')}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
-              <Link href="/tools" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
-                {t('nav.tools')}
+              <Link 
+                href="/tools" 
+                className="text-text-muted hover:text-primary hover:bg-surface px-4 py-2 rounded-md font-medium transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10">{t('nav.tools')}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
-              <Link href="/canvas" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
-                {t('nav.canvas')}
+              <Link 
+                href="/canvas" 
+                className="text-text-muted hover:text-primary hover:bg-surface px-4 py-2 rounded-md font-medium transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10">{t('nav.canvas')}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
-              <Link href="/chat" className="text-text-muted hover:text-text-primary px-4 py-2 rounded-md font-medium transition-colors duration-200">
-                {t('nav.chat')}
+              <Link 
+                href="/chat" 
+                className="text-text-muted hover:text-primary hover:bg-surface px-4 py-2 rounded-md font-medium transition-all duration-300 relative overflow-hidden group"
+              >
+                <span className="relative z-10">{t('nav.chat')}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
             </nav>
             
             {/* Language Toggle */}
-            <div className="flex items-center border border-border rounded-lg p-1">
+            <div className="flex items-center border border-border rounded-lg p-1 hover:border-primary transition-colors duration-300">
               <button
                 onClick={() => setLanguage('ko')}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
+                className={`px-3 py-1 rounded text-sm transition-all duration-300 relative overflow-hidden group ${
                   language === 'ko' 
-                    ? 'bg-primary text-white' 
-                    : 'text-text-muted hover:text-text-primary'
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-text-muted hover:text-primary hover:bg-surface/50'
                 }`}
               >
-                한국어
+                <span className="relative z-10">한국어</span>
+                {language !== 'ko' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                )}
               </button>
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-3 py-1 rounded text-sm transition-colors ${
+                className={`px-3 py-1 rounded text-sm transition-all duration-300 relative overflow-hidden group ${
                   language === 'en' 
-                    ? 'bg-primary text-white' 
-                    : 'text-text-muted hover:text-text-primary'
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-text-muted hover:text-primary hover:bg-surface/50'
                 }`}
               >
-                English
+                <span className="relative z-10">English</span>
+                {language !== 'en' && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                )}
               </button>
             </div>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button className="text-text-muted hover:text-text-primary">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button className="text-text-muted hover:text-primary hover:bg-surface p-2 rounded-md transition-all duration-300 group">
+              <svg className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
