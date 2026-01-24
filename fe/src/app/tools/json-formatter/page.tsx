@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { api } from '@/lib/api'
 import { useLanguage } from '@/contexts/LanguageContext'
+import WorkspaceManager from '@/components/WorkspaceManager'
+import { workspace } from '@/lib/workspace'
 
 export default function JsonFormatterPage() {
   const { t } = useLanguage()
@@ -10,6 +12,8 @@ export default function JsonFormatterPage() {
   const [output, setOutput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [history, setHistory] = useState<string[]>([])
+  const [showWorkspace, setShowWorkspace] = useState(false)
 
   const formatJson = async () => {
     if (!input.trim()) return
@@ -23,7 +27,12 @@ export default function JsonFormatterPage() {
       })
 
       if (response.success) {
-        setOutput(response.data.formatted)
+        const formatted = response.data.formatted
+        setOutput(formatted)
+        // Add to history
+        if (input && !history.includes(input)) {
+          setHistory(prev => [input, ...prev.slice(0, 9)]) // Keep last 10
+        }
       } else {
         setError(response.error || t('json.error.invalid'))
       }
@@ -40,6 +49,23 @@ export default function JsonFormatterPage() {
     setError('')
   }
 
+  const saveToWorkspace = async () => {
+    const sessionName = prompt('세션 이름을 입력하세요:')
+    if (sessionName && input) {
+      const sessionId = await workspace.saveSession('json-formatter', {
+        input,
+        output,
+        timestamp: new Date().toISOString()
+      }, sessionName)
+      alert(`세션이 저장되었습니다: ${sessionName}`)
+    }
+  }
+
+  const loadFromWorkspace = (data: any) => {
+    if (data.input) setInput(data.input)
+    if (data.output) setOutput(data.output)
+  }
+
   return (
     <div className="min-h-screen" style={{background: 'var(--background)'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -50,7 +76,7 @@ export default function JsonFormatterPage() {
         </div>
 
         {/* Controls */}
-        <div className="mb-6 flex gap-4">
+        <div className="mb-6 flex flex-wrap gap-4">
           <button
             onClick={formatJson}
             disabled={isLoading || !input.trim()}
@@ -64,7 +90,33 @@ export default function JsonFormatterPage() {
           >
             초기화
           </button>
+          <button
+            onClick={saveToWorkspace}
+            disabled={!input.trim()}
+            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            워크스페이스에 저장
+          </button>
         </div>
+
+        {/* Quick History */}
+        {history.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-300 mb-2">최근 사용한 JSON:</h3>
+            <div className="flex gap-2 flex-wrap">
+              {history.map((json, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInput(json)}
+                  className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded border border-gray-600 transition-colors max-w-xs truncate"
+                  title={json}
+                >
+                  {json.length > 30 ? `${json.substring(0, 30)}...` : json}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Error Display */}
         {error && (
@@ -113,6 +165,12 @@ export default function JsonFormatterPage() {
             <li>• 잘못된 JSON 형식은 에러 메시지가 표시됩니다</li>
           </ul>
         </div>
+
+        {/* Workspace Manager */}
+        <WorkspaceManager 
+          currentTool="json-formatter"
+          onSessionLoad={loadFromWorkspace}
+        />
       </div>
     </div>
   )

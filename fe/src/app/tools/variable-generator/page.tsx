@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { api } from '@/lib/api'
+import WorkspaceManager from '@/components/WorkspaceManager'
+import { workspace } from '@/lib/workspace'
 
 interface GeneratedVariable {
   camelCase: string
@@ -18,6 +20,7 @@ export default function VariableGeneratorPage() {
   const [output, setOutput] = useState<GeneratedVariable | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [history, setHistory] = useState<string[]>([])
 
   const generateVariables = async () => {
     if (!input.trim()) return
@@ -32,6 +35,10 @@ export default function VariableGeneratorPage() {
 
       if (response.success) {
         setOutput(response.data.variables)
+        // Add to history
+        if (input && !history.includes(input)) {
+          setHistory(prev => [input, ...prev.slice(0, 9)]) // Keep last 10
+        }
       } else {
         setError(response.error || '변수명 생성 실패')
       }
@@ -48,6 +55,23 @@ export default function VariableGeneratorPage() {
     setError('')
   }
 
+  const saveToWorkspace = async () => {
+    const sessionName = prompt('세션 이름을 입력하세요:')
+    if (sessionName && input) {
+      await workspace.saveSession('variable-generator', {
+        input,
+        output,
+        timestamp: new Date().toISOString()
+      }, sessionName)
+      alert(`세션이 저장되었습니다: ${sessionName}`)
+    }
+  }
+
+  const loadFromWorkspace = (data: any) => {
+    if (data.input) setInput(data.input)
+    if (data.output) setOutput(data.output)
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
   }
@@ -62,7 +86,7 @@ export default function VariableGeneratorPage() {
         </div>
 
         {/* Controls */}
-        <div className="mb-6 flex gap-4">
+        <div className="mb-6 flex flex-wrap gap-4">
           <button
             onClick={generateVariables}
             disabled={isLoading || !input.trim()}
@@ -76,7 +100,33 @@ export default function VariableGeneratorPage() {
           >
             초기화
           </button>
+          <button
+            onClick={saveToWorkspace}
+            disabled={!input.trim()}
+            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            워크스페이스에 저장
+          </button>
         </div>
+
+        {/* Quick History */}
+        {history.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-300 mb-2">최근 사용한 텍스트:</h3>
+            <div className="flex gap-2 flex-wrap">
+              {history.map((text, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInput(text)}
+                  className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded border border-gray-600 transition-colors"
+                  title={text}
+                >
+                  {text}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Error Display */}
         {error && (
@@ -139,6 +189,12 @@ export default function VariableGeneratorPage() {
             <li>• <strong>UPPER_SNAKE_CASE</strong>: 상수명에서 사용</li>
           </ul>
         </div>
+
+        {/* Workspace Manager */}
+        <WorkspaceManager 
+          currentTool="variable-generator"
+          onSessionLoad={loadFromWorkspace}
+        />
       </div>
     </div>
   )
