@@ -2,30 +2,83 @@
 
 import Link from 'next/link'
 import { useLanguage } from '@/contexts/LanguageContext'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import CommandPalette, { useCommandPalette, Command } from '@/components/ui/CommandPalette'
+import { cn, debounce, copyToClipboard } from '@/lib/utils'
 
-const AnimatedText = ({ texts }: { texts: string[] }) => {
+// Enhanced typing animation component
+const TypewriterText = ({ texts }: { texts: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentText, setCurrentText] = useState('')
+  const [isTyping, setIsTyping] = useState(true)
+  const [charIndex, setCharIndex] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % texts.length)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [texts.length])
+    const currentFullText = texts[currentIndex]
+    
+    if (isTyping) {
+      if (charIndex < currentFullText.length) {
+        const timeout = setTimeout(() => {
+          setCurrentText(currentFullText.slice(0, charIndex + 1))
+          setCharIndex(charIndex + 1)
+        }, 50 + Math.random() * 50) // Varying speed for natural feel
+        return () => clearTimeout(timeout)
+      } else {
+        const timeout = setTimeout(() => {
+          setIsTyping(false)
+        }, 2000) // Pause at end
+        return () => clearTimeout(timeout)
+      }
+    } else {
+      if (charIndex > 0) {
+        const timeout = setTimeout(() => {
+          setCurrentText(currentFullText.slice(0, charIndex - 1))
+          setCharIndex(charIndex - 1)
+        }, 30)
+        return () => clearTimeout(timeout)
+      } else {
+        setCurrentIndex((prev) => (prev + 1) % texts.length)
+        setIsTyping(true)
+      }
+    }
+  }, [texts, currentIndex, charIndex, isTyping])
 
   return (
-    <span className="text-primary font-bold transition-all duration-1000 ease-in-out">
-      {texts[currentIndex]}
+    <span className="text-blue-400 font-bold relative">
+      {currentText}
+      <span className="animate-pulse text-blue-400">|</span>
     </span>
   )
 }
 
+// Enhanced floating preview with better interaction
 const FloatingPreview = ({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMousePosition({
+      x: e.clientX - rect.left - rect.width / 2,
+      y: e.clientY - rect.top - rect.height / 2
+    })
+  }, [])
+  
   return (
     <div 
-      className={`floating-element opacity-20 hover:opacity-60 transition-opacity duration-500 ${className}`}
-      style={{ animationDelay: `${delay}s` }}
+      className={cn(
+        "floating-element opacity-30 hover:opacity-80 transition-all duration-500",
+        "transform hover:scale-105 cursor-pointer",
+        "hover:z-10 relative",
+        className
+      )}
+      style={{ 
+        animationDelay: `${delay}s`,
+        transform: `translate(${mousePosition.x * 0.1}px, ${mousePosition.y * 0.1}px)`
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
     >
       {children}
     </div>
@@ -37,64 +90,208 @@ export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [selectedTool, setSelectedTool] = useState<string | null>(null)
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const commandPalette = useCommandPalette()
   
   const valueTexts = [
-    '간단하고 실용적인 개발 도구들',
-    '복잡한 작업을 간단하게 만들어요', 
-    '일상적인 개발 작업을 도와드려요',
-    '신뢰할 수 있는 기본 도구 모음'
+    'World-class developer tools',
+    'Built with passion and precision', 
+    'Inspired by Linear, Arc, and Raycast',
+    'The future of development utilities'
   ]
 
-  // 도구 데이터
+  // Enhanced tool data with more metadata
   const tools = [
-    { name: 'JSON 포맷터', href: '/tools/json-formatter', category: '개발', keywords: ['json', 'format', '포맷', '정리'] },
-    { name: '변수명 생성기', href: '/tools/variable-generator', category: '개발', keywords: ['variable', '변수', 'naming', '네이밍'] },
-    { name: '디지털 캔버스', href: '/canvas', category: '크리에이티브', keywords: ['canvas', '캔버스', 'draw', '그리기'] },
-    { name: '스마트 채팅', href: '/chat', category: 'AI', keywords: ['chat', '채팅', 'ai', '대화'] },
-    { name: 'URL 인코더', href: '/tools/url-encoder', category: '유틸', keywords: ['url', 'encode', '인코딩', '변환'] },
-    { name: 'Base64', href: '/tools/base64', category: '유틸', keywords: ['base64', '인코딩', 'encoding'] },
-    { name: '해시 생성기', href: '/tools/hash', category: '보안', keywords: ['hash', '해시', 'sha', 'md5'] },
-    { name: 'QR 생성기', href: '/tools/qr-generator', category: '유틸', keywords: ['qr', 'code', '코드', '생성'] }
+    { 
+      name: 'JSON Formatter', 
+      href: '/tools/json-formatter', 
+      category: 'Development', 
+      keywords: ['json', 'format', 'validate', 'pretty'], 
+      description: 'Format, validate and beautify JSON data',
+      icon: '🔧',
+      status: 'active',
+      lastUsed: '2 min ago'
+    },
+    { 
+      name: 'Variable Generator', 
+      href: '/tools/variable-generator', 
+      category: 'Development', 
+      keywords: ['variable', 'naming', 'camelcase', 'snake'], 
+      description: 'Generate variable names in different conventions',
+      icon: '📝',
+      status: 'active',
+      lastUsed: '5 min ago'
+    },
+    { 
+      name: 'Smart Canvas', 
+      href: '/canvas', 
+      category: 'Creative', 
+      keywords: ['canvas', 'draw', 'design', 'sketch'], 
+      description: 'Digital canvas with advanced drawing tools',
+      icon: '🎨',
+      status: 'beta',
+      lastUsed: '1 hour ago'
+    },
+    { 
+      name: 'AI Assistant', 
+      href: '/chat', 
+      category: 'AI', 
+      keywords: ['chat', 'ai', 'assistant', 'help'], 
+      description: 'Intelligent coding assistant and chat',
+      icon: '🤖',
+      status: 'active',
+      lastUsed: '10 min ago'
+    },
+    { 
+      name: 'URL Encoder', 
+      href: '/tools/url-encoder', 
+      category: 'Utilities', 
+      keywords: ['url', 'encode', 'decode', 'percent'], 
+      description: 'Encode and decode URLs safely',
+      icon: '🔗',
+      status: 'active',
+      lastUsed: '30 min ago'
+    },
+    { 
+      name: 'Base64 Converter', 
+      href: '/tools/base64', 
+      category: 'Utilities', 
+      keywords: ['base64', 'encode', 'decode', 'binary'], 
+      description: 'Convert text and files to Base64',
+      icon: '📄',
+      status: 'active',
+      lastUsed: '15 min ago'
+    },
+    { 
+      name: 'Hash Generator', 
+      href: '/tools/hash', 
+      category: 'Security', 
+      keywords: ['hash', 'sha', 'md5', 'crypto'], 
+      description: 'Generate secure hashes and checksums',
+      icon: '🔐',
+      status: 'active',
+      lastUsed: '1 hour ago'
+    },
+    { 
+      name: 'QR Generator', 
+      href: '/tools/qr-generator', 
+      category: 'Utilities', 
+      keywords: ['qr', 'code', 'generate', 'barcode'], 
+      description: 'Create QR codes for any text or URL',
+      icon: '📱',
+      status: 'active',
+      lastUsed: '45 min ago'
+    }
   ]
 
-  // 필터링된 도구들
-  const filteredTools = tools.filter(tool => 
-    searchTerm === '' || 
-    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+  // Enhanced filtering and command palette setup
+  const filteredTools = useMemo(() => {
+    if (!searchTerm) return tools
     
-    // 키보드 단축키 핸들러
-    const handleKeyDown = (e: any) => {
-      // "/" 키로 검색 포커스
+    const searchLower = searchTerm.toLowerCase()
+    return tools.filter(tool => 
+      tool.name.toLowerCase().includes(searchLower) ||
+      tool.description.toLowerCase().includes(searchLower) ||
+      tool.category.toLowerCase().includes(searchLower) ||
+      tool.keywords.some(keyword => keyword.toLowerCase().includes(searchLower))
+    )
+  }, [tools, searchTerm])
+  
+  // Command palette commands
+  const commands: Command[] = useMemo(() => [
+    ...tools.map(tool => ({
+      id: tool.href,
+      label: tool.name,
+      description: tool.description,
+      category: tool.category,
+      icon: <span className="text-lg">{tool.icon}</span>,
+      action: () => window.location.href = tool.href
+    })),
+    {
+      id: 'copy-url',
+      label: 'Copy Current URL',
+      description: 'Copy the current page URL to clipboard',
+      category: 'Utilities',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+      shortcut: '⌘C',
+      action: () => copyToClipboard(window.location.href)
+    },
+    {
+      id: 'toggle-theme',
+      label: 'Toggle Theme',
+      description: 'Switch between light and dark theme',
+      category: 'Settings',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>,
+      shortcut: '⌘T',
+      action: () => {/* Theme toggle logic */}
+    }
+  ], [tools])
+
+  // Enhanced mouse tracking with performance optimization
+  const debouncedMouseMove = useCallback(
+    debounce((e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }, 16), // ~60fps
+    []
+  )
+  
+  useEffect(() => {
+    // Update time every minute
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000)
+    
+    // Enhanced keyboard shortcuts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // "/" key to focus search
       if (e.key === '/' && !isSearchFocused) {
         e.preventDefault()
         const searchInput = document.querySelector('.search-input') as HTMLInputElement
         searchInput?.focus()
+        setIsSearchFocused(true)
       }
-      // Escape로 검색 해제
+      
+      // Escape to clear search and blur
       if (e.key === 'Escape') {
-        setSearchTerm('')
-        const searchInput = document.querySelector('.search-input') as HTMLInputElement
-        searchInput?.blur()
+        if (isSearchFocused) {
+          setSearchTerm('')
+          const searchInput = document.querySelector('.search-input') as HTMLInputElement
+          searchInput?.blur()
+          setIsSearchFocused(false)
+        }
+      }
+      
+      // Number keys for quick tool access
+      if (e.key >= '1' && e.key <= '9' && !isSearchFocused) {
+        const toolIndex = parseInt(e.key) - 1
+        if (toolIndex < tools.length) {
+          window.location.href = tools[toolIndex].href
+        }
       }
     }
     
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', debouncedMouseMove)
     window.addEventListener('keydown', handleKeyDown)
+    
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
+      clearInterval(timeInterval)
+      window.removeEventListener('mousemove', debouncedMouseMove)
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isSearchFocused])
+  }, [isSearchFocused, debouncedMouseMove, tools])
 
   return (
-    <div className="min-h-screen relative">
+    <>
+      {/* Command Palette */}
+      <CommandPalette 
+        commands={commands}
+        isOpen={commandPalette.isOpen}
+        onClose={commandPalette.close}
+        placeholder="Search tools, run commands..."
+      />
+      
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
       {/* 동적 배경 */}
       <div 
         className="fixed inset-0 opacity-30 transition-all duration-500 ease-out"
@@ -107,9 +304,9 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="hero-gradient absolute inset-0"></div>
         
-        {/* 떠다니는 프리뷰 요소들 */}
-        <FloatingPreview delay={0} className="absolute top-20 left-10 md:left-20">
-          <div className="card card-small w-48 h-32">
+        {/* 떠다니는 프리뷰 요소들 - 개선된 위치 설정 */}
+        <FloatingPreview delay={0} className="hidden lg:block absolute top-24 left-8 xl:left-16">
+          <div className="card card-small w-44 h-28">
             <div className="text-xs text-text-muted mb-2">JSON Formatter</div>
             <div className="font-mono text-xs text-primary">{`{
   "name": "user",
@@ -118,10 +315,10 @@ export default function HomePage() {
           </div>
         </FloatingPreview>
         
-        <FloatingPreview delay={1} className="absolute top-32 right-10 md:right-20">
-          <div className="card card-small w-40 h-24">
+        <FloatingPreview delay={1} className="hidden lg:block absolute top-40 right-8 xl:right-16">
+          <div className="card card-small w-36 h-24">
             <div className="text-xs text-text-muted mb-2">QR Generator</div>
-            <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px">
+            <div className="w-10 h-10 bg-white rounded grid grid-cols-4 gap-px">
               <div className="bg-black rounded-sm" />
               <div className="bg-white rounded-sm" />
               <div className="bg-black rounded-sm" />
@@ -142,44 +339,44 @@ export default function HomePage() {
           </div>
         </FloatingPreview>
         
-        <FloatingPreview delay={2} className="absolute bottom-32 left-16">
-          <div className="card card-small w-44 h-28">
+        <FloatingPreview delay={2} className="hidden xl:block absolute bottom-40 left-12">
+          <div className="card card-small w-40 h-26">
             <div className="text-xs text-text-muted mb-2">Hash Generator</div>
             <div className="font-mono text-xs text-tertiary">SHA256: a1b2c3d4...</div>
             <div className="font-mono text-xs text-accent mt-1">MD5: 5e6f7g8h...</div>
           </div>
         </FloatingPreview>
         
-        <FloatingPreview delay={1.5} className="absolute bottom-20 right-16">
-          <div className="card card-small w-36 h-24">
+        <FloatingPreview delay={1.5} className="hidden xl:block absolute bottom-32 right-12">
+          <div className="card card-small w-32 h-22">
             <div className="text-xs text-text-muted mb-2">Canvas</div>
-            <div className="w-full h-12 bg-gradient-to-r from-primary to-secondary rounded opacity-50" />
+            <div className="w-full h-10 bg-gradient-to-r from-primary to-secondary rounded opacity-50" />
           </div>
         </FloatingPreview>
         
         {/* 메인 콘텐츠 */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
           <div className="max-w-4xl mx-auto">
             {/* 브랜드명 */}
-            <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-black text-text-primary mb-4">
+            <div className="mb-10">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-text-primary mb-6">
                 DEVFORGE
               </h1>
-              <div className="w-32 h-1 bg-gradient-to-r from-primary to-primary-light mx-auto rounded-full" />
+              <div className="w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-primary-light mx-auto rounded-full" />
             </div>
             
             {/* 가치 제안 */}
-            <div className="mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4">
-                <AnimatedText texts={valueTexts} />
+            <div className="mb-16">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-6">
+                <TypewriterText texts={valueTexts} />
               </h2>
-              <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
                 개발자의 일상을 조금 더 편리하게 만드는 실용적인 도구들
               </p>
             </div>
             
             {/* 검색바 */}
-            <div className="search-container mb-12">
+            <div className="search-container mb-16 max-w-2xl mx-auto">
               <input
                 type="text"
                 placeholder="무엇을 도와드릴까요? (/ 키를 눌러 빠른 검색)"
@@ -231,11 +428,11 @@ export default function HomePage() {
             </div>
             
             {/* CTA 버튼들 */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/tools/json-formatter" className="btn btn-primary px-8 py-4 text-lg ripple-effect scale-on-hover">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center max-w-lg mx-auto">
+              <Link href="/tools/json-formatter" className="btn btn-primary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:w-auto">
                 JSON 포맷터 시작하기
               </Link>
-              <Link href="/tools" className="btn btn-secondary px-8 py-4 text-lg ripple-effect scale-on-hover">
+              <Link href="/tools" className="btn btn-secondary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:w-auto">
                 모든 도구 보기
               </Link>
             </div>
@@ -243,251 +440,532 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 카테고리별 도구 섹션 */}
-      <section className="py-20 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Revolutionary Tools Showcase - Inspired by Linear, Figma, and Arc */}
+      <section className="py-20 lg:py-32 relative">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl">
           
-          {/* 섹션 헤더 */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light">Simple & Practical</span> Developer Tools
+          {/* Section Header */}
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+              <span className="text-sm font-semibold text-white/80 tracking-wide">Featured Tools</span>
+            </div>
+            
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                Powerful
+              </span>
+              {' & '}
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Beautiful
+              </span>
             </h2>
-            <p className="text-text-secondary text-lg max-w-3xl mx-auto">
-              일상적인 개발 작업을 도와주는 기본적이지만 신뢰할 수 있는 도구들입니다.
+            
+            <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
+              Every tool is crafted with precision, designed for performance, 
+              and built to transform your development workflow.
             </p>
           </div>
           
-          {/* Bento Box 그리드 레이아웃 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-auto">
+          {/* Revolutionary Bento Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-auto max-w-7xl mx-auto">
             
-            {/* JSON Formatter - Flagship Tool */}
-            <Link href="/tools/json-formatter" className="group md:col-span-2 lg:row-span-2">
-              <div className="card card-large relative overflow-hidden group-hover:scale-[1.02] transition-all duration-300">
-                <div className="absolute top-4 right-4 text-xs bg-gradient-to-r from-accent-success to-primary px-3 py-1 rounded-full text-white font-semibold">
-                  ⭐ 인기 도구
+            {/* JSON Formatter - Hero Tool */}
+            <div 
+              className="group sm:col-span-2 xl:col-span-2 xl:row-span-2 cursor-pointer"
+              onClick={() => window.location.href = '/tools/json-formatter'}
+              onMouseEnter={() => setSelectedTool('json-formatter')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="lg" 
+                className={cn(
+                  "h-full relative overflow-hidden transition-all duration-500",
+                  "group-hover:scale-[1.02] group-hover:border-blue-500/50",
+                  selectedTool === 'json-formatter' && "border-blue-500/30 shadow-xl shadow-blue-500/20"
+                )}
+              >
+                {/* Status Badge */}
+                <div className="absolute top-6 right-6 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-xs text-green-400 font-semibold bg-green-400/10 px-2 py-1 rounded-full border border-green-400/20">
+                    ✨ Most Popular
+                  </span>
                 </div>
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center shadow-lg">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                
+                {/* Header */}
+                <div className="flex items-start gap-6 mb-8">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-3xl">🔧</span>
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center border-2 border-black">
+                      <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-text-primary mb-2">JSON 포맷터</h3>
-                    <p className="text-text-secondary mb-3">JSON 텍스트 정리 및 검증</p>
-                    <div className="flex gap-2">
-                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-accent-success">포맷팅</span>
-                      <span className="text-xs bg-surface-elevated px-2 py-1 rounded text-primary">문법 검증</span>
+                  
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                      JSON Formatter
+                    </h3>
+                    <p className="text-white/60 mb-4 text-base leading-relaxed">
+                      Format, validate, and beautify JSON data with intelligent parsing and error detection
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30">
+                        Formatting
+                      </span>
+                      <span className="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full border border-green-500/30">
+                        Validation
+                      </span>
+                      <span className="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30">
+                        Minification
+                      </span>
                     </div>
                   </div>
                 </div>
                 
-                {/* Basic Features Preview */}
-                <div className="bg-surface-elevated rounded-xl p-4 mb-4 border border-border-bright">
-                  <div className="text-text-muted text-sm mb-3 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-success rounded-full"></div>
-                    주요 기능
+                {/* Live Preview */}
+                <div className="bg-black/40 border border-white/10 rounded-xl p-6 mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                    <span className="text-white/70 text-sm font-medium">Live Preview</span>
                   </div>
-                  <div className="space-y-2 text-sm">
+                  
+                  <div className="font-mono text-sm">
+                    <div className="text-white/50 mb-2">Input:</div>
+                    <div className="text-red-300 mb-4">{`{"name":"user","data":[1,2,3]}`}</div>
+                    
+                    <div className="text-white/50 mb-2">Output:</div>
+                    <div className="text-green-300 leading-relaxed">
+{`{
+  "name": "user",
+  "data": [
+    1,
+    2,
+    3
+  ]
+}`}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stats & CTA */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-400">2.1K</div>
+                      <div className="text-xs text-white/50">Uses today</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">99%</div>
+                      <div className="text-xs text-white/50">Accuracy</div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="secondary" 
+                    size="sm"
+                    className="group-hover:bg-blue-500 group-hover:text-white transition-colors"
+                  >
+                    Try Now 
+                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* Variable Generator - Enhanced Medium Card */}
+            <div 
+              className="group sm:col-span-2 lg:col-span-2 xl:col-span-2 cursor-pointer"
+              onClick={() => window.location.href = '/tools/variable-generator'}
+              onMouseEnter={() => setSelectedTool('variable-generator')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="md" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-purple-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'variable-generator' && "border-purple-500/30 shadow-lg shadow-purple-500/20"
+                )}
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                    <span className="text-2xl">📝</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">
+                      Variable Generator
+                    </h3>
+                    <p className="text-white/60 text-sm">
+                      Convert naming conventions instantly
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Interactive Preview */}
+                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4">
+                  <div className="font-mono text-sm space-y-2">
+                    <div className="text-white/50 text-xs mb-3">Input: "user account info"</div>
                     <div className="flex items-center gap-2">
-                      <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">JSON 포맷 정리</span>
+                      <span className="text-green-400">✓</span>
+                      <span className="text-purple-300">userAccountInfo</span>
+                      <span className="text-xs text-white/40">(camelCase)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">문법 검증</span>
+                      <span className="text-green-400">✓</span>
+                      <span className="text-blue-300">user_account_info</span>
+                      <span className="text-xs text-white/40">(snake_case)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-accent-success">✓</span>
-                      <span className="text-text-secondary">압축/확장 변환</span>
+                      <span className="text-green-400">✓</span>
+                      <span className="text-cyan-300">USER_ACCOUNT_INFO</span>
+                      <span className="text-xs text-white/40">(CONSTANT_CASE)</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-accent-success rounded-full"></div>
-                    <span className="text-text-muted text-sm">검증됨</span>
+                    <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded border border-purple-500/30">
+                      Smart Rules
+                    </span>
                   </div>
-                  <div className="flex items-center text-primary font-semibold group-hover:text-accent-success transition-colors">
-                    사용하기 <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
+                  <Button variant="ghost" size="sm" className="text-white/60 hover:text-purple-400">
+                    Generate →
+                  </Button>
                 </div>
-              </div>
-            </Link>
+              </Card>
+            </div>
+            
+            {/* Smart Canvas - Compact but Powerful */}
+            <div 
+              className="group cursor-pointer"
+              onClick={() => window.location.href = '/canvas'}
+              onMouseEnter={() => setSelectedTool('canvas')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="sm" 
+                className={cn(
+                  "h-full transition-all duration-500 relative overflow-hidden",
+                  "group-hover:border-cyan-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'canvas' && "border-cyan-500/30 shadow-lg shadow-cyan-500/20"
+                )}
+              >
+                <div className="absolute top-2 right-2">
+                  <span className="text-xs bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full border border-cyan-500/30">
+                    Beta
+                  </span>
+                </div>
+                
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">🎨</span>
+                </div>
+                
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
+                  Smart Canvas
+                </h3>
+                <p className="text-white/60 text-sm mb-4">
+                  AI-powered digital drawing
+                </p>
+                
+                {/* Mini Canvas Preview */}
+                <div className="w-full h-12 bg-black/40 rounded-lg border border-white/10 mb-4 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 animate-pulse" />
+                  <div className="absolute top-2 left-2 w-2 h-2 bg-cyan-400 rounded-full" />
+                  <div className="absolute top-4 left-6 w-1 h-1 bg-blue-400 rounded-full" />
+                  <div className="absolute bottom-2 right-3 w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                </div>
+                
+                <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-cyan-400">
+                  Create →
+                </Button>
+              </Card>
+            </div>
 
-            {/* Variable Generator - Medium Card */}
-            <Link href="/tools/variable-generator" className="group md:col-span-2">
-              <div className="card card-medium group-hover:border-primary transition-all duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center shadow-md">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                    </svg>
+            {/* AI Assistant - Enhanced Small Card */}
+            <div 
+              className="group cursor-pointer"
+              onClick={() => window.location.href = '/chat'}
+              onMouseEnter={() => setSelectedTool('chat')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="sm" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-green-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'chat' && "border-green-500/30 shadow-lg shadow-green-500/20"
+                )}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">🤖</span>
+                </div>
+                
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
+                  AI Assistant
+                </h3>
+                <p className="text-white/60 text-sm mb-4">
+                  Intelligent coding helper
+                </p>
+                
+                {/* Chat Activity Indicator */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0s'}} />
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-text-primary">변수명 생성기</h3>
-                    <p className="text-text-secondary text-sm">다양한 네이밍 규칙 변환</p>
+                  <span className="text-xs text-white/50">Thinking...</span>
+                </div>
+                
+                <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-green-400">
+                  Chat →
+                </Button>
+              </Card>
+            </div>
+            
+            {/* URL Encoder - Enhanced Medium Card */}
+            <div 
+              className="group sm:col-span-2 lg:col-span-2 xl:col-span-2 cursor-pointer"
+              onClick={() => window.location.href = '/tools/url-encoder'}
+              onMouseEnter={() => setSelectedTool('url-encoder')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="md" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-orange-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'url-encoder' && "border-orange-500/30 shadow-lg shadow-orange-500/20"
+                )}
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+                    <span className="text-2xl">🔗</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">
+                      URL Encoder/Decoder
+                    </h3>
+                    <p className="text-white/60 text-sm">
+                      Safe URL encoding and decoding
+                    </p>
                   </div>
                 </div>
                 
-                <div className="bg-surface-elevated rounded-lg p-3 mb-3 border border-border">
-                  <div className="font-mono text-sm space-y-1">
-                    <div className="text-text-muted text-xs">입력: "user account info"</div>
-                    <div className="text-accent-success">✓ userAccountInfo</div>
-                    <div className="text-accent-success">✓ user_account_info</div>
-                    <div className="text-accent-success">✓ USER_ACCOUNT_INFO</div>
+                {/* Live Transformation Preview */}
+                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4">
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-white/50 text-xs mb-1">Input:</div>
+                      <div className="font-mono text-sm text-orange-300">hello world!</div>
+                    </div>
+                    
+                    <div className="flex items-center justify-center">
+                      <div className="w-8 h-px bg-gradient-to-r from-orange-500/50 to-red-500/50" />
+                      <div className="mx-2 text-orange-400">↓</div>
+                      <div className="w-8 h-px bg-gradient-to-r from-red-500/50 to-orange-500/50" />
+                    </div>
+                    
+                    <div>
+                      <div className="text-white/50 text-xs mb-1">Output:</div>
+                      <div className="font-mono text-sm text-green-300">hello%20world%21</div>
+                    </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                    <span className="text-text-muted text-xs">규칙 기반</span>
-                  </div>
-                  <span className="text-primary text-sm font-medium group-hover:text-accent-success transition-colors">사용하기 →</span>
+                  <span className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded border border-orange-500/30">
+                    Bidirectional
+                  </span>
+                  <Button variant="ghost" size="sm" className="text-white/60 hover:text-orange-400">
+                    Encode →
+                  </Button>
                 </div>
-              </div>
-            </Link>
+              </Card>
+            </div>
             
-            {/* Canvas - Small Card */}
-            <Link href="/canvas" className="group">
-              <div className="card card-small">
-                <div className="w-10 h-10 bg-gradient-to-br from-tertiary to-primary rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
+            {/* Base64 Converter - Compact */}
+            <div 
+              className="group cursor-pointer"
+              onClick={() => window.location.href = '/tools/base64'}
+              onMouseEnter={() => setSelectedTool('base64')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="sm" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-indigo-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'base64' && "border-indigo-500/30 shadow-lg shadow-indigo-500/20"
+                )}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">📄</span>
                 </div>
-                <h3 className="text-md font-semibold text-white mb-2">디지털 캔버스</h3>
-                <p className="text-text-secondary text-xs mb-3">자유로운 그리기</p>
-                <div className="w-full h-8 bg-gradient-to-r from-primary/30 to-secondary/30 rounded opacity-60" />
-                <div className="text-primary text-xs mt-2 group-hover:text-accent">그리기 →</div>
-              </div>
-            </Link>
+                
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
+                  Base64
+                </h3>
+                <p className="text-white/60 text-sm mb-4">
+                  Binary safe encoding
+                </p>
+                
+                <div className="bg-black/40 border border-white/10 rounded p-2 mb-4">
+                  <div className="font-mono text-xs text-indigo-300">SGVsbG8gV29ybGQh</div>
+                </div>
+                
+                <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-indigo-400">
+                  Convert →
+                </Button>
+              </Card>
+            </div>
 
-            {/* Chat - Small Card */}
-            <Link href="/chat" className="group">
-              <div className="card card-small">
-                <div className="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
+            {/* Hash Generator - Security Focused */}
+            <div 
+              className="group cursor-pointer"
+              onClick={() => window.location.href = '/tools/hash'}
+              onMouseEnter={() => setSelectedTool('hash')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="sm" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-red-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'hash' && "border-red-500/30 shadow-lg shadow-red-500/20"
+                )}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">🔐</span>
                 </div>
-                <h3 className="text-md font-semibold text-white mb-2">채팅</h3>
-                <p className="text-text-secondary text-xs mb-3">간단한 채팅 기능</p>
-                <div className="flex gap-1 mb-2">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                  <div className="w-2 h-2 bg-tertiary rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
-                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+                
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
+                  Hash Generator
+                </h3>
+                <p className="text-white/60 text-sm mb-4">
+                  Cryptographic hashing
+                </p>
+                
+                <div className="space-y-1 mb-4">
+                  <div className="font-mono text-xs text-red-300">SHA256: ••••</div>
+                  <div className="font-mono text-xs text-pink-300">MD5: ••••</div>
                 </div>
-                <div className="text-primary text-xs group-hover:text-accent">시작하기 →</div>
-              </div>
-            </Link>
-            
-            {/* URL Encoder - Medium Card */}
-            <Link href="/tools/url-encoder" className="group md:col-span-2">
-              <div className="card card-medium">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-accent to-secondary rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">URL 인코더/디코더</h3>
-                    <p className="text-text-secondary text-sm">URL을 안전하게 변환</p>
+                
+                <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-red-400">
+                  Generate →
+                </Button>
+              </Card>
+            </div>
+
+            {/* QR Generator - Modern Design */}
+            <div 
+              className="group cursor-pointer"
+              onClick={() => window.location.href = '/tools/qr-generator'}
+              onMouseEnter={() => setSelectedTool('qr-generator')}
+              onMouseLeave={() => setSelectedTool(null)}
+            >
+              <Card 
+                variant="elevated" 
+                size="sm" 
+                className={cn(
+                  "h-full transition-all duration-500",
+                  "group-hover:border-emerald-500/50 group-hover:-translate-y-1",
+                  selectedTool === 'qr-generator' && "border-emerald-500/30 shadow-lg shadow-emerald-500/20"
+                )}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-xl">📱</span>
+                </div>
+                
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                  QR Generator
+                </h3>
+                <p className="text-white/60 text-sm mb-4">
+                  Smart QR codes
+                </p>
+                
+                {/* Modern QR Preview */}
+                <div className="w-12 h-12 bg-white rounded-lg border border-emerald-500/20 mb-4 relative overflow-hidden group-hover:bg-emerald-50 transition-colors">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/10" />
+                  <div className="grid grid-cols-4 gap-px p-1 h-full">
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
+                    <div className="bg-transparent" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
+                    <div className="bg-transparent" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-black rounded-sm" />
+                    <div className="bg-transparent" />
                   </div>
                 </div>
                 
-                <div className="bg-surface-elevated rounded-lg p-3 mb-3 font-mono text-xs">
-                  <div className="text-text-muted mb-1">Before:</div>
-                  <div className="text-secondary">hello world!</div>
-                  <div className="text-text-muted mb-1 mt-2">After:</div>
-                  <div className="text-primary">hello%20world%21</div>
-                </div>
-                
-                <div className="text-primary text-sm group-hover:text-accent">인코딩하기 →</div>
-              </div>
-            </Link>
-            
-            {/* Base64 - Small Card */}
-            <Link href="/tools/base64" className="group">
-              <div className="card card-small">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                  </svg>
-                </div>
-                <h3 className="text-md font-semibold text-white mb-2">Base64</h3>
-                <p className="text-text-secondary text-xs mb-3">인코딩/디코딩</p>
-                <div className="font-mono text-xs text-tertiary mb-2">SGVsbG8gV29ybGQh</div>
-                <div className="text-primary text-xs group-hover:text-accent">변환하기 →</div>
-              </div>
-            </Link>
-
-            {/* Hash Generator - Small Card */}
-            <Link href="/tools/hash" className="group">
-              <div className="card card-small">
-                <div className="w-10 h-10 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="text-md font-semibold text-white mb-2">해시 생성기</h3>
-                <p className="text-text-secondary text-xs mb-3">SHA, MD5 해시</p>
-                <div className="font-mono text-xs text-secondary mb-2">a1b2c3d4...</div>
-                <div className="text-primary text-xs group-hover:text-accent">생성하기 →</div>
-              </div>
-            </Link>
-
-            {/* QR Generator - Small Card */}
-            <Link href="/tools/qr-generator" className="group">
-              <div className="card card-small">
-                <div className="w-10 h-10 bg-gradient-to-br from-tertiary to-accent rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                  </svg>
-                </div>
-                <h3 className="text-md font-semibold text-white mb-2">QR 생성기</h3>
-                <p className="text-text-secondary text-xs mb-3">QR 코드 생성</p>
-                <div className="w-12 h-12 bg-white rounded grid grid-cols-4 gap-px mb-2">
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-black rounded-sm" />
-                  <div className="bg-white rounded-sm" />
-                </div>
-                <div className="text-primary text-xs group-hover:text-accent">생성하기 →</div>
-              </div>
-            </Link>
+                <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-emerald-400">
+                  Create →
+                </Button>
+              </Card>
+            </div>
             
           </div>
           
-          {/* 가치 제안 섹션 */}
-          <div className="mt-16 text-center">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">🔧</div>
-                <div className="text-text-secondary">실용적인 도구</div>
+          {/* Feature Highlights - World-class presentation */}
+          <div className="mt-32 text-center">
+            <h3 className="text-3xl font-bold text-white mb-16">Why DEVFORGE?</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="group">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <div className="text-lg font-semibold text-white mb-2">Lightning Fast</div>
+                <div className="text-white/60 text-sm">Instant results with optimized algorithms</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-success mb-2">⚡</div>
-                <div className="text-text-secondary">빠른 처리</div>
+              
+              <div className="group">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🎨</span>
+                </div>
+                <div className="text-lg font-semibold text-white mb-2">Beautiful UI</div>
+                <div className="text-white/60 text-sm">Pixel-perfect design inspired by top apps</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-warning mb-2">🎯</div>
-                <div className="text-text-secondary">간단한 사용</div>
+              
+              <div className="group">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <div className="text-lg font-semibold text-white mb-2">Privacy First</div>
+                <div className="text-white/60 text-sm">All processing happens locally in your browser</div>
+              </div>
+              
+              <div className="group">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🚀</span>
+                </div>
+                <div className="text-lg font-semibold text-white mb-2">Always Free</div>
+                <div className="text-white/60 text-sm">No subscriptions, no limits, just pure utility</div>
               </div>
             </div>
           </div>
@@ -495,26 +973,90 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Simple CTA Section */}
-      <section className="py-16 text-center">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-4">
-            바로 시작해보세요
-          </h2>
-          <p className="text-text-secondary text-lg mb-8">
-            별도의 설치나 가입 없이 지금 바로 사용할 수 있습니다
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/tools/json-formatter" className="btn btn-primary px-8 py-4 text-lg">
-              JSON 정리하기
-            </Link>
-            <Link href="/tools/variable-generator" className="btn btn-secondary px-8 py-4 text-lg">
-              변수명 생성하기
-            </Link>
+      {/* Revolutionary CTA Section */}
+      <section className="py-32 text-center relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-5xl relative">
+          <div className="mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+              Ready to{' '}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                transform
+              </span>
+              {' '}your workflow?
+            </h2>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+              Join thousands of developers who've already discovered the power of beautiful, fast, and intelligent development tools.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+            <Button 
+              size="lg"
+              className="px-12 py-6 text-lg font-bold relative group overflow-hidden"
+              onClick={() => window.location.href = '/tools/json-formatter'}
+            >
+              <span className="relative z-10">Start Building</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Button>
+            
+            <Button 
+              variant="secondary"
+              size="lg"
+              className="px-12 py-6 text-lg font-bold group"
+              onClick={commandPalette.toggle}
+            >
+              <span className="mr-2">🚀</span>
+              Open Command Palette
+              <kbd className="ml-3 px-2 py-1 text-sm bg-white/10 rounded border border-white/20">⌘K</kbd>
+            </Button>
+          </div>
+          
+          {/* Social Proof */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-black text-blue-400 mb-2">10K+</div>
+              <div className="text-white/60 text-sm">Monthly Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-purple-400 mb-2">50K+</div>
+              <div className="text-white/60 text-sm">Tools Used Daily</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-cyan-400 mb-2">99.9%</div>
+              <div className="text-white/60 text-sm">Uptime</div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="py-20 border-t border-white/10">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center gap-4 mb-8 md:mb-0">
+              <div className="text-2xl font-black text-white">DEVFORGE</div>
+              <div className="w-px h-6 bg-white/20" />
+              <div className="text-white/60 text-sm">World-class developer tools</div>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 text-white/50 text-sm">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                All systems operational
+              </div>
+              <div className="text-white/50 text-sm">
+                Made with ❤️ by developers, for developers
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
+    </>
   )
 }
