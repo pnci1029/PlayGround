@@ -8,6 +8,79 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import CommandPalette, { useCommandPalette, Command } from '@/components/ui/CommandPalette'
 import { cn, debounce, copyToClipboard } from '@/lib/utils'
 
+// Professional icon component
+const renderIcon = (iconName: string) => {
+  const icons = {
+    code: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+      </svg>
+    ),
+    edit: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+    palette: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+      </svg>
+    ),
+    brain: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
+    ),
+    link: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+      </svg>
+    ),
+    'file-text': (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+    shield: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+    'qr-code': (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 019-5.197m3 5.197a4 4 0 110-8 4 4 0 010 8zm0 0v-3" />
+      </svg>
+    ),
+    zap: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    lock: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+    ),
+    rocket: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+      </svg>
+    ),
+    command: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    search: (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    )
+  }
+  
+  return icons[iconName as keyof typeof icons] || icons.code
+}
+
 // Enhanced typing animation component
 const TypewriterText = ({ texts }: { texts: string[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -53,32 +126,19 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
   )
 }
 
-// Enhanced floating preview with better interaction
+// Simplified floating preview
 const FloatingPreview = ({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setMousePosition({
-      x: e.clientX - rect.left - rect.width / 2,
-      y: e.clientY - rect.top - rect.height / 2
-    })
-  }, [])
-  
   return (
     <div 
       className={cn(
-        "floating-element opacity-30 hover:opacity-80 transition-all duration-500",
-        "transform hover:scale-105 cursor-pointer",
-        "hover:z-10 relative",
+        "floating-element opacity-30 hover:opacity-80 transition-opacity duration-300",
+        "hover:scale-105 transition-transform duration-300",
+        "relative",
         className
       )}
       style={{ 
-        animationDelay: `${delay}s`,
-        transform: `translate(${mousePosition.x * 0.1}px, ${mousePosition.y * 0.1}px)`
+        animationDelay: `${delay}s`
       }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
     >
       {children}
     </div>
@@ -88,10 +148,8 @@ const FloatingPreview = ({ children, delay = 0, className = '' }: { children: Re
 export default function HomePage() {
   const { t } = useLanguage()
   const [searchTerm, setSearchTerm] = useState('')
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
-  const [currentTime, setCurrentTime] = useState(new Date())
   const commandPalette = useCommandPalette()
   
   const valueTexts = [
@@ -101,7 +159,7 @@ export default function HomePage() {
     'The future of development utilities'
   ]
 
-  // Enhanced tool data with more metadata
+  // Enhanced tool data with professional icons
   const tools = [
     { 
       name: 'JSON Formatter', 
@@ -109,7 +167,7 @@ export default function HomePage() {
       category: 'Development', 
       keywords: ['json', 'format', 'validate', 'pretty'], 
       description: 'Format, validate and beautify JSON data',
-      icon: '🔧',
+      icon: 'code',
       status: 'active',
       lastUsed: '2 min ago'
     },
@@ -119,7 +177,7 @@ export default function HomePage() {
       category: 'Development', 
       keywords: ['variable', 'naming', 'camelcase', 'snake'], 
       description: 'Generate variable names in different conventions',
-      icon: '📝',
+      icon: 'edit',
       status: 'active',
       lastUsed: '5 min ago'
     },
@@ -129,7 +187,7 @@ export default function HomePage() {
       category: 'Creative', 
       keywords: ['canvas', 'draw', 'design', 'sketch'], 
       description: 'Digital canvas with advanced drawing tools',
-      icon: '🎨',
+      icon: 'palette',
       status: 'beta',
       lastUsed: '1 hour ago'
     },
@@ -139,7 +197,7 @@ export default function HomePage() {
       category: 'AI', 
       keywords: ['chat', 'ai', 'assistant', 'help'], 
       description: 'Intelligent coding assistant and chat',
-      icon: '🤖',
+      icon: 'brain',
       status: 'active',
       lastUsed: '10 min ago'
     },
@@ -149,7 +207,7 @@ export default function HomePage() {
       category: 'Utilities', 
       keywords: ['url', 'encode', 'decode', 'percent'], 
       description: 'Encode and decode URLs safely',
-      icon: '🔗',
+      icon: 'link',
       status: 'active',
       lastUsed: '30 min ago'
     },
@@ -159,7 +217,7 @@ export default function HomePage() {
       category: 'Utilities', 
       keywords: ['base64', 'encode', 'decode', 'binary'], 
       description: 'Convert text and files to Base64',
-      icon: '📄',
+      icon: 'file-text',
       status: 'active',
       lastUsed: '15 min ago'
     },
@@ -169,7 +227,7 @@ export default function HomePage() {
       category: 'Security', 
       keywords: ['hash', 'sha', 'md5', 'crypto'], 
       description: 'Generate secure hashes and checksums',
-      icon: '🔐',
+      icon: 'shield',
       status: 'active',
       lastUsed: '1 hour ago'
     },
@@ -179,7 +237,7 @@ export default function HomePage() {
       category: 'Utilities', 
       keywords: ['qr', 'code', 'generate', 'barcode'], 
       description: 'Create QR codes for any text or URL',
-      icon: '📱',
+      icon: 'qr-code',
       status: 'active',
       lastUsed: '45 min ago'
     }
@@ -205,7 +263,7 @@ export default function HomePage() {
       label: tool.name,
       description: tool.description,
       category: tool.category,
-      icon: <span className="text-lg">{tool.icon}</span>,
+      icon: <div className="w-4 h-4">{renderIcon(tool.icon)}</div>,
       action: () => window.location.href = tool.href
     })),
     {
@@ -228,21 +286,16 @@ export default function HomePage() {
     }
   ], [tools])
 
-  // Enhanced mouse tracking with performance optimization
-  const debouncedMouseMove = useCallback(
-    debounce((e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }, 16), // ~60fps
-    []
-  )
+  // Enhanced keyboard navigation handler for tool cards
+  const handleToolNavigation = useCallback((href: string) => (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      window.location.href = href
+    }
+  }, [])
   
   useEffect(() => {
-    // Update time every minute
-    const timeInterval = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 60000)
-    
-    // Enhanced keyboard shortcuts
+    // Essential keyboard shortcuts only
     const handleKeyDown = (e: KeyboardEvent) => {
       // "/" key to focus search
       if (e.key === '/' && !isSearchFocused) {
@@ -271,15 +324,12 @@ export default function HomePage() {
       }
     }
     
-    window.addEventListener('mousemove', debouncedMouseMove)
     window.addEventListener('keydown', handleKeyDown)
     
     return () => {
-      clearInterval(timeInterval)
-      window.removeEventListener('mousemove', debouncedMouseMove)
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isSearchFocused, debouncedMouseMove, tools])
+  }, [isSearchFocused, tools])
 
   return (
     <>
@@ -292,13 +342,6 @@ export default function HomePage() {
       />
       
       <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
-      {/* 동적 배경 */}
-      <div 
-        className="fixed inset-0 opacity-30 transition-all duration-500 ease-out"
-        style={{
-          background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 212, 170, 0.1), transparent 80%)`
-        }}
-      />
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -355,84 +398,94 @@ export default function HomePage() {
         </FloatingPreview>
         
         {/* 메인 콘텐츠 */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
-          <div className="max-w-4xl mx-auto">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
+          <div className="w-full max-w-5xl mx-auto">
             {/* 브랜드명 */}
-            <div className="mb-10">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-text-primary mb-6">
+            <div className="mb-12 flex flex-col items-center justify-center">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-text-primary mb-8 text-center">
                 DEVFORGE
               </h1>
-              <div className="w-24 sm:w-32 h-1 bg-gradient-to-r from-primary to-primary-light mx-auto rounded-full" />
+              <div className="w-28 sm:w-36 h-1.5 bg-gradient-to-r from-primary to-primary-light mx-auto rounded-full" />
             </div>
             
             {/* 가치 제안 */}
-            <div className="mb-16">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-6">
+            <div className="mb-18 flex flex-col items-center">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary mb-8 text-center">
                 <TypewriterText texts={valueTexts} />
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-4xl mx-auto leading-relaxed text-center px-4">
                 개발자의 일상을 조금 더 편리하게 만드는 실용적인 도구들
               </p>
             </div>
             
             {/* 검색바 */}
-            <div className="search-container mb-16 max-w-2xl mx-auto">
-              <input
-                type="text"
-                placeholder="무엇을 도와드릴까요? (/ 키를 눌러 빠른 검색)"
-                className="search-input"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-              />
-              <div className="search-icon">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              
-              {/* 검색 결과 드롭다운 */}
-              {searchTerm && isSearchFocused && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-border-bright rounded-2xl backdrop-filter backdrop-blur-20 z-50">
-                  <div className="p-4">
-                    <div className="text-sm text-text-muted mb-3">
-                      "{searchTerm}" 검색 결과 ({filteredTools.length}개)
-                    </div>
-                    {filteredTools.length > 0 ? (
-                      <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {filteredTools.map((tool, index) => (
-                          <Link 
-                            key={tool.href} 
-                            href={tool.href}
-                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-hover transition-colors group"
-                          >
-                            <div className="w-2 h-2 bg-primary rounded-full opacity-60 group-hover:opacity-100" />
-                            <div className="flex-1">
-                              <div className="font-medium text-white text-sm">{tool.name}</div>
-                              <div className="text-xs text-text-secondary">{tool.category}</div>
-                            </div>
-                            <div className="text-primary text-xs group-hover:text-accent">→</div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-text-muted">
-                        <div className="text-2xl mb-2">🔍</div>
-                        <div>검색 결과가 없습니다</div>
-                      </div>
-                    )}
-                  </div>
+            <div className="search-container mb-20 max-w-3xl mx-auto flex justify-center">
+              <div className="w-full max-w-2xl relative">
+                <input
+                  type="text"
+                  placeholder="무엇을 도와드릴까요? (/ 키를 눌러 빠른 검색)"
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                />
+                <div className="search-icon">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-              )}
+                
+                {/* 검색 결과 드롭다운 */}
+                {searchTerm && isSearchFocused && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-surface-elevated border border-border-bright rounded-2xl backdrop-filter backdrop-blur-20 z-50">
+                    <div className="p-6">
+                      <div className="text-sm text-text-muted mb-4 text-center">
+                        "{searchTerm}" 검색 결과 ({filteredTools.length}개)
+                      </div>
+                      {filteredTools.length > 0 ? (
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {filteredTools.map((tool, index) => (
+                            <Link 
+                              key={tool.href} 
+                              href={tool.href}
+                              className="flex items-center gap-4 p-4 rounded-xl hover:bg-surface-hover transition-colors group"
+                            >
+                              <div className="w-3 h-3 bg-primary rounded-full opacity-60 group-hover:opacity-100" />
+                              <div className="flex-1">
+                                <div className="font-medium text-white text-sm">{tool.name}</div>
+                                <div className="text-xs text-text-secondary">{tool.category}</div>
+                              </div>
+                              <div className="text-primary text-xs group-hover:text-accent">→</div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-text-muted">
+                          <div className="w-8 h-8 mx-auto mb-3 opacity-50">{renderIcon('search')}</div>
+                          <div>검색 결과가 없습니다</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* CTA 버튼들 */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center max-w-lg mx-auto">
-              <Link href="/tools/json-formatter" className="btn btn-primary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center w-full max-w-2xl mx-auto px-4">
+              <Link 
+                href="/tools/json-formatter" 
+                className="btn btn-primary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-center"
+                aria-label="JSON 포맷터 도구 시작하기"
+              >
                 JSON 포맷터 시작하기
               </Link>
-              <Link href="/tools" className="btn btn-secondary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:w-auto">
+              <Link 
+                href="/tools" 
+                className="btn btn-secondary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-center"
+                aria-label="모든 개발 도구 목록 보기"
+              >
                 모든 도구 보기
               </Link>
             </div>
@@ -441,17 +494,17 @@ export default function HomePage() {
       </section>
 
       {/* Revolutionary Tools Showcase - Inspired by Linear, Figma, and Arc */}
-      <section className="py-20 lg:py-32 relative">
-        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl">
+      <section className="py-24 lg:py-36 relative">
+        <div className="container mx-auto px-8 sm:px-10 lg:px-16 max-w-7xl">
           
           {/* Section Header */}
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
+          <div className="text-center mb-24 flex flex-col items-center">
+            <div className="inline-flex items-center gap-3 mb-10 px-8 py-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
               <span className="text-sm font-semibold text-white/80 tracking-wide">Featured Tools</span>
             </div>
             
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-8 leading-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-10 leading-tight text-center">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
                 Powerful
               </span>
@@ -461,19 +514,23 @@ export default function HomePage() {
               </span>
             </h2>
             
-            <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed text-center px-4">
               Every tool is crafted with precision, designed for performance, 
               and built to transform your development workflow.
             </p>
           </div>
           
-          {/* Revolutionary Bento Grid Layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 auto-rows-auto max-w-7xl mx-auto">
+          {/* Enhanced Grid Layout with Better Balance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 auto-rows-fr w-full max-w-7xl mx-auto px-4">
             
-            {/* JSON Formatter - Hero Tool */}
+            {/* JSON Formatter - Featured Tool */}
             <div 
-              className="group sm:col-span-2 xl:col-span-2 xl:row-span-2 cursor-pointer"
+              className="group md:col-span-2 lg:col-span-2 xl:col-span-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="JSON Formatter - Format, validate and beautify JSON data"
               onClick={() => window.location.href = '/tools/json-formatter'}
+              onKeyDown={handleToolNavigation('/tools/json-formatter')}
               onMouseEnter={() => setSelectedTool('json-formatter')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -490,7 +547,7 @@ export default function HomePage() {
                 <div className="absolute top-6 right-6 flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   <span className="text-xs text-green-400 font-semibold bg-green-400/10 px-2 py-1 rounded-full border border-green-400/20">
-                    ✨ Most Popular
+                    Most Popular
                   </span>
                 </div>
                 
@@ -498,7 +555,7 @@ export default function HomePage() {
                 <div className="flex items-start gap-6 mb-8">
                   <div className="relative">
                     <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-3xl">🔧</span>
+                      <div className="w-10 h-10 text-white">{renderIcon('code')}</div>
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center border-2 border-black">
                       <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20">
@@ -581,10 +638,14 @@ export default function HomePage() {
               </Card>
             </div>
 
-            {/* Variable Generator - Enhanced Medium Card */}
+            {/* Variable Generator - Enhanced Card */}
             <div 
-              className="group sm:col-span-2 lg:col-span-2 xl:col-span-2 cursor-pointer"
+              className="group md:col-span-1 lg:col-span-1 xl:col-span-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="Variable Generator - Generate variable names in different conventions"
               onClick={() => window.location.href = '/tools/variable-generator'}
+              onKeyDown={handleToolNavigation('/tools/variable-generator')}
               onMouseEnter={() => setSelectedTool('variable-generator')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -599,7 +660,7 @@ export default function HomePage() {
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-2xl">📝</span>
+                    <div className="w-8 h-8 text-white">{renderIcon('edit')}</div>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">
@@ -648,8 +709,12 @@ export default function HomePage() {
             
             {/* Smart Canvas - Compact but Powerful */}
             <div 
-              className="group cursor-pointer"
+              className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="Smart Canvas - Digital canvas with advanced drawing tools"
               onClick={() => window.location.href = '/canvas'}
+              onKeyDown={handleToolNavigation('/canvas')}
               onMouseEnter={() => setSelectedTool('canvas')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -669,7 +734,7 @@ export default function HomePage() {
                 </div>
                 
                 <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🎨</span>
+                  <div className="w-6 h-6 text-white">{renderIcon('palette')}</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
@@ -695,8 +760,12 @@ export default function HomePage() {
 
             {/* AI Assistant - Enhanced Small Card */}
             <div 
-              className="group cursor-pointer"
+              className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="AI Assistant - Intelligent coding assistant and chat"
               onClick={() => window.location.href = '/chat'}
+              onKeyDown={handleToolNavigation('/chat')}
               onMouseEnter={() => setSelectedTool('chat')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -710,7 +779,7 @@ export default function HomePage() {
                 )}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🤖</span>
+                  <div className="w-6 h-6 text-white">{renderIcon('brain')}</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
@@ -736,10 +805,14 @@ export default function HomePage() {
               </Card>
             </div>
             
-            {/* URL Encoder - Enhanced Medium Card */}
+            {/* URL Encoder - Enhanced Card */}
             <div 
-              className="group sm:col-span-2 lg:col-span-2 xl:col-span-2 cursor-pointer"
+              className="group md:col-span-1 lg:col-span-1 xl:col-span-1 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="URL Encoder - Encode and decode URLs safely"
               onClick={() => window.location.href = '/tools/url-encoder'}
+              onKeyDown={handleToolNavigation('/tools/url-encoder')}
               onMouseEnter={() => setSelectedTool('url-encoder')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -754,7 +827,7 @@ export default function HomePage() {
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-2xl">🔗</span>
+                    <div className="w-8 h-8 text-white">{renderIcon('link')}</div>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">
@@ -800,8 +873,12 @@ export default function HomePage() {
             
             {/* Base64 Converter - Compact */}
             <div 
-              className="group cursor-pointer"
+              className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="Base64 Converter - Convert text and files to Base64"
               onClick={() => window.location.href = '/tools/base64'}
+              onKeyDown={handleToolNavigation('/tools/base64')}
               onMouseEnter={() => setSelectedTool('base64')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -815,7 +892,7 @@ export default function HomePage() {
                 )}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">📄</span>
+                  <div className="w-6 h-6 text-white">{renderIcon('file-text')}</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
@@ -837,8 +914,12 @@ export default function HomePage() {
 
             {/* Hash Generator - Security Focused */}
             <div 
-              className="group cursor-pointer"
+              className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="Hash Generator - Generate secure hashes and checksums"
               onClick={() => window.location.href = '/tools/hash'}
+              onKeyDown={handleToolNavigation('/tools/hash')}
               onMouseEnter={() => setSelectedTool('hash')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -852,7 +933,7 @@ export default function HomePage() {
                 )}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🔐</span>
+                  <div className="w-6 h-6 text-white">{renderIcon('shield')}</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
@@ -875,8 +956,12 @@ export default function HomePage() {
 
             {/* QR Generator - Modern Design */}
             <div 
-              className="group cursor-pointer"
+              className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
+              role="button"
+              tabIndex={0}
+              aria-label="QR Generator - Create QR codes for any text or URL"
               onClick={() => window.location.href = '/tools/qr-generator'}
+              onKeyDown={handleToolNavigation('/tools/qr-generator')}
               onMouseEnter={() => setSelectedTool('qr-generator')}
               onMouseLeave={() => setSelectedTool(null)}
             >
@@ -890,7 +975,7 @@ export default function HomePage() {
                 )}
               >
                 <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">📱</span>
+                  <div className="w-6 h-6 text-white">{renderIcon('qr-code')}</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
@@ -932,40 +1017,40 @@ export default function HomePage() {
           </div>
           
           {/* Feature Highlights - World-class presentation */}
-          <div className="mt-32 text-center">
-            <h3 className="text-3xl font-bold text-white mb-16">Why DEVFORGE?</h3>
+          <div className="mt-36 text-center flex flex-col items-center">
+            <h3 className="text-3xl font-bold text-white mb-20 text-center">Why DEVFORGE?</h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="group">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">⚡</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 w-full max-w-6xl mx-auto px-4">
+              <div className="group text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 text-white">{renderIcon('zap')}</div>
                 </div>
-                <div className="text-lg font-semibold text-white mb-2">Lightning Fast</div>
-                <div className="text-white/60 text-sm">Instant results with optimized algorithms</div>
+                <div className="text-xl font-semibold text-white mb-3">Lightning Fast</div>
+                <div className="text-white/60 text-base leading-relaxed">Instant results with optimized algorithms</div>
               </div>
               
-              <div className="group">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">🎨</span>
+              <div className="group text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 text-white">{renderIcon('palette')}</div>
                 </div>
-                <div className="text-lg font-semibold text-white mb-2">Beautiful UI</div>
-                <div className="text-white/60 text-sm">Pixel-perfect design inspired by top apps</div>
+                <div className="text-xl font-semibold text-white mb-3">Beautiful UI</div>
+                <div className="text-white/60 text-base leading-relaxed">Pixel-perfect design inspired by top apps</div>
               </div>
               
-              <div className="group">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">🔒</span>
+              <div className="group text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 text-white">{renderIcon('lock')}</div>
                 </div>
-                <div className="text-lg font-semibold text-white mb-2">Privacy First</div>
-                <div className="text-white/60 text-sm">All processing happens locally in your browser</div>
+                <div className="text-xl font-semibold text-white mb-3">Privacy First</div>
+                <div className="text-white/60 text-base leading-relaxed">All processing happens locally in your browser</div>
               </div>
               
-              <div className="group">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl">🚀</span>
+              <div className="group text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 text-white">{renderIcon('rocket')}</div>
                 </div>
-                <div className="text-lg font-semibold text-white mb-2">Always Free</div>
-                <div className="text-white/60 text-sm">No subscriptions, no limits, just pure utility</div>
+                <div className="text-xl font-semibold text-white mb-3">Always Free</div>
+                <div className="text-white/60 text-base leading-relaxed">No subscriptions, no limits, just pure utility</div>
               </div>
             </div>
           </div>
@@ -974,29 +1059,29 @@ export default function HomePage() {
       </section>
 
       {/* Revolutionary CTA Section */}
-      <section className="py-32 text-center relative overflow-hidden">
+      <section className="py-36 text-center relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
         
-        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-5xl relative">
-          <div className="mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+        <div className="container mx-auto px-8 sm:px-10 lg:px-16 max-w-6xl relative">
+          <div className="mb-16 flex flex-col items-center">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight text-center">
               Ready to{' '}
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 transform
               </span>
               {' '}your workflow?
             </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed text-center px-4">
               Join thousands of developers who've already discovered the power of beautiful, fast, and intelligent development tools.
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-16 max-w-4xl mx-auto">
             <Button 
               size="lg"
-              className="px-12 py-6 text-lg font-bold relative group overflow-hidden"
+              className="px-14 py-7 text-lg font-bold relative group overflow-hidden w-full sm:w-auto"
               onClick={() => window.location.href = '/tools/json-formatter'}
             >
               <span className="relative z-10">Start Building</span>
@@ -1006,50 +1091,50 @@ export default function HomePage() {
             <Button 
               variant="secondary"
               size="lg"
-              className="px-12 py-6 text-lg font-bold group"
+              className="px-14 py-7 text-lg font-bold group w-full sm:w-auto"
               onClick={commandPalette.toggle}
             >
-              <span className="mr-2">🚀</span>
+              <div className="w-4 h-4 mr-2 inline-block">{renderIcon('command')}</div>
               Open Command Palette
               <kbd className="ml-3 px-2 py-1 text-sm bg-white/10 rounded border border-white/20">⌘K</kbd>
             </Button>
           </div>
           
           {/* Social Proof */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-3xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-black text-blue-400 mb-2">10K+</div>
-              <div className="text-white/60 text-sm">Monthly Users</div>
+              <div className="text-4xl font-black text-blue-400 mb-3">10K+</div>
+              <div className="text-white/60 text-base">Monthly Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-black text-purple-400 mb-2">50K+</div>
-              <div className="text-white/60 text-sm">Tools Used Daily</div>
+              <div className="text-4xl font-black text-purple-400 mb-3">50K+</div>
+              <div className="text-white/60 text-base">Tools Used Daily</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-black text-cyan-400 mb-2">99.9%</div>
-              <div className="text-white/60 text-sm">Uptime</div>
+              <div className="text-4xl font-black text-cyan-400 mb-3">99.9%</div>
+              <div className="text-white/60 text-base">Uptime</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-20 border-t border-white/10">
-        <div className="container mx-auto px-6 sm:px-8 lg:px-12 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center gap-4 mb-8 md:mb-0">
+      <footer className="py-24 border-t border-white/10">
+        <div className="container mx-auto px-8 sm:px-10 lg:px-16 max-w-7xl">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-6 mb-8 md:mb-0">
               <div className="text-2xl font-black text-white">DEVFORGE</div>
               <div className="w-px h-6 bg-white/20" />
-              <div className="text-white/60 text-sm">World-class developer tools</div>
+              <div className="text-white/60 text-base">World-class developer tools</div>
             </div>
             
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-white/50 text-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-8">
+              <div className="flex items-center gap-3 text-white/50 text-base">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 All systems operational
               </div>
-              <div className="text-white/50 text-sm">
-                Made with ❤️ by developers, for developers
+              <div className="text-white/50 text-base text-center">
+                Made by developers, for developers
               </div>
             </div>
           </div>

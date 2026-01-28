@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals-v2.css";
+import "./globals.css";
 import Header from '@/components/common/Header'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 
