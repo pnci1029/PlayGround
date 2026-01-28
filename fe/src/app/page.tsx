@@ -153,10 +153,10 @@ export default function HomePage() {
   const commandPalette = useCommandPalette()
   
   const valueTexts = [
-    'World-class developer tools',
-    'Built with passion and precision', 
-    'Inspired by Linear, Arc, and Raycast',
-    'The future of development utilities'
+    '개발자 도구',
+    '간단한 도구', 
+    '빠른 처리',
+    '편리한 사용'
   ]
 
   // Enhanced tool data with professional icons
@@ -182,11 +182,11 @@ export default function HomePage() {
       lastUsed: '5 min ago'
     },
     { 
-      name: 'Smart Canvas', 
+      name: '그림판', 
       href: '/canvas', 
       category: 'Creative', 
       keywords: ['canvas', 'draw', 'design', 'sketch'], 
-      description: 'Digital canvas with advanced drawing tools',
+      description: '그림 그리기',
       icon: 'palette',
       status: 'beta',
       lastUsed: '1 hour ago'
@@ -196,7 +196,7 @@ export default function HomePage() {
       href: '/chat', 
       category: 'AI', 
       keywords: ['chat', 'ai', 'assistant', 'help'], 
-      description: 'Intelligent coding assistant and chat',
+      description: 'AI 채팅',
       icon: 'brain',
       status: 'active',
       lastUsed: '10 min ago'
@@ -226,7 +226,7 @@ export default function HomePage() {
       href: '/tools/hash', 
       category: 'Security', 
       keywords: ['hash', 'sha', 'md5', 'crypto'], 
-      description: 'Generate secure hashes and checksums',
+      description: '해시 생성',
       icon: 'shield',
       status: 'active',
       lastUsed: '1 hour ago'
@@ -349,7 +349,7 @@ export default function HomePage() {
         
         {/* 떠다니는 프리뷰 요소들 - 개선된 위치 설정 */}
         <FloatingPreview delay={0} className="hidden lg:block absolute top-24 left-8 xl:left-16">
-          <div className="card card-small w-44 h-28">
+          <div className="card card-small interactive-card w-44 h-28">
             <div className="text-xs text-text-muted mb-2">JSON Formatter</div>
             <div className="font-mono text-xs text-primary">{`{
   "name": "user",
@@ -359,7 +359,7 @@ export default function HomePage() {
         </FloatingPreview>
         
         <FloatingPreview delay={1} className="hidden lg:block absolute top-40 right-8 xl:right-16">
-          <div className="card card-small w-36 h-24">
+          <div className="card card-small interactive-card w-36 h-24">
             <div className="text-xs text-text-muted mb-2">QR Generator</div>
             <div className="w-10 h-10 bg-white rounded grid grid-cols-4 gap-px">
               <div className="bg-black rounded-sm" />
@@ -383,7 +383,7 @@ export default function HomePage() {
         </FloatingPreview>
         
         <FloatingPreview delay={2} className="hidden xl:block absolute bottom-40 left-12">
-          <div className="card card-small w-40 h-26">
+          <div className="card card-small interactive-card w-40 h-26">
             <div className="text-xs text-text-muted mb-2">Hash Generator</div>
             <div className="font-mono text-xs text-tertiary">SHA256: a1b2c3d4...</div>
             <div className="font-mono text-xs text-accent mt-1">MD5: 5e6f7g8h...</div>
@@ -391,7 +391,7 @@ export default function HomePage() {
         </FloatingPreview>
         
         <FloatingPreview delay={1.5} className="hidden xl:block absolute bottom-32 right-12">
-          <div className="card card-small w-32 h-22">
+          <div className="card card-small interactive-card w-32 h-22">
             <div className="text-xs text-text-muted mb-2">Canvas</div>
             <div className="w-full h-10 bg-gradient-to-r from-primary to-secondary rounded opacity-50" />
           </div>
@@ -414,7 +414,7 @@ export default function HomePage() {
                 <TypewriterText texts={valueTexts} />
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-4xl mx-auto leading-relaxed text-center px-4">
-                개발자의 일상을 조금 더 편리하게 만드는 실용적인 도구들
+                개발 도구
               </p>
             </div>
             
@@ -424,7 +424,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   placeholder="무엇을 도와드릴까요? (/ 키를 눌러 빠른 검색)"
-                  className="search-input"
+                  className="search-input hover-border"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
@@ -476,14 +476,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center w-full max-w-2xl mx-auto px-4">
               <Link 
                 href="/tools/json-formatter" 
-                className="btn btn-primary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-center"
+                className="btn btn-primary btn-enhanced px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-center"
                 aria-label="JSON 포맷터 도구 시작하기"
               >
                 JSON 포맷터 시작하기
               </Link>
               <Link 
                 href="/tools" 
-                className="btn btn-secondary px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect scale-on-hover w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-center"
+                className="btn btn-secondary btn-enhanced px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg ripple-effect w-full sm:flex-1 max-w-xs focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-center"
                 aria-label="모든 개발 도구 목록 보기"
               >
                 모든 도구 보기
@@ -493,7 +493,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Revolutionary Tools Showcase - Inspired by Linear, Figma, and Arc */}
+      {/* 주요 도구 소개 */}
       <section className="py-24 lg:py-36 relative">
         <div className="container mx-auto px-8 sm:px-10 lg:px-16 max-w-7xl">
           
@@ -501,22 +501,17 @@ export default function HomePage() {
           <div className="text-center mb-24 flex flex-col items-center">
             <div className="inline-flex items-center gap-3 mb-10 px-8 py-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-white/80 tracking-wide">Featured Tools</span>
+              <span className="text-sm font-semibold text-white/80 tracking-wide">도구</span>
             </div>
             
             <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-10 leading-tight text-center">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                Powerful
-              </span>
-              {' & '}
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Beautiful
+                도구
               </span>
             </h2>
             
             <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed text-center px-4">
-              Every tool is crafted with precision, designed for performance, 
-              and built to transform your development workflow.
+              개발 도구 모음
             </p>
           </div>
           
@@ -543,13 +538,6 @@ export default function HomePage() {
                   selectedTool === 'json-formatter' && "border-blue-500/30 shadow-xl shadow-blue-500/20"
                 )}
               >
-                {/* Status Badge */}
-                <div className="absolute top-6 right-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-xs text-green-400 font-semibold bg-green-400/10 px-2 py-1 rounded-full border border-green-400/20">
-                    Most Popular
-                  </span>
-                </div>
                 
                 {/* Header */}
                 <div className="flex items-start gap-6 mb-8">
@@ -569,7 +557,7 @@ export default function HomePage() {
                       JSON Formatter
                     </h3>
                     <p className="text-white/60 mb-4 text-base leading-relaxed">
-                      Format, validate, and beautify JSON data with intelligent parsing and error detection
+                      JSON 데이터 포맷팅 및 검증
                     </p>
                     
                     <div className="flex flex-wrap gap-2">
@@ -587,10 +575,10 @@ export default function HomePage() {
                 </div>
                 
                 {/* Live Preview */}
-                <div className="bg-black/40 border border-white/10 rounded-xl p-6 mb-6">
+                <div className="bg-black/40 border border-white/10 rounded-xl p-6 mb-6 interactive-card hover-glow">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-white/70 text-sm font-medium">Live Preview</span>
+                    <span className="text-white/70 text-sm font-medium">미리보기</span>
                   </div>
                   
                   <div className="font-mono text-sm">
@@ -615,12 +603,8 @@ export default function HomePage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">2.1K</div>
-                      <div className="text-xs text-white/50">Uses today</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">99%</div>
-                      <div className="text-xs text-white/50">Accuracy</div>
+                      <div className="text-lg font-medium text-blue-400">JSON 포맷팅</div>
+                      <div className="text-xs text-white/50">즉시 처리</div>
                     </div>
                   </div>
                   
@@ -629,10 +613,7 @@ export default function HomePage() {
                     size="sm"
                     className="group-hover:bg-blue-500 group-hover:text-white transition-colors"
                   >
-                    Try Now 
-                    <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    JSON 포맷터
                   </Button>
                 </div>
               </Card>
@@ -673,7 +654,7 @@ export default function HomePage() {
                 </div>
                 
                 {/* Interactive Preview */}
-                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4">
+                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4 interactive-card">
                   <div className="font-mono text-sm space-y-2">
                     <div className="text-white/50 text-xs mb-3">Input: "user account info"</div>
                     <div className="flex items-center gap-2">
@@ -697,7 +678,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded border border-purple-500/30">
-                      Smart Rules
+                      규칙
                     </span>
                   </div>
                   <Button variant="ghost" size="sm" className="text-white/60 hover:text-purple-400">
@@ -707,7 +688,7 @@ export default function HomePage() {
               </Card>
             </div>
             
-            {/* Smart Canvas - Compact but Powerful */}
+            {/* 그림판 */}
             <div 
               className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
               role="button"
@@ -738,14 +719,14 @@ export default function HomePage() {
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                  Smart Canvas
+                  그림판
                 </h3>
                 <p className="text-white/60 text-sm mb-4">
                   AI-powered digital drawing
                 </p>
                 
                 {/* Mini Canvas Preview */}
-                <div className="w-full h-12 bg-black/40 rounded-lg border border-white/10 mb-4 relative overflow-hidden">
+                <div className="w-full h-12 bg-black/40 rounded-lg border border-white/10 mb-4 relative overflow-hidden hover-border">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 animate-pulse" />
                   <div className="absolute top-2 left-2 w-2 h-2 bg-cyan-400 rounded-full" />
                   <div className="absolute top-4 left-6 w-1 h-1 bg-blue-400 rounded-full" />
@@ -786,7 +767,7 @@ export default function HomePage() {
                   AI Assistant
                 </h3>
                 <p className="text-white/60 text-sm mb-4">
-                  Intelligent coding helper
+                  코딩 도우미
                 </p>
                 
                 {/* Chat Activity Indicator */}
@@ -839,8 +820,8 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                {/* Live Transformation Preview */}
-                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4">
+                {/* 미리보기 */}
+                <div className="bg-black/40 border border-white/10 rounded-lg p-4 mb-4 interactive-card">
                   <div className="space-y-3">
                     <div>
                       <div className="text-white/50 text-xs mb-1">Input:</div>
@@ -902,7 +883,7 @@ export default function HomePage() {
                   Binary safe encoding
                 </p>
                 
-                <div className="bg-black/40 border border-white/10 rounded p-2 mb-4">
+                <div className="bg-black/40 border border-white/10 rounded p-2 mb-4 interactive-card">
                   <div className="font-mono text-xs text-indigo-300">SGVsbG8gV29ybGQh</div>
                 </div>
                 
@@ -912,7 +893,7 @@ export default function HomePage() {
               </Card>
             </div>
 
-            {/* Hash Generator - Security Focused */}
+            {/* 해시 생성기 */}
             <div 
               className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-xl"
               role="button"
@@ -982,7 +963,7 @@ export default function HomePage() {
                   QR Generator
                 </h3>
                 <p className="text-white/60 text-sm mb-4">
-                  Smart QR codes
+                  QR 코드
                 </p>
                 
                 {/* Modern QR Preview */}
@@ -1016,41 +997,41 @@ export default function HomePage() {
             
           </div>
           
-          {/* Feature Highlights - World-class presentation */}
+          {/* 주요 특징 */}
           <div className="mt-36 text-center flex flex-col items-center">
-            <h3 className="text-3xl font-bold text-white mb-20 text-center">Why DEVFORGE?</h3>
+            <h3 className="text-3xl font-bold text-white mb-20 text-center">특징</h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 w-full max-w-6xl mx-auto px-4">
               <div className="group text-center">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <div className="w-10 h-10 text-white">{renderIcon('zap')}</div>
                 </div>
-                <div className="text-xl font-semibold text-white mb-3">Lightning Fast</div>
-                <div className="text-white/60 text-base leading-relaxed">Instant results with optimized algorithms</div>
+                <div className="text-xl font-semibold text-white mb-3">미니멀</div>
+                <div className="text-white/60 text-base leading-relaxed">간단한 UI</div>
               </div>
               
               <div className="group text-center">
                 <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <div className="w-10 h-10 text-white">{renderIcon('palette')}</div>
                 </div>
-                <div className="text-xl font-semibold text-white mb-3">Beautiful UI</div>
-                <div className="text-white/60 text-base leading-relaxed">Pixel-perfect design inspired by top apps</div>
+                <div className="text-xl font-semibold text-white mb-3">도구</div>
+                <div className="text-white/60 text-base leading-relaxed">개발 도구</div>
               </div>
               
               <div className="group text-center">
                 <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <div className="w-10 h-10 text-white">{renderIcon('lock')}</div>
                 </div>
-                <div className="text-xl font-semibold text-white mb-3">Privacy First</div>
-                <div className="text-white/60 text-base leading-relaxed">All processing happens locally in your browser</div>
+                <div className="text-xl font-semibold text-white mb-3">보안</div>
+                <div className="text-white/60 text-base leading-relaxed">로컴 처리</div>
               </div>
               
               <div className="group text-center">
                 <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <div className="w-10 h-10 text-white">{renderIcon('rocket')}</div>
                 </div>
-                <div className="text-xl font-semibold text-white mb-3">Always Free</div>
-                <div className="text-white/60 text-base leading-relaxed">No subscriptions, no limits, just pure utility</div>
+                <div className="text-xl font-semibold text-white mb-3">무료</div>
+                <div className="text-white/60 text-base leading-relaxed">무료 도구</div>
               </div>
             </div>
           </div>
@@ -1058,7 +1039,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Revolutionary CTA Section */}
+      {/* 시작하기 섹션 */}
       <section className="py-36 text-center relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-blue-600/10" />
@@ -1067,14 +1048,12 @@ export default function HomePage() {
         <div className="container mx-auto px-8 sm:px-10 lg:px-16 max-w-6xl relative">
           <div className="mb-16 flex flex-col items-center">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight text-center">
-              Ready to{' '}
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                transform
+                도구 사용하기
               </span>
-              {' '}your workflow?
             </h2>
             <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed text-center px-4">
-              Join thousands of developers who've already discovered the power of beautiful, fast, and intelligent development tools.
+              개발 도구를 사용해보세요
             </p>
           </div>
           
@@ -1084,7 +1063,7 @@ export default function HomePage() {
               className="px-14 py-7 text-lg font-bold relative group overflow-hidden w-full sm:w-auto"
               onClick={() => window.location.href = '/tools/json-formatter'}
             >
-              <span className="relative z-10">Start Building</span>
+              <span className="relative z-10">시작하기</span>
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Button>
             
@@ -1095,26 +1074,11 @@ export default function HomePage() {
               onClick={commandPalette.toggle}
             >
               <div className="w-4 h-4 mr-2 inline-block">{renderIcon('command')}</div>
-              Open Command Palette
+              도구 찾기
               <kbd className="ml-3 px-2 py-1 text-sm bg-white/10 rounded border border-white/20">⌘K</kbd>
             </Button>
           </div>
           
-          {/* Social Proof */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-3xl mx-auto">
-            <div className="text-center">
-              <div className="text-4xl font-black text-blue-400 mb-3">10K+</div>
-              <div className="text-white/60 text-base">Monthly Users</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-black text-purple-400 mb-3">50K+</div>
-              <div className="text-white/60 text-base">Tools Used Daily</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-black text-cyan-400 mb-3">99.9%</div>
-              <div className="text-white/60 text-base">Uptime</div>
-            </div>
-          </div>
         </div>
       </section>
 

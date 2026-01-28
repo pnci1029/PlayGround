@@ -455,6 +455,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-primary {
@@ -837,6 +839,71 @@ body {
   transform: scale(1.05);
 }
 
+/* Enhanced hover effects */
+.hover-lift {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-glow {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
+}
+
+.hover-border {
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.hover-border:hover {
+  border-color: var(--primary);
+}
+
+.interactive-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+}
+
+.btn-enhanced {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+}
+
+.btn-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.btn-enhanced:hover::before {
+  left: 100%;
+}
+
 /* 회전 애니메이션 */
 @keyframes rotate-slow {
   from {
@@ -849,6 +916,30 @@ body {
 
 .rotate-slow {
   animation: rotate-slow 20s linear infinite;
+}
+
+/* Interactive elements cursor fixes */
+button, [role="button"], input[type="button"], input[type="submit"] {
+  cursor: pointer;
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea, .search-input {
+  cursor: text;
+}
+
+a, .link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Group hover scale effect */
+.group:hover .group-hover-scale {
+  transform: scale(1.1);
+}
+
+/* Alternative for Tailwind-like group hover */
+.group:hover [class*="group-hover:scale-110"] {
+  transform: scale(1.1);
 }
 
 /* 텍스트 그라데이션 애니메이션 */
