@@ -17,81 +17,81 @@ export default function HomePage() {
 
   // Enhanced tool data with professional icons
   const tools = [
-    { 
-      name: 'JSON Formatter', 
-      href: '/tools/json-formatter', 
-      category: 'Development', 
-      keywords: ['json', 'format', 'validate', 'pretty'], 
+    {
+      name: 'JSON Formatter',
+      href: '/tools/json-formatter',
+      category: 'Development',
+      keywords: ['json', 'format', 'validate', 'pretty'],
       description: 'Format, validate and beautify JSON data',
       icon: 'code',
       status: 'active',
       lastUsed: '2 min ago'
     },
-    { 
-      name: 'Variable Generator', 
-      href: '/tools/variable-generator', 
-      category: 'Development', 
-      keywords: ['variable', 'naming', 'camelcase', 'snake'], 
+    {
+      name: 'Variable Generator',
+      href: '/tools/variable-generator',
+      category: 'Development',
+      keywords: ['variable', 'naming', 'camelcase', 'snake'],
       description: 'Generate variable names in different conventions',
       icon: 'edit',
       status: 'active',
       lastUsed: '5 min ago'
     },
-    { 
-      name: '그림판', 
-      href: '/canvas', 
-      category: 'Creative', 
-      keywords: ['canvas', 'draw', 'design', 'sketch'], 
+    {
+      name: '그림판',
+      href: '/canvas',
+      category: 'Creative',
+      keywords: ['canvas', 'draw', 'design', 'sketch'],
       description: '그림 그리기',
       icon: 'palette',
       status: 'beta',
       lastUsed: '1 hour ago'
     },
-    { 
-      name: 'AI Assistant', 
-      href: '/chat', 
-      category: 'AI', 
-      keywords: ['chat', 'ai', 'assistant', 'help'], 
+    {
+      name: 'AI Assistant',
+      href: '/chat',
+      category: 'AI',
+      keywords: ['chat', 'ai', 'assistant', 'help'],
       description: 'AI 채팅',
       icon: 'brain',
       status: 'active',
       lastUsed: '10 min ago'
     },
-    { 
-      name: 'URL Encoder', 
-      href: '/tools/url-encoder', 
-      category: 'Utilities', 
-      keywords: ['url', 'encode', 'decode', 'percent'], 
+    {
+      name: 'URL Encoder',
+      href: '/tools/url-encoder',
+      category: 'Utilities',
+      keywords: ['url', 'encode', 'decode', 'percent'],
       description: 'Encode and decode URLs safely',
       icon: 'link',
       status: 'active',
       lastUsed: '30 min ago'
     },
-    { 
-      name: 'Base64 Converter', 
-      href: '/tools/base64', 
-      category: 'Utilities', 
-      keywords: ['base64', 'encode', 'decode', 'binary'], 
+    {
+      name: 'Base64 Converter',
+      href: '/tools/base64',
+      category: 'Utilities',
+      keywords: ['base64', 'encode', 'decode', 'binary'],
       description: 'Convert text and files to Base64',
       icon: 'file-text',
       status: 'active',
       lastUsed: '15 min ago'
     },
-    { 
-      name: 'Hash Generator', 
-      href: '/tools/hash', 
-      category: 'Security', 
-      keywords: ['hash', 'sha', 'md5', 'crypto'], 
+    {
+      name: 'Hash Generator',
+      href: '/tools/hash',
+      category: 'Security',
+      keywords: ['hash', 'sha', 'md5', 'crypto'],
       description: '해시 생성',
       icon: 'shield',
       status: 'active',
       lastUsed: '1 hour ago'
     },
-    { 
-      name: 'QR Generator', 
-      href: '/tools/qr-generator', 
-      category: 'Utilities', 
-      keywords: ['qr', 'code', 'generate', 'barcode'], 
+    {
+      name: 'QR Generator',
+      href: '/tools/qr-generator',
+      category: 'Utilities',
+      keywords: ['qr', 'code', 'generate', 'barcode'],
       description: 'Create QR codes for any text or URL',
       icon: 'qr-code',
       status: 'active',
@@ -102,16 +102,16 @@ export default function HomePage() {
   // Enhanced filtering and command palette setup
   const filteredTools = useMemo(() => {
     if (!searchTerm) return tools
-    
+
     const searchLower = searchTerm.toLowerCase()
-    return tools.filter(tool => 
+    return tools.filter(tool =>
       tool.name.toLowerCase().includes(searchLower) ||
       tool.description.toLowerCase().includes(searchLower) ||
       tool.category.toLowerCase().includes(searchLower) ||
       tool.keywords.some(keyword => keyword.toLowerCase().includes(searchLower))
     )
   }, [tools, searchTerm])
-  
+
   // Command palette commands
   const commands: Command[] = useMemo(() => [
     ...tools.map(tool => ({
@@ -141,7 +141,7 @@ export default function HomePage() {
       action: () => {/* Theme toggle logic */}
     }
   ], [tools])
-  
+
   useEffect(() => {
     // Essential keyboard shortcuts only
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -152,7 +152,7 @@ export default function HomePage() {
         searchInput?.focus()
         setIsSearchFocused(true)
       }
-      
+
       // Escape to clear search and blur
       if (e.key === 'Escape') {
         if (isSearchFocused) {
@@ -162,7 +162,7 @@ export default function HomePage() {
           setIsSearchFocused(false)
         }
       }
-      
+
       // Number keys for quick tool access
       if (e.key >= '1' && e.key <= '9' && !isSearchFocused) {
         const toolIndex = parseInt(e.key) - 1
@@ -171,9 +171,9 @@ export default function HomePage() {
         }
       }
     }
-    
+
     window.addEventListener('keydown', handleKeyDown)
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
@@ -182,16 +182,19 @@ export default function HomePage() {
   return (
     <>
       {/* Command Palette */}
-      <CommandPalette 
+      <CommandPalette
         commands={commands}
         isOpen={commandPalette.isOpen}
         onClose={commandPalette.close}
         placeholder="Search tools, run commands..."
       />
-      
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
-        
-        <HeroSection 
+
+      {/* Header */}
+      <Header />
+
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black pt-16">
+
+        <HeroSection
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           isSearchFocused={isSearchFocused}
@@ -199,14 +202,14 @@ export default function HomePage() {
           filteredTools={filteredTools}
           renderIcon={renderIcon}
         />
-        
-        <ToolsGrid 
+
+        <ToolsGrid
           tools={tools}
           renderIcon={renderIcon}
         />
-        
+
         <Footer />
-        
+
       </div>
     </>
   )
