@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import CommandPalette, { useCommandPalette, Command } from '@/components/ui/CommandPalette'
 import { copyToClipboard } from '@/lib/utils'
@@ -188,9 +188,6 @@ export default function HomePage() {
         onClose={commandPalette.close}
         placeholder="Search tools, run commands..."
       />
-
-      {/* Header */}
-      <Header />
 
       <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black pt-16">
 
