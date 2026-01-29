@@ -7,7 +7,6 @@ import { copyToClipboard } from '@/lib/utils'
 import { renderIcon } from '@/components/ui/Icons'
 import HeroSection from '@/components/sections/HeroSection'
 import ToolsGrid from '@/components/sections/ToolsGrid'
-import CTASection from '@/components/sections/CTASection'
 import Footer from '@/components/sections/Footer'
 
 export default function HomePage() {
@@ -203,11 +202,6 @@ export default function HomePage() {
         
         <ToolsGrid 
           tools={tools}
-          renderIcon={renderIcon}
-        />
-        
-        <CTASection 
-          onCommandPaletteToggle={commandPalette.toggle}
           renderIcon={renderIcon}
         />
         

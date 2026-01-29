@@ -142,45 +142,6 @@ export default function ToolsGrid({ tools, renderIcon }: ToolsGridProps) {
           
         </div>
         
-        {/* 주요 특징 */}
-        <div className="mt-36 text-center flex flex-col items-center">
-          <h3 className="text-3xl font-bold text-white mb-20 text-center">특징</h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 w-full max-w-6xl mx-auto px-4">
-            <div className="group text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <div className="w-10 h-10 text-white">{renderIcon('zap')}</div>
-              </div>
-              <div className="text-xl font-semibold text-white mb-3">미니멀</div>
-              <div className="text-white/60 text-base leading-relaxed">간단한 UI</div>
-            </div>
-            
-            <div className="group text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <div className="w-10 h-10 text-white">{renderIcon('palette')}</div>
-              </div>
-              <div className="text-xl font-semibold text-white mb-3">도구</div>
-              <div className="text-white/60 text-base leading-relaxed">개발 도구</div>
-            </div>
-            
-            <div className="group text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <div className="w-10 h-10 text-white">{renderIcon('lock')}</div>
-              </div>
-              <div className="text-xl font-semibold text-white mb-3">보안</div>
-              <div className="text-white/60 text-base leading-relaxed">로컬 처리</div>
-            </div>
-            
-            <div className="group text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
-                <div className="w-10 h-10 text-white">{renderIcon('rocket')}</div>
-              </div>
-              <div className="text-xl font-semibold text-white mb-3">무료</div>
-              <div className="text-white/60 text-base leading-relaxed">무료 도구</div>
-            </div>
-          </div>
-        </div>
-        
       </div>
     </section>
   )
