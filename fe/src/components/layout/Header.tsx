@@ -23,24 +23,24 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/tools"
-              className="relative text-sm font-medium text-white/70 hover:text-white transition-all duration-200 ease-out group"
+              className="relative text-sm font-medium transition-all duration-200 ease-out group"
             >
-              <span className="relative z-10 px-3 py-2">도구</span>
-              <span className="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
+              <span className="relative z-10 px-3 py-2 text-white group-hover:text-blue-400 transition-colors">도구</span>
+              <span className="absolute inset-0 bg-blue-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
             </Link>
             <Link
               href="/canvas"
-              className="relative text-sm font-medium text-white/70 hover:text-white transition-all duration-200 ease-out group"
+              className="relative text-sm font-medium transition-all duration-200 ease-out group"
             >
-              <span className="relative z-10 px-3 py-2">그림판</span>
-              <span className="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
+              <span className="relative z-10 px-3 py-2 text-white group-hover:text-blue-400 transition-colors">그림판</span>
+              <span className="absolute inset-0 bg-blue-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
             </Link>
             <Link
               href="/chat"
-              className="relative text-sm font-medium text-white/70 hover:text-white transition-all duration-200 ease-out group"
+              className="relative text-sm font-medium transition-all duration-200 ease-out group"
             >
-              <span className="relative z-10 px-3 py-2">AI 채팅</span>
-              <span className="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
+              <span className="relative z-10 px-3 py-2 text-white group-hover:text-blue-400 transition-colors">AI 채팅</span>
+              <span className="absolute inset-0 bg-blue-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-200 ease-out"></span>
             </Link>
           </nav>
 
@@ -89,21 +89,21 @@ export default function Header() {
           <div className="px-6 py-6 space-y-2">
             <Link
               href="/tools"
-              className="block text-white/70 hover:text-white py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-white/10 rounded-lg hover:translate-x-2"
+              className="block text-blue-300 hover:text-blue-400 py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-blue-500/10 rounded-lg hover:translate-x-2"
               onClick={() => setIsMenuOpen(false)}
             >
               도구
             </Link>
             <Link
               href="/canvas"
-              className="block text-white/70 hover:text-white py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-white/10 rounded-lg hover:translate-x-2"
+              className="block text-blue-300 hover:text-blue-400 py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-blue-500/10 rounded-lg hover:translate-x-2"
               onClick={() => setIsMenuOpen(false)}
             >
               그림판
             </Link>
             <Link
               href="/chat"
-              className="block text-white/70 hover:text-white py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-white/10 rounded-lg hover:translate-x-2"
+              className="block text-blue-300 hover:text-blue-400 py-3 px-4 text-sm font-medium transition-all duration-200 ease-out hover:bg-blue-500/10 rounded-lg hover:translate-x-2"
               onClick={() => setIsMenuOpen(false)}
             >
               AI 채팅

@@ -230,7 +230,7 @@ export default function ToolCard({
                 <div className="w-8 h-8 text-white">{renderIcon(tool.icon)}</div>
               </div>
               <div className="flex-1">
-                <h3 className={`text-xl font-bold text-white mb-1 group-hover:text-${colorScheme}-400 transition-colors`}>
+                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
                   {tool.name}
                 </h3>
                 <p className="text-white/60 text-sm">
@@ -292,7 +292,7 @@ export default function ToolCard({
                   {tool.category === 'Development' ? '규칙' : tool.category}
                 </span>
               </div>
-              <Button variant="ghost" size="sm" className={`text-white/60 hover:text-${colorScheme}-400`}>
+              <Button variant="ghost" size="sm" className="text-white/60 hover:text-blue-400">
                 {tool.icon === 'edit' ? 'Generate →' : tool.icon === 'link' ? 'Encode →' : 'Open →'}
               </Button>
             </div>
@@ -303,7 +303,7 @@ export default function ToolCard({
               <div className="w-6 h-6 text-white">{renderIcon(tool.icon)}</div>
             </div>
             
-            <h3 className={`text-lg font-bold text-white mb-2 group-hover:text-${colorScheme}-400 transition-colors`}>
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
               {tool.name}
             </h3>
             <p className="text-white/60 text-sm mb-4">
@@ -372,7 +372,7 @@ export default function ToolCard({
               </div>
             )}
             
-            <Button variant="ghost" size="sm" className={`w-full text-white/60 hover:text-${colorScheme}-400`}>
+            <Button variant="ghost" size="sm" className="w-full text-white/60 hover:text-blue-400">
               {tool.icon === 'palette' ? 'Create →' : 
                tool.icon === 'brain' ? 'Chat →' :
                tool.icon === 'file-text' ? 'Convert →' :
