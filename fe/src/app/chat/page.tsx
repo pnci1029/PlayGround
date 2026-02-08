@@ -204,7 +204,7 @@ export default function ChatPage() {
                       {msg.type === 'message' ? (
                         <div className={`max-w-xs lg:max-w-md ${
                           msg.userId === 'me' 
-                            ? 'bg-purple-600 text-white' 
+                            ? 'bg-blue-600 text-white' 
                             : 'bg-gray-800 text-gray-100'
                         } rounded-lg p-3`}>
                           <div className="flex justify-between items-start gap-2 mb-1">
@@ -242,14 +242,14 @@ export default function ChatPage() {
                     onKeyPress={handleKeyPress}
                     placeholder="메시지를 입력하세요..."
                     disabled={connectionStatus !== 'connected'}
-                    className="flex-1 bg-gray-800 border text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                    className="flex-1 bg-gray-800 border text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     style={{ borderColor: 'var(--border)' }}
                     maxLength={500}
                   />
                   <button
                     onClick={sendMessage}
                     disabled={connectionStatus !== 'connected' || !inputMessage.trim()}
-                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
                   >
                     전송
                   </button>

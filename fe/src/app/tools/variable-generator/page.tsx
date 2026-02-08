@@ -66,7 +66,7 @@ export default function VariableGeneratorPage() {
           <button
             onClick={generateVariables}
             disabled={isLoading || !input.trim()}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
           >
             {isLoading ? '생성중...' : '생성하기'}
           </button>
@@ -96,7 +96,7 @@ export default function VariableGeneratorPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && generateVariables()}
             placeholder="예: user profile data"
-            className="w-full bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             style={{ borderColor: 'var(--border)' }}
           />
         </div>
@@ -114,7 +114,7 @@ export default function VariableGeneratorPage() {
                   <h3 className="text-sm font-medium text-gray-400">{convention}</h3>
                   <button
                     onClick={() => copyToClipboard(value)}
-                    className="text-gray-500 hover:text-purple-400 transition-colors"
+                    className="text-gray-500 hover:text-blue-400 transition-colors"
                     title="클립보드에 복사"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
