@@ -54,7 +54,7 @@ export default function JsonFormatterPage() {
           <button
             onClick={formatJson}
             disabled={isLoading || !input.trim()}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
           >
             {isLoading ? '처리중...' : '포맷팅'}
           </button>
@@ -84,7 +84,7 @@ export default function JsonFormatterPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder='{"name": "example", "data": [1,2,3]}'
-              className="w-full h-96 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full h-96 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ borderColor: 'var(--border)' }}
             />
           </div>
