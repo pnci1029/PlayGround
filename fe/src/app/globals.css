@@ -848,6 +848,20 @@ body {
   animation: fadeOut 0.5s ease-out;
 }
 
+/* 헤더 여백 강제 적용 */
+.pt-20 {
+  padding-top: 6rem !important;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* 페이지별 헤더 여백 강제 적용 */
+div[class*="min-h-screen"]:not([class*="pt-"]) {
+  padding-top: 6rem !important;
+}
+
 @keyframes fadeOut {
   to {
     opacity: 0;
