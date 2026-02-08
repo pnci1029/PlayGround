@@ -234,7 +234,7 @@ export default function CanvasPage() {
   ]
 
   return (
-    <div className="min-h-screen pt-20" style={{background: 'var(--background)'}}>
+    <div className="min-h-screen" style={{background: 'var(--background)'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">

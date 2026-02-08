@@ -78,14 +78,14 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center pt-20">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-white text-lg">로딩 중...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pt-20">
+    <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
       <header className="bg-gray-800 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
