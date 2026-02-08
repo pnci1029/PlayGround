@@ -52,7 +52,7 @@ export default function RootLayout({
       <body className="min-h-screen antialiased bg-black text-white overflow-x-hidden">
         <LanguageProvider>
           <Header />
-          <main className="relative">
+          <main className="relative pt-16">
             {children}
           </main>
         </LanguageProvider>

@@ -57,7 +57,7 @@ export default function ToolCard({
   const getColorScheme = (icon: string) => {
     const schemes = {
       code: 'blue',
-      edit: 'purple', 
+      edit: 'blue', 
       palette: 'cyan',
       brain: 'green',
       link: 'orange',
@@ -118,7 +118,7 @@ export default function ToolCard({
             </div>
             
             <div className="flex-1">
-              <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+              <h3 className="text-2xl font-bold text-white mb-2 transition-colors tool-card-title">
                 {tool.name}
               </h3>
               <p className="text-white/60 mb-4 text-base leading-relaxed">
@@ -246,7 +246,7 @@ export default function ToolCard({
                   <div className="text-white/50 text-xs mb-3">Input: "user account info"</div>
                   <div className="flex items-center gap-2">
                     <span className="text-green-400">✓</span>
-                    <span className="text-purple-300">userAccountInfo</span>
+                    <span className="text-blue-300">userAccountInfo</span>
                     <span className="text-xs text-white/40">(camelCase)</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -313,10 +313,10 @@ export default function ToolCard({
             {/* Canvas Preview */}
             {tool.icon === 'palette' && (
               <div className="w-full h-12 bg-black/40 rounded-lg border border-white/10 mb-4 relative overflow-hidden hover-border">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-blue-500/20 animate-pulse" />
                 <div className="absolute top-2 left-2 w-2 h-2 bg-cyan-400 rounded-full" />
                 <div className="absolute top-4 left-6 w-1 h-1 bg-blue-400 rounded-full" />
-                <div className="absolute bottom-2 right-3 w-1.5 h-1.5 bg-purple-400 rounded-full" />
+                <div className="absolute bottom-2 right-3 w-1.5 h-1.5 bg-blue-400 rounded-full" />
               </div>
             )}
 
@@ -326,7 +326,7 @@ export default function ToolCard({
                 <div className="flex gap-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0s'}} />
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                 </div>
                 <span className="text-xs text-white/50">Thinking...</span>
               </div>
