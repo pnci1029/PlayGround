@@ -58,8 +58,63 @@ services:
     networks:
       - playground_network
 
+  # MoodBite 백엔드 서비스 (Spring Boot + Kotlin)
+  moodbite-backend:
+    build:
+      context: ./moodbite/MoodBite_BE
+      dockerfile: Dockerfile
+    image: moodbite-backend:latest
+    container_name: moodbite_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # MoodBite 프론트엔드 서비스 (React)
+  moodbite-frontend:
+    build:
+      context: ./moodbite/MoodBite_FE
+      dockerfile: Dockerfile
+    image: moodbite-frontend:latest
+    container_name: moodbite_frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8080
+    depends_on:
+      - moodbite-backend
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Caddy 리버스 프록시
+  caddy:
+    image: caddy:2-alpine
+    container_name: playground_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - playground_network
+    depends_on:
+      - frontend
+      - backend
+      - moodbite-frontend
+      - moodbite-backend
+
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:
 
 networks:
   playground_network:
