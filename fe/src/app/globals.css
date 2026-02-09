@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Reset and Base */
 * {
   box-sizing: border-box;
@@ -244,6 +246,7 @@ html, body {
 .border { border-width: 1px; }
 .border-2 { border-width: 2px; }
 .border-t { border-top-width: 1px; }
+.border-border { border-color: var(--border); }
 .border-border-bright { border-color: var(--border-bright); }
 .border-white\/10 { border-color: rgba(255, 255, 255, 0.1); }
 .border-white\/20 { border-color: rgba(255, 255, 255, 0.2); }
