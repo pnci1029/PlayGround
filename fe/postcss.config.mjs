@@ -1,6 +1,6 @@
 const config = {
   plugins: {
-    // Removed tailwindcss plugin
+    '@tailwindcss/postcss': {},
   },
 };
 
