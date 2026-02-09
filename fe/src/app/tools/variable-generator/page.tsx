@@ -96,8 +96,7 @@ export default function VariableGeneratorPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && generateVariables()}
             placeholder="예: user profile data"
-            className="w-full bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            style={{ borderColor: 'var(--border)' }}
+            className="w-full bg-gray-900 border border-border text-white p-4 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -107,8 +106,7 @@ export default function VariableGeneratorPage() {
             {Object.entries(output).map(([convention, value]) => (
               <div
                 key={convention}
-                className="bg-gray-900 border rounded-lg p-4 transition-all duration-300"
-                style={{ borderColor: 'var(--border)' }}
+                className="bg-gray-900 border border-border rounded-lg p-4 transition-all duration-300"
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-sm font-medium text-gray-400">{convention}</h3>
@@ -129,7 +127,7 @@ export default function VariableGeneratorPage() {
         )}
 
         {/* Info */}
-        <div className="p-4 bg-gray-900/50 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
+        <div className="p-4 bg-gray-900/50 border border-border rounded-lg">
           <h3 className="text-white font-medium mb-2">지원하는 네이밍 컨벤션</h3>
           <ul className="text-gray-400 text-sm space-y-1">
             <li>• <strong>camelCase</strong>: JavaScript, Java 등에서 사용</li>

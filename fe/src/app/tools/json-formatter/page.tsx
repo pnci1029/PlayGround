@@ -84,8 +84,7 @@ export default function JsonFormatterPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder='{"name": "example", "data": [1,2,3]}'
-              className="w-full h-96 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              style={{ borderColor: 'var(--border)' }}
+              className="w-full h-96 bg-gray-900 border border-border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -98,14 +97,13 @@ export default function JsonFormatterPage() {
               value={output}
               readOnly
               placeholder="포맷된 JSON이 여기에 표시됩니다"
-              className="w-full h-96 bg-gray-900 border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none"
-              style={{ borderColor: 'var(--border)' }}
+              className="w-full h-96 bg-gray-900 border border-border text-white p-4 rounded-lg font-mono text-sm resize-none focus:outline-none"
             />
           </div>
         </div>
 
         {/* Info */}
-        <div className="mt-8 p-4 bg-gray-900/50 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
+        <div className="mt-8 p-4 bg-gray-900/50 border border-border rounded-lg">
           <h3 className="text-white font-medium mb-2">사용법</h3>
           <ul className="text-gray-400 text-sm space-y-1">
             <li>• 왼쪽에 JSON 데이터를 입력하세요</li>

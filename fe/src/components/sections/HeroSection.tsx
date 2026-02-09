@@ -20,7 +20,7 @@ export default function HeroSection({
   renderIcon
 }: HeroSectionProps) {
   return (
-    <section className="relative py-20 lg:py-32">
+    <section className="relative py-16 lg:py-20">
       {/* 메인 콘텐츠 */}
       <div className="w-full max-w-4xl mx-auto px-6 sm:px-8 text-center">
         {/* 브랜드명 */}
@@ -34,7 +34,7 @@ export default function HeroSection({
         </div>
 
         {/* 검색바 */}
-        <div className="mb-12 max-w-2xl mx-auto">
+        <div className="mb-10 max-w-2xl mx-auto">
           <div className="relative">
             <input
               type="text"
