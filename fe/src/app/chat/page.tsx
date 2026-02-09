@@ -46,6 +46,7 @@ export default function ChatPage() {
 
       ws.onopen = () => {
         setConnectionStatus('connected')
+        console.log('채팅 서버에 연결되었습니다')
       }
 
       ws.onmessage = (event) => {
@@ -59,18 +60,13 @@ export default function ChatPage() {
 
       ws.onclose = () => {
         setConnectionStatus('disconnected')
-        
-        // 자동 재연결 (5초 후)
-        setTimeout(() => {
-          if (wsRef.current?.readyState === WebSocket.CLOSED) {
-            connectWebSocket()
-          }
-        }, 5000)
+        console.log('채팅 서버 연결이 끊어졌습니다')
       }
 
       ws.onerror = (error) => {
         console.error('Chat WebSocket error:', error)
         setConnectionStatus('disconnected')
+        console.log('채팅 서버에 연결할 수 없습니다 (오프라인 모드)')
       }
     } catch (error) {
       console.error('Failed to connect to chat:', error)
@@ -118,14 +114,8 @@ export default function ChatPage() {
   }
 
   const sendMessage = () => {
-    if (!inputMessage.trim() || wsRef.current?.readyState !== WebSocket.OPEN) return
+    if (!inputMessage.trim()) return
 
-    wsRef.current.send(JSON.stringify({
-      type: 'message',
-      message: inputMessage.trim()
-    }))
-
-    // 내 메시지를 즉시 화면에 표시
     const myMessage: ChatMessage = {
       type: 'message',
       message: inputMessage.trim(),
@@ -133,7 +123,18 @@ export default function ChatPage() {
       timestamp: Date.now(),
       userId: 'me'
     }
-    setMessages(prev => [...prev, myMessage])
+
+    // WebSocket이 연결되어 있으면 서버로 전송
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'message',
+        message: inputMessage.trim()
+      }))
+    } else {
+      // 오프라인 모드: 로컬에서만 표시
+      setMessages(prev => [...prev, myMessage])
+    }
+
     setInputMessage('')
   }
 
@@ -186,17 +187,24 @@ export default function ChatPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* 채팅 영역 */}
           <div className="lg:col-span-3">
-            <div className="bg-gray-900 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
+            <div className="bg-gray-900/80 backdrop-blur-md border border-border rounded-lg">
               {/* 메시지 영역 */}
               <div 
                 ref={chatContainerRef}
-                className="h-96 overflow-y-auto p-4 space-y-3"
-                style={{ maxHeight: '500px' }}
+                className="h-[600px] overflow-y-auto p-4 space-y-3"
+                style={{ minHeight: '400px', maxHeight: '70vh' }}
               >
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-400 mt-8">
                     <p>아직 메시지가 없습니다.</p>
                     <p className="text-sm mt-2">첫 번째 메시지를 보내보세요! 🎉</p>
+                    {connectionStatus === 'disconnected' && (
+                      <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-600/30 rounded-lg">
+                        <p className="text-yellow-400 text-xs">
+                          🔥 채팅 서버가 오프라인입니다. 메시지는 로컬에서만 표시됩니다.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   messages.map((msg, index) => (
@@ -233,22 +241,20 @@ export default function ChatPage() {
               </div>
 
               {/* 입력 영역 */}
-              <div className="border-t p-4" style={{ borderColor: 'var(--border)' }}>
+              <div className="border-t border-border p-4">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="메시지를 입력하세요..."
-                    disabled={connectionStatus !== 'connected'}
-                    className="flex-1 bg-gray-800 border text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                    style={{ borderColor: 'var(--border)' }}
+                    placeholder={connectionStatus === 'connected' ? "메시지를 입력하세요..." : "오프라인 모드 - 로컬 메시지만 가능"}
+                    className="flex-1 bg-gray-800 border border-border text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     maxLength={500}
                   />
                   <button
                     onClick={sendMessage}
-                    disabled={connectionStatus !== 'connected' || !inputMessage.trim()}
+                    disabled={!inputMessage.trim()}
                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
                   >
                     전송
@@ -263,7 +269,7 @@ export default function ChatPage() {
 
           {/* 사이드바 - 참여자 목록 */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-900 border rounded-lg p-4" style={{ borderColor: 'var(--border)' }}>
+            <div className="bg-gray-900/80 backdrop-blur-md border border-border rounded-lg p-4">
               <h3 className="text-white font-medium mb-3">
                 참여자 ({userCount}명)
               </h3>
@@ -282,7 +288,7 @@ export default function ChatPage() {
             </div>
 
             {/* 채팅 규칙 */}
-            <div className="mt-4 bg-gray-900/50 border rounded-lg p-4" style={{ borderColor: 'var(--border)' }}>
+            <div className="mt-4 bg-gray-900/60 backdrop-blur-md border border-border rounded-lg p-4">
               <h3 className="text-white font-medium mb-2">채팅 규칙</h3>
               <ul className="text-xs text-gray-400 space-y-1">
                 <li>• 서로 존중하며 대화해요</li>

@@ -189,7 +189,7 @@ export default function HomePage() {
         placeholder="Search tools, run commands..."
       />
 
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black pt-16">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black" style={{paddingTop: '6rem'}}>
 
         <HeroSection
           searchTerm={searchTerm}

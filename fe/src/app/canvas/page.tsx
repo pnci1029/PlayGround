@@ -255,7 +255,7 @@ export default function CanvasPage() {
         </div>
 
         {/* Tools Panel */}
-        <div className="mb-6 p-4 bg-gray-900 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
+        <div className="mb-6 p-4 bg-gray-900 border border-border rounded-lg">
           <div className="flex flex-wrap items-center gap-6">
             
             {/* Tool Selection */}
@@ -327,7 +327,7 @@ export default function CanvasPage() {
         </div>
 
         {/* Canvas */}
-        <div className="border rounded-lg overflow-hidden" style={{ borderColor: 'var(--border)' }}>
+        <div className="border border-border rounded-lg overflow-hidden">
           <canvas
             ref={canvasRef}
             width={800}
@@ -342,7 +342,7 @@ export default function CanvasPage() {
         </div>
 
         {/* Info */}
-        <div className="mt-6 p-4 bg-gray-900/50 border rounded-lg" style={{ borderColor: 'var(--border)' }}>
+        <div className="mt-6 p-4 bg-gray-900/50 border border-border rounded-lg">
           <h3 className="text-white font-medium mb-2">사용법</h3>
           <ul className="text-gray-400 text-sm space-y-1">
             <li>• 마우스를 드래그하여 그림을 그립니다</li>
