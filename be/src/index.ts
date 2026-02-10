@@ -1,9 +1,11 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import path from 'path'
 import { config } from './config'
 import toolsRoutes from './routes/tools'
 import { authRoutes } from './routes/auth'
-import { testConnection } from './config/database'
+import { artworkRoutes } from './routes/artworks'
+import { testConnection, db } from './config/database'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
 // import canvasRoutes from './routes/canvas'
 // import websocketPlugin from './plugins/websocket'
@@ -11,6 +13,10 @@ import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo }
 const fastify = Fastify({
   logger: true
 })
+
+// Add uploads directory and database to fastify instance
+fastify.decorate('uploadsDir', path.join(__dirname, '../uploads'))
+fastify.decorate('pg', db)
 
 // 서브도메인별 CORS 설정
 fastify.register(cors, {
@@ -27,6 +33,7 @@ fastify.addHook('preHandler', subdomainRoutingMiddleware)
 // 라우트 등록
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
 fastify.register(authRoutes, { prefix: `${config.api.prefix}/auth` })
+fastify.register(artworkRoutes)
 // fastify.register(canvasRoutes, { prefix: `${config.api.prefix}/canvas` })
 
 // 헬스체크 라우트
