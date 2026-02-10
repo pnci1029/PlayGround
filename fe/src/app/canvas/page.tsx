@@ -1,6 +1,8 @@
 'use client'
 
 import { useRef, useState, useEffect, MouseEvent } from 'react'
+import { useSearchParams } from 'next/navigation'
+import SaveModal from '@/components/canvas/SaveModal'
 
 export default function CanvasPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -11,6 +13,11 @@ export default function CanvasPage() {
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected')
   const [activeUsers, setActiveUsers] = useState(1)
   const wsRef = useRef<WebSocket | null>(null)
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [loadedArtwork, setLoadedArtwork] = useState<any>(null)
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -39,44 +46,48 @@ export default function CanvasPage() {
     }
   }, [])
 
-  const connectWebSocket = () => {
+  // 편집 모드일 때 기존 작품 로드
+  useEffect(() => {
+    if (editId) {
+      loadArtworkForEdit(editId)
+    }
+  }, [editId])
+
+  const loadArtworkForEdit = async (artworkId: string) => {
     try {
-      setConnectionStatus('connecting')
-      const ws = new WebSocket('ws://localhost:8083')
-      wsRef.current = ws
+      const response = await fetch(`http://localhost:8085/api/artworks/${artworkId}`)
+      if (response.ok) {
+        const artwork = await response.json()
+        setLoadedArtwork(artwork)
+        
+        // Canvas에 기존 작품 로드
+        if (artwork.canvas_data && artwork.canvas_data.imageData) {
+          const canvas = canvasRef.current
+          if (!canvas) return
 
-      ws.onopen = () => {
-        setConnectionStatus('connected')
-      }
+          const ctx = canvas.getContext('2d')
+          if (!ctx) return
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data)
-          handleWebSocketMessage(data)
-        } catch (error) {
-          console.error('WebSocket message parse error:', error)
+          const img = new Image()
+          img.onload = () => {
+            // Canvas 크기를 작품 크기로 설정
+            canvas.width = artwork.width || 800
+            canvas.height = artwork.height || 600
+            
+            // 기존 이미지 그리기
+            ctx.drawImage(img, 0, 0)
+          }
+          img.src = artwork.canvas_data.imageData
         }
       }
-
-      ws.onclose = () => {
-        setConnectionStatus('disconnected')
-        
-        // 자동 재연결 (5초 후)
-        setTimeout(() => {
-          if (wsRef.current?.readyState === WebSocket.CLOSED) {
-            connectWebSocket()
-          }
-        }, 5000)
-      }
-
-      ws.onerror = (error) => {
-        console.error('Canvas WebSocket error:', error)
-        setConnectionStatus('disconnected')
-      }
     } catch (error) {
-      console.error('Failed to connect WebSocket:', error)
-      setConnectionStatus('disconnected')
+      console.error('Failed to load artwork for editing:', error)
     }
+  }
+
+  const connectWebSocket = () => {
+    // WebSocket 연결 비활성화 (실시간 협업 기능은 나중에 추가)
+    setConnectionStatus('disconnected')
   }
 
   const handleWebSocketMessage = (data: any) => {
@@ -135,25 +146,13 @@ export default function CanvasPage() {
   }
 
   const sendDrawEvent = (x: number, y: number, prevX: number, prevY: number) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'draw',
-        data: {
-          x, y, prevX, prevY,
-          color,
-          brushSize,
-          tool: currentTool
-        }
-      }))
-    }
+    // WebSocket 비활성화 - 실시간 협업 기능은 나중에 추가
+    return
   }
 
   const sendClearEvent = () => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'clear'
-      }))
-    }
+    // WebSocket 비활성화 - 실시간 협업 기능은 나중에 추가
+    return
   }
 
   let lastX = 0
@@ -202,9 +201,6 @@ export default function CanvasPage() {
     ctx.lineTo(x, y)
     ctx.stroke()
 
-    // WebSocket으로 그리기 데이터 전송
-    sendDrawEvent(x, y, lastX, lastY)
-
     // 현재 좌표를 이전 좌표로 업데이트
     lastX = x
     lastY = y
@@ -223,9 +219,65 @@ export default function CanvasPage() {
 
     ctx.fillStyle = '#1a1a1a'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }
 
-    // WebSocket으로 클리어 이벤트 전송
-    sendClearEvent()
+  const saveArtwork = async (title: string, description: string, authorName: string) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    setIsSaving(true)
+    try {
+      // Canvas를 Blob으로 변환
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob)
+        }, 'image/png', 0.9)
+      })
+
+      // Canvas 데이터 추출 (향후 편집용)
+      const canvasData = {
+        width: canvas.width,
+        height: canvas.height,
+        imageData: canvas.toDataURL('image/png')
+      }
+
+      // FormData 생성
+      const formData = new FormData()
+      formData.append('file', blob, 'artwork.png')
+      formData.append('title', title)
+      formData.append('description', description)
+      formData.append('author_name', authorName)
+      formData.append('canvas_data', JSON.stringify(canvasData))
+      formData.append('width', canvas.width.toString())
+      formData.append('height', canvas.height.toString())
+
+      // API 호출 (편집 모드면 PUT, 새 작품이면 POST)
+      const url = editId 
+        ? `http://localhost:8085/api/artworks/${editId}`
+        : 'http://localhost:8085/api/artworks'
+      
+      const response = await fetch(url, {
+        method: editId ? 'PUT' : 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('저장에 실패했습니다')
+      }
+
+      const result = await response.json()
+      console.log('Artwork saved:', result)
+      
+      // 성공 알림
+      alert('작품이 성공적으로 저장되었습니다!')
+      setShowSaveModal(false)
+
+    } catch (error) {
+      console.error('Save error:', error)
+      alert('저장 중 오류가 발생했습니다.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const colors = [
@@ -238,19 +290,20 @@ export default function CanvasPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white mb-2">실시간 그림판</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-3xl font-bold text-white">
+              {editId ? '작품 편집' : '실시간 그림판'}
+            </h1>
+            {editId && loadedArtwork && (
+              <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                편집 중: {loadedArtwork.title}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-4">
-            <p className="text-gray-400">다른 사용자와 함께 그림을 그려보세요</p>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${
-                connectionStatus === 'connected' ? 'bg-green-500' : 
-                connectionStatus === 'connecting' ? 'bg-yellow-500' : 'bg-red-500'
-              }`} />
-              <span className="text-sm text-gray-400">
-                {connectionStatus === 'connected' ? '연결됨' : 
-                 connectionStatus === 'connecting' ? '연결 중...' : '오프라인'}
-              </span>
-            </div>
+            <p className="text-gray-400">
+              {editId ? '기존 작품을 편집하고 있습니다' : '그림을 그리고 저장할 수 있습니다'}
+            </p>
           </div>
         </div>
 
@@ -316,6 +369,14 @@ export default function CanvasPage() {
               </div>
             </div>
 
+            {/* Save Button */}
+            <button
+              onClick={() => setShowSaveModal(true)}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded text-sm transition-colors"
+            >
+              {editId ? '업데이트' : '저장'}
+            </button>
+
             {/* Clear Button */}
             <button
               onClick={clearCanvas}
@@ -348,11 +409,26 @@ export default function CanvasPage() {
             <li>• 마우스를 드래그하여 그림을 그립니다</li>
             <li>• 펜/지우개 도구를 선택할 수 있습니다</li>
             <li>• 브러시 크기와 색상을 조절할 수 있습니다</li>
+            <li>• <span className="text-green-400">'저장' 버튼</span>으로 작품을 저장할 수 있습니다</li>
             <li>• '전체 지우기' 버튼으로 캔버스를 초기화합니다</li>
-            <li className="text-yellow-400">• 실시간 협업 기능은 곧 추가될 예정입니다</li>
+            <li>• 저장된 작품은 갤러리에서 확인하고 편집할 수 있습니다</li>
           </ul>
         </div>
       </div>
+
+      {/* Save Modal */}
+      <SaveModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        onSave={saveArtwork}
+        isLoading={isSaving}
+        isEdit={!!editId}
+        defaultValues={loadedArtwork ? {
+          title: loadedArtwork.title,
+          description: loadedArtwork.description || '',
+          authorName: loadedArtwork.author_name
+        } : undefined}
+      />
     </div>
   )
 }

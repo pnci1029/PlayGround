@@ -48,6 +48,16 @@ export default function HomePage() {
       lastUsed: '1 hour ago'
     },
     {
+      name: '갤러리',
+      href: '/gallery',
+      category: 'Creative',
+      keywords: ['gallery', 'artworks', 'pictures', 'collection'],
+      description: '작품 갤러리',
+      icon: 'grid',
+      status: 'active',
+      lastUsed: '30 min ago'
+    },
+    {
       name: 'AI Assistant',
       href: '/chat',
       category: 'AI',
