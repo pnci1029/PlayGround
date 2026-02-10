@@ -1,0 +1,186 @@
+@import "common/variables";
+
+// recommend.module.scss
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #f6f6f6 0%, #ffffff 100%);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+
+  .headerContent {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+
+  .backButton {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    margin-right: 1rem;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  .pageTitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #2C3E50;
+  }
+}
+
+.mainContent {
+  padding: 80px 1rem 1rem;
+  overflow-y: auto;
+  height: calc(100vh - 80px);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.moodSection {
+  margin-bottom: 2rem;
+
+  .sectionTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #2C3E50;
+    animation: fadeInDown 0.5s ease-out;
+  }
+
+  .moodGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .moodButton {
+    padding: 1.5rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+    &:nth-child(1) { background: linear-gradient(135deg, #FFE0B2, #FFCC80); }
+    &:nth-child(2) { background: linear-gradient(135deg, #B2EBF2, #80DEEA); }
+    &:nth-child(3) { background: linear-gradient(135deg, #C8E6C9, #A5D6A7); }
+    &:nth-child(4) { background: linear-gradient(135deg, #FFCDD2, #EF9A9A); }
+    &:nth-child(5) { background: linear-gradient(135deg, #E1BEE7, #CE93D8); }
+    &:nth-child(6) { background: linear-gradient(135deg, #FFE0B2, #FFAB91); }
+
+    &:active {
+      transform: scale(0.95) translateY(2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.foodSection {
+  .sectionTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #2C3E50;
+  }
+
+  .foodCards {
+    padding: 0 0.5rem;
+  }
+
+  .foodCard {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .foodImage {
+      width: 100%;
+      height: 200px;
+      background-color: #f0f0f0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .foodInfo {
+      padding: 1.5rem;
+
+      h3 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #2C3E50;
+      }
+
+      p {
+        color: #7F8C8D;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.moodButton {
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation: fadeIn 0.5s ease-out;
+      animation-delay: #{$i * 0.1}s;
+      animation-fill-mode: both;
+    }
+  }
+}

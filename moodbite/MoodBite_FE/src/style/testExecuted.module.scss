@@ -1,0 +1,274 @@
+@import './common/variables';
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.backButton {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.title {
+  margin: 0 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.mainContent {
+  padding: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.analysisSection {
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.analysisGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.analysisItem {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.scoreLabel {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.scoreValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.contextInfo {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  
+  @include mobile {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
+
+.contextItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.recommendationSection {
+  margin-bottom: 2rem;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+
+  p {
+    margin-top: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: #4ECDC4;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.summaryCard {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #4ECDC4;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 1.1rem;
+  }
+}
+
+.restaurantList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.restaurantCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s, background-color 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.restaurantHeader {
+  margin-bottom: 1rem;
+}
+
+.restaurantName {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: #4ECDC4;
+}
+
+.restaurantDescription {
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.restaurantDetails {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.recommendReason {
+  background: rgba(76, 205, 196, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 3px solid #4ECDC4;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fullTextRecommendation {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.recommendationText {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  line-height: 1.6;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.actionSection {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(45deg, #4ECDC4, #44A08D);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 205, 196, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 205, 196, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@include mobile {
+  .mainContent {
+    padding: 1rem;
+  }
+
+  .analysisGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contextInfo {
+    justify-content: stretch;
+  }
+
+  .restaurantDetails {
+    justify-content: center;
+  }
+}

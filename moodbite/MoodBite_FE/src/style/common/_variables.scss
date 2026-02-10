@@ -1,0 +1,24 @@
+$breakpoint-mobile: 1080px;
+$breakpoint-desktop: 1380px;
+
+@mixin desktop {
+  @media (min-width: calc(#{$breakpoint-mobile} + 1px)) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: calc(#{$breakpoint-mobile} - 1px)) {
+    @content;
+  }
+}
+.spinner {
+  width: 200px;
+  height: 200px;
+  animation: spin 1s linear infinite;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+}

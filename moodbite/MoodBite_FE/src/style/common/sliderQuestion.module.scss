@@ -1,0 +1,225 @@
+.testSection {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px;
+  opacity: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.2s;
+
+  .questionTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-align: center;
+    margin-bottom: 3.5rem;
+    line-height: 1.4;
+    word-break: keep-all;
+    letter-spacing: -0.02em;
+  }
+}
+
+.sliderContainer {
+  margin-bottom: 2.5rem;
+
+  .sliderWrapper {
+    position: relative;
+    padding: 1.5rem 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(to right, #e0e0e0, #e0e0e0);
+    outline: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 6px;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      margin-top: -13px;
+      background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 10px rgba(43, 181, 172, 0.3);
+      transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+      &:active {
+        transform: scale(1.2);
+        box-shadow: 0 2px 15px rgba(43, 181, 172, 0.5);
+      }
+    }
+
+    &::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 10px rgba(43, 181, 172, 0.3);
+      transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+      &:active {
+        transform: scale(1.2);
+        box-shadow: 0 2px 15px rgba(43, 181, 172, 0.5);
+      }
+    }
+
+    &:focus {
+      outline: none;
+
+      &::-webkit-slider-thumb {
+        box-shadow: 0 0 0 6px rgba(43, 181, 172, 0.15);
+      }
+
+      &::-moz-range-thumb {
+        box-shadow: 0 0 0 6px rgba(43, 181, 172, 0.15);
+      }
+    }
+  }
+
+  .sliderLabels {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+}
+
+.scoreDisplay {
+  text-align: center;
+  font-size: 3.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 2.5rem 0 1.5rem;
+  height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.active {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+  }
+}
+
+.scoreIndicator {
+  display: flex;
+  justify-content: center;
+
+  .indicatorText {
+    text-align: center;
+    color: #4b5563;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 20px;
+    background-color: rgba(43, 181, 172, 0.08);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
+    animation-delay: 0.3s;
+    border: 1px solid rgba(43, 181, 172, 0.15);
+  }
+}
+
+/* 예산 슬라이더용 스타일 오버라이드 */
+.budgetSlider {
+  .indicatorText {
+    background-color: rgba(43, 181, 172, 0.08);
+
+    &.lowBudget {
+      background-color: rgba(43, 181, 172, 0.08);
+      color: #4b5563;
+    }
+
+    &.mediumBudget {
+      background-color: rgba(43, 181, 172, 0.15);
+      color: #2bb5ac;
+    }
+
+    &.highBudget {
+      background-color: rgba(43, 181, 172, 0.3);
+      color: #2a9d92;
+    }
+  }
+}
+
+/* 애니메이션 정의 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+  .testSection {
+    padding: 0 12px;
+
+    .questionTitle {
+      font-size: 1.4rem;
+      margin-bottom: 3rem;
+    }
+  }
+
+  .scoreDisplay {
+    font-size: 3.4rem;
+    margin: 2rem 0 1.2rem;
+    height: 4rem;
+  }
+
+  .sliderContainer {
+    .slider {
+      &::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+        margin-top: -11px;
+      }
+    }
+  }
+
+  .scoreIndicator {
+    .indicatorText {
+      font-size: 1rem;
+      padding: 0.5rem 1.2rem;
+    }
+  }
+}

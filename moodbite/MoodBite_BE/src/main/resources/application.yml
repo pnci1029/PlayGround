@@ -1,0 +1,50 @@
+spring:
+  profiles:
+    include: secret
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+    #
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:~/testdb
+    driver-class-name: org.h2.Driver
+    username: sar
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  sql:
+    init:
+      continue-on-error: 'true'
+      mode: always
+logging:
+  level:
+    com.example.pro.controller: debug
+
+# 한글 인코딩 문제
+server:
+  servlet:
+    encoding:
+      force-response: true
+
+openai:
+  model: gpt-3.5-turbo
+  api:
+    url: 'https://api.openai.com/v1/chat/completions'
+    key: ${secret.openai.api.key}
+
+openRouter:
+  model: perplexity/sonar-reasoning
+  api:
+    url: 'https://openrouter.ai/api/v1/chat/completions'
+    key: ${secret.openrouter.api.key}

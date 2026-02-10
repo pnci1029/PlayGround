@@ -1,0 +1,56 @@
+.buttonContainer {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.4s;
+}
+
+.prevButton {
+  flex: 1;
+  padding: 1rem;
+  background: rgba(243, 244, 246, 0.8);
+  border: none;
+  border-radius: 12px;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:active {
+    background: rgba(229, 231, 235, 0.9);
+    transform: scale(0.98);
+  }
+}
+
+.nextButton {
+  flex: 1;
+  padding: 1rem;
+  background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.15);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(78, 205, 196, 0.1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
