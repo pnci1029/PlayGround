@@ -1,0 +1,102 @@
+# 개발 환경 설정 (localhost)
+localhost {
+	reverse_proxy frontend:3000
+}
+
+# 메인 도메인 (프로덕션)
+playground.local, www.playground.local {
+	reverse_proxy frontend:3000
+}
+
+# 관리자 서브도메인
+admin.localhost, admin.playground.local {
+	reverse_proxy frontend:3000
+}
+
+# 블로그 서브도메인
+blog.localhost, blog.playground.local {
+	reverse_proxy frontend:3000
+}
+
+# API 서브도메인 (선택적)
+api.localhost, api.playground.local {
+	reverse_proxy backend:8000
+}
+
+# MoodBite 서브도메인
+moodbite.localhost, moodbite.playground.local {
+	reverse_proxy moodbite-frontend:3000
+}
+
+# MoodBite API 서브도메인
+api.moodbite.localhost, api.moodbite.playground.local {
+	reverse_proxy moodbite-backend:8080
+}
+
+# 미래 서브도메인들
+menu.localhost, menu.playground.local {
+	reverse_proxy frontend:3000
+}
+
+diary.localhost, diary.playground.local {
+	reverse_proxy frontend:3000
+}
+
+portfolio.localhost, portfolio.playground.local {
+	reverse_proxy frontend:3000
+}
+
+# 모든 서브도메인 와일드카드 (개발용)
+*.localhost {
+	@admin host admin.localhost
+	handle @admin {
+		reverse_proxy frontend:3000
+	}
+	
+	@blog host blog.localhost
+	handle @blog {
+		reverse_proxy frontend:3000
+	}
+	
+	@api host api.localhost
+	handle @api {
+		reverse_proxy backend:8000
+	}
+	
+	@moodbite host moodbite.localhost
+	handle @moodbite {
+		reverse_proxy moodbite-frontend:3000
+	}
+	
+	@moodbite_api host api.moodbite.localhost
+	handle @moodbite_api {
+		reverse_proxy moodbite-backend:8080
+	}
+	
+	# 기본 프론트엔드로 라우팅
+	reverse_proxy frontend:3000
+}
+
+# 프로덕션 와일드카드 (실제 도메인)
+*.playground.com {
+	@admin host admin.playground.com
+	handle @admin {
+		reverse_proxy frontend:3000
+	}
+	
+	@blog host blog.playground.com
+	handle @blog {
+		reverse_proxy frontend:3000
+	}
+	
+	@api host api.playground.com
+	handle @api {
+		reverse_proxy backend:8000
+	}
+	
+	# 개발환경에서는 자동 HTTPS 비활성화
+	tls internal
+	
+	# 기본 프론트엔드로 라우팅
+	reverse_proxy frontend:3000
+}
