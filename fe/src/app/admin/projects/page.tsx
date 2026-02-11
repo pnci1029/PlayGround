@@ -140,16 +140,16 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="text-center">로딩 중...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-gray-800 shadow-md">
+      <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-xl font-bold">프로젝트 관리</h1>
@@ -174,24 +174,24 @@ export default function ProjectsPage() {
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <div key={project.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div key={project.id} className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium">{project.display_name}</h3>
                 {getStatusBadge(project.status)}
               </div>
               
-              <p className="text-gray-400 text-sm mb-4">
+              <p className="text-gray-600 text-sm mb-4">
                 {project.description || '설명이 없습니다'}
               </p>
 
               <div className="space-y-2 text-sm">
                 <div>
-                  <span className="text-gray-400">프로젝트명:</span>
+                  <span className="text-gray-600">프로젝트명:</span>
                   <span className="ml-2 font-mono">{project.name}</span>
                 </div>
                 {project.subdomain && (
                   <div>
-                    <span className="text-gray-400">서브도메인:</span>
+                    <span className="text-gray-600">서브도메인:</span>
                     <span className="ml-2 font-mono text-blue-400">
                       {project.subdomain}.playground.com
                     </span>
@@ -199,7 +199,7 @@ export default function ProjectsPage() {
                 )}
                 {project.git_repo && (
                   <div>
-                    <span className="text-gray-400">저장소:</span>
+                    <span className="text-gray-600">저장소:</span>
                     <a 
                       href={project.git_repo}
                       target="_blank"
@@ -211,23 +211,23 @@ export default function ProjectsPage() {
                   </div>
                 )}
                 <div>
-                  <span className="text-gray-400">브랜치:</span>
+                  <span className="text-gray-600">브랜치:</span>
                   <span className="ml-2 font-mono">{project.branch}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">생성일:</span>
+                  <span className="text-gray-600">생성일:</span>
                   <span className="ml-2">{new Date(project.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
 
               <div className="mt-6 flex space-x-2">
-                <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded text-sm transition-colors">
+                <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 py-2 px-3 rounded text-sm transition-colors">
                   설정
                 </button>
-                <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm transition-colors">
+                <button className="flex-1 bg-green-600 hover:bg-green-700 text-gray-900 py-2 px-3 rounded text-sm transition-colors">
                   배포
                 </button>
-                <button className="bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded text-sm transition-colors">
+                <button className="bg-red-600 hover:bg-red-700 text-gray-900 py-2 px-3 rounded text-sm transition-colors">
                   삭제
                 </button>
               </div>
@@ -237,12 +237,12 @@ export default function ProjectsPage() {
 
         {projects.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-4">
+            <div className="text-gray-600 text-lg mb-4">
               아직 프로젝트가 없습니다
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded transition-colors"
+              className="bg-purple-600 hover:bg-purple-700 text-gray-900 py-2 px-4 rounded transition-colors"
             >
               첫 번째 프로젝트 만들기
             </button>
@@ -253,63 +253,63 @@ export default function ProjectsPage() {
       {/* Create Project Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-700">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md border border-gray-200">
             <h2 className="text-xl font-bold mb-4">새 프로젝트 생성</h2>
             
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   프로젝트명 *
                 </label>
                 <input
                   type="text"
                   value={newProject.name}
                   onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900"
                   placeholder="blog, portfolio, etc..."
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   표시 이름 *
                 </label>
                 <input
                   type="text"
                   value={newProject.display_name}
                   onChange={(e) => setNewProject({...newProject, display_name: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900"
                   placeholder="개인 블로그"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   설명
                 </label>
                 <textarea
                   value={newProject.description}
                   onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900"
                   placeholder="프로젝트에 대한 간단한 설명..."
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   서브도메인
                 </label>
                 <input
                   type="text"
                   value={newProject.subdomain}
                   onChange={(e) => setNewProject({...newProject, subdomain: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900"
                   placeholder="blog (선택사항)"
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   {newProject.subdomain}.playground.com으로 접근 가능
                 </p>
               </div>
@@ -318,13 +318,13 @@ export default function ProjectsPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded transition-colors"
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 text-gray-900 py-2 px-4 rounded transition-colors"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded transition-colors"
+                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-gray-900 py-2 px-4 rounded transition-colors"
                 >
                   생성
                 </button>

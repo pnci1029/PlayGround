@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 export default function Header() {
   const { language, setLanguage, t } = useLanguage()
   return (
-    <header className="bg-black/80 border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl">
+    <header className="bg-white/95 border-b border-gray-100 sticky top-0 z-50 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex justify-between items-center h-18">
           {/* Logo */}
