@@ -44,20 +44,20 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             🚀 PlayGround Admin
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-600">
             관리자 계정으로 로그인하세요
           </p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-gray-800 rounded-lg shadow-lg p-8 border border-gray-700">
+        <div className="bg-white rounded-lg shadow-lg p-8 border border-gray-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-600 bg-opacity-20 border border-red-600 text-red-100 px-4 py-3 rounded">
@@ -66,7 +66,7 @@ export default function AdminLogin() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 사용자명
               </label>
               <input
@@ -74,14 +74,14 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="admin"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 비밀번호
               </label>
               <input
@@ -89,7 +89,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -105,15 +105,15 @@ export default function AdminLogin() {
           </form>
 
           {/* Demo Info */}
-          <div className="mt-8 pt-6 border-t border-gray-600">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">
               🧪 개발용 계정
             </h3>
-            <div className="bg-gray-700 rounded p-3 text-sm">
-              <p className="text-gray-300 mb-1">
+            <div className="bg-gray-50 rounded p-3 text-sm">
+              <p className="text-gray-700 mb-1">
                 <strong>사용자명:</strong> admin
               </p>
-              <p className="text-gray-300">
+              <p className="text-gray-700">
                 <strong>비밀번호:</strong> admin123
               </p>
               <p className="text-yellow-400 text-xs mt-2">
@@ -125,7 +125,7 @@ export default function AdminLogin() {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-600 text-sm">
             <a href="/" className="text-purple-400 hover:text-purple-300">
               ← 메인 사이트로 돌아가기
             </a>

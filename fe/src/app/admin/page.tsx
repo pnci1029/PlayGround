@@ -78,23 +78,23 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-lg">로딩 중...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-900 text-lg">로딩 중...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-gray-800 shadow-md">
+      <header className="bg-white shadow-md border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-bold">관리자 대시보드</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">
+              <span className="text-gray-700">
                 {admin?.name || admin?.username}님 안녕하세요
               </span>
               <button
@@ -109,22 +109,22 @@ export default function AdminDashboard() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-gray-800 border-b border-gray-700">
+      <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <a href="/admin" className="border-b-2 border-purple-500 text-purple-400 py-4 px-1 text-sm font-medium">
               대시보드
             </a>
-            <a href="/admin/projects" className="text-gray-300 hover:text-white py-4 px-1 text-sm font-medium">
+            <a href="/admin/projects" className="text-gray-700 hover:text-gray-900 py-4 px-1 text-sm font-medium">
               프로젝트
             </a>
-            <a href="/admin/subdomains" className="text-gray-300 hover:text-white py-4 px-1 text-sm font-medium">
+            <a href="/admin/subdomains" className="text-gray-700 hover:text-gray-900 py-4 px-1 text-sm font-medium">
               서브도메인
             </a>
-            <a href="/admin/deployments" className="text-gray-300 hover:text-white py-4 px-1 text-sm font-medium">
+            <a href="/admin/deployments" className="text-gray-700 hover:text-gray-900 py-4 px-1 text-sm font-medium">
               배포 관리
             </a>
-            <a href="/admin/settings" className="text-gray-300 hover:text-white py-4 px-1 text-sm font-medium">
+            <a href="/admin/settings" className="text-gray-700 hover:text-gray-900 py-4 px-1 text-sm font-medium">
               설정
             </a>
           </div>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
@@ -155,13 +155,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">전체 프로젝트</p>
+                <p className="text-sm font-medium text-gray-600">전체 프로젝트</p>
                 <p className="text-2xl font-semibold">{stats.totalProjects}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
@@ -171,13 +171,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">활성 프로젝트</p>
+                <p className="text-sm font-medium text-gray-600">활성 프로젝트</p>
                 <p className="text-2xl font-semibold">{stats.activeProjects}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
@@ -187,13 +187,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">서브도메인</p>
+                <p className="text-sm font-medium text-gray-600">서브도메인</p>
                 <p className="text-2xl font-semibold">{stats.totalSubdomains}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-400">이번 달 배포</p>
+                <p className="text-sm font-medium text-gray-600">이번 달 배포</p>
                 <p className="text-2xl font-semibold">{stats.recentDeployments}</p>
               </div>
             </div>
@@ -213,27 +213,27 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Projects */}
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-medium mb-4">최근 프로젝트</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
                 <div>
                   <p className="font-medium">블로그 사이트</p>
-                  <p className="text-sm text-gray-400">blog.playground.com</p>
+                  <p className="text-sm text-gray-600">blog.playground.com</p>
                 </div>
                 <span className="px-2 py-1 bg-green-600 text-green-100 text-xs rounded">활성</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
                 <div>
                   <p className="font-medium">맛집 추천</p>
-                  <p className="text-sm text-gray-400">menu.playground.com</p>
+                  <p className="text-sm text-gray-600">menu.playground.com</p>
                 </div>
                 <span className="px-2 py-1 bg-yellow-600 text-yellow-100 text-xs rounded">빌드 중</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
                 <div>
                   <p className="font-medium">포트폴리오</p>
-                  <p className="text-sm text-gray-400">portfolio.playground.com</p>
+                  <p className="text-sm text-gray-600">portfolio.playground.com</p>
                 </div>
                 <span className="px-2 py-1 bg-gray-600 text-gray-100 text-xs rounded">비활성</span>
               </div>
@@ -244,7 +244,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-medium mb-4">빠른 작업</h3>
             <div className="grid grid-cols-2 gap-4">
               <button className="p-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-center transition-colors">
@@ -288,7 +288,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* System Status */}
-        <div className="mt-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="mt-8 bg-white rounded-lg p-6 border border-gray-200">
           <h3 className="text-lg font-medium mb-4">시스템 상태</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center space-x-3">
