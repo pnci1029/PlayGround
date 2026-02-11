@@ -51,7 +51,18 @@ fe/tsconfig.json
 # 문서
 docs/CRITICAL.md
 docs/architecture-guide.md
+
+# 인프라 설정
+caddy/Caddyfile
 ```
+
+## 🔄 Caddy 리버스 프록시
+
+### 핵심 기능
+- 서브도메인별 서비스 라우팅 (admin.localhost, blog.localhost, moodbite.localhost 등)
+- 백엔드/프론트엔드 자동 프록시 설정
+- 개발환경(localhost)과 프로덕션(playground.com) 동시 지원
+- SSL/TLS 자동 인증서 관리
 
 ## 🚀 개발 서버 실행
 
