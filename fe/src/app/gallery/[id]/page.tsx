@@ -120,7 +120,7 @@ export default function ArtworkDetailPage() {
       <div className="min-h-screen" style={{background: 'var(--background)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center py-12">
-            <div className="text-gray-400">작품을 불러오는 중...</div>
+            <div className="text-gray-600">작품을 불러오는 중...</div>
           </div>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function ArtworkDetailPage() {
       <div className="min-h-screen" style={{background: 'var(--background)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">작품을 찾을 수 없습니다.</div>
+            <div className="text-gray-600 mb-4">작품을 찾을 수 없습니다.</div>
             <Link 
               href="/gallery"
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition-colors"
@@ -161,7 +161,7 @@ export default function ArtworkDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Artwork Display */}
           <div className="lg:col-span-2">
-            <div className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <img
                 src={`http://localhost:8085${artwork.image_url}`}
                 alt={artwork.title}
@@ -176,26 +176,26 @@ export default function ArtworkDetailPage() {
               <h1 className="text-3xl font-bold text-white mb-2">
                 {artwork.title}
               </h1>
-              <p className="text-gray-400 mb-4">
+              <p className="text-gray-600 mb-4">
                 by {artwork.author_name}
               </p>
               {artwork.description && (
-                <p className="text-gray-300 mb-4">
+                <p className="text-gray-700 mb-4">
                   {artwork.description}
                 </p>
               )}
             </div>
 
             {/* Stats */}
-            <div className="bg-gray-800 border border-gray-600 rounded-lg p-4">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-white">{artwork.views}</div>
-                  <div className="text-sm text-gray-400">조회수</div>
+                  <div className="text-sm text-gray-600">조회수</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{artwork.likes}</div>
-                  <div className="text-sm text-gray-400">좋아요</div>
+                  <div className="text-sm text-gray-600">좋아요</div>
                 </div>
               </div>
             </div>
@@ -230,13 +230,13 @@ export default function ArtworkDetailPage() {
             </div>
 
             {/* Metadata */}
-            <div className="bg-gray-800 border border-gray-600 rounded-lg p-4 space-y-2 text-sm">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">크기:</span>
+                <span className="text-gray-600">크기:</span>
                 <span className="text-white">{artwork.width} × {artwork.height}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">생성일:</span>
+                <span className="text-gray-600">생성일:</span>
                 <span className="text-white">{formatDate(artwork.created_at)}</span>
               </div>
             </div>
@@ -252,7 +252,7 @@ export default function ArtworkDetailPage() {
                 <Link 
                   key={relatedArtwork.id}
                   href={`/gallery/${relatedArtwork.id}`}
-                  className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden hover:border-gray-500 transition-colors"
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors"
                 >
                   <div className="aspect-square">
                     <img
@@ -265,7 +265,7 @@ export default function ArtworkDetailPage() {
                     <h3 className="text-white text-sm font-medium truncate">
                       {relatedArtwork.title}
                     </h3>
-                    <p className="text-gray-400 text-xs truncate">
+                    <p className="text-gray-600 text-xs truncate">
                       {relatedArtwork.author_name}
                     </p>
                   </div>

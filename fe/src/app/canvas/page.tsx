@@ -33,7 +33,7 @@ export default function CanvasPage() {
     // 기본 설정
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    ctx.fillStyle = '#1a1a1a'
+    ctx.fillStyle = '#ffffff'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // WebSocket 연결
@@ -217,7 +217,7 @@ export default function CanvasPage() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    ctx.fillStyle = '#1a1a1a'
+    ctx.fillStyle = '#ffffff'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
   }
 
@@ -291,7 +291,7 @@ export default function CanvasPage() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-gray-900">
               {editId ? '작품 편집' : '실시간 그림판'}
             </h1>
             {editId && loadedArtwork && (
@@ -301,26 +301,26 @@ export default function CanvasPage() {
             )}
           </div>
           <div className="flex items-center gap-4">
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               {editId ? '기존 작품을 편집하고 있습니다' : '그림을 그리고 저장할 수 있습니다'}
             </p>
           </div>
         </div>
 
         {/* Tools Panel */}
-        <div className="mb-6 p-4 bg-gray-900 border border-border rounded-lg">
+        <div className="mb-6 p-4 bg-white border border-border rounded-lg">
           <div className="flex flex-wrap items-center gap-6">
             
             {/* Tool Selection */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-300">도구:</label>
+              <label className="text-sm text-gray-700">도구:</label>
               <div className="flex gap-1">
                 <button
                   onClick={() => setCurrentTool('pen')}
                   className={`px-3 py-1 rounded text-sm transition-colors ${
                     currentTool === 'pen' 
                       ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   펜
@@ -330,7 +330,7 @@ export default function CanvasPage() {
                   className={`px-3 py-1 rounded text-sm transition-colors ${
                     currentTool === 'eraser' 
                       ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   지우개
@@ -340,7 +340,7 @@ export default function CanvasPage() {
 
             {/* Brush Size */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-300">크기:</label>
+              <label className="text-sm text-gray-700">크기:</label>
               <input
                 type="range"
                 min="1"
@@ -349,19 +349,19 @@ export default function CanvasPage() {
                 onChange={(e) => setBrushSize(Number(e.target.value))}
                 className="w-20"
               />
-              <span className="text-sm text-gray-400 w-6">{brushSize}</span>
+              <span className="text-sm text-gray-600 w-6">{brushSize}</span>
             </div>
 
             {/* Color Picker */}
             <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-300">색상:</label>
+              <label className="text-sm text-gray-700">색상:</label>
               <div className="flex gap-1">
                 {colors.map((colorOption) => (
                   <button
                     key={colorOption}
                     onClick={() => setColor(colorOption)}
                     className={`w-6 h-6 rounded border-2 ${
-                      color === colorOption ? 'border-white' : 'border-gray-600'
+                      color === colorOption ? 'border-blue-500' : 'border-gray-300'
                     }`}
                     style={{ backgroundColor: colorOption }}
                   />
@@ -393,7 +393,7 @@ export default function CanvasPage() {
             ref={canvasRef}
             width={800}
             height={600}
-            className="w-full cursor-crosshair bg-gray-900"
+            className="w-full cursor-crosshair bg-white"
             style={{ maxHeight: '70vh' }}
             onMouseDown={startDrawing}
             onMouseMove={draw}
@@ -403,13 +403,13 @@ export default function CanvasPage() {
         </div>
 
         {/* Info */}
-        <div className="mt-6 p-4 bg-gray-900/50 border border-border rounded-lg">
-          <h3 className="text-white font-medium mb-2">사용법</h3>
-          <ul className="text-gray-400 text-sm space-y-1">
+        <div className="mt-6 p-4 bg-white/50 border border-border rounded-lg">
+          <h3 className="text-gray-900 font-medium mb-2">사용법</h3>
+          <ul className="text-gray-600 text-sm space-y-1">
             <li>• 마우스를 드래그하여 그림을 그립니다</li>
             <li>• 펜/지우개 도구를 선택할 수 있습니다</li>
             <li>• 브러시 크기와 색상을 조절할 수 있습니다</li>
-            <li>• <span className="text-green-400">'저장' 버튼</span>으로 작품을 저장할 수 있습니다</li>
+            <li>• <span className="text-green-600">'저장' 버튼</span>으로 작품을 저장할 수 있습니다</li>
             <li>• '전체 지우기' 버튼으로 캔버스를 초기화합니다</li>
             <li>• 저장된 작품은 갤러리에서 확인하고 편집할 수 있습니다</li>
           </ul>

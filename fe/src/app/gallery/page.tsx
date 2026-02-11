@@ -81,7 +81,7 @@ export default function GalleryPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-white">작품 갤러리</h1>
+            <h1 className="text-3xl font-bold text-gray-900">작품 갤러리</h1>
             <Link 
               href="/canvas"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
@@ -99,7 +99,7 @@ export default function GalleryPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="작품명이나 작가명으로 검색..."
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="submit"
@@ -113,7 +113,7 @@ export default function GalleryPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-white border border-gray-200 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="latest">최신순</option>
               <option value="popular">인기순</option>
@@ -125,14 +125,14 @@ export default function GalleryPage() {
         {/* Loading */}
         {loading && (
           <div className="flex justify-center items-center py-12">
-            <div className="text-gray-400">작품을 불러오는 중...</div>
+            <div className="text-gray-600">작품을 불러오는 중...</div>
           </div>
         )}
 
         {/* Empty State */}
         {!loading && artworks.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
+            <div className="text-gray-600 mb-4">
               {searchTerm ? '검색 결과가 없습니다.' : '아직 등록된 작품이 없습니다.'}
             </div>
             <Link 
@@ -149,7 +149,7 @@ export default function GalleryPage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {artworks.map((artwork) => (
-                <div key={artwork.id} className="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden hover:border-gray-500 transition-colors">
+                <div key={artwork.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-blue-300 transition-colors shadow-lg">
                   <Link href={`/gallery/${artwork.id}`}>
                     <div className="aspect-video relative">
                       <img
@@ -159,10 +159,10 @@ export default function GalleryPage() {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-white font-medium mb-1 truncate">
+                      <h3 className="text-gray-900 font-medium mb-1 truncate">
                         {artwork.title}
                       </h3>
-                      <p className="text-gray-400 text-sm mb-2">
+                      <p className="text-gray-600 text-sm mb-2">
                         by {artwork.author_name}
                       </p>
                       <div className="flex items-center justify-between text-xs text-gray-500">
@@ -184,19 +184,19 @@ export default function GalleryPage() {
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={pagination.page === 1}
-                  className="px-3 py-1 bg-gray-800 text-gray-300 rounded border border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                  className="px-3 py-1 bg-white text-gray-700 rounded border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
                   이전
                 </button>
                 
-                <span className="px-4 py-1 text-gray-300">
+                <span className="px-4 py-1 text-gray-700">
                   {pagination.page} / {pagination.totalPages}
                 </span>
                 
                 <button
                   onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page === pagination.totalPages}
-                  className="px-3 py-1 bg-gray-800 text-gray-300 rounded border border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700"
+                  className="px-3 py-1 bg-white text-gray-700 rounded border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
                   다음
                 </button>
@@ -204,7 +204,7 @@ export default function GalleryPage() {
             )}
 
             {/* Stats */}
-            <div className="text-center text-gray-500 text-sm mt-6">
+            <div className="text-center text-gray-600 text-sm mt-6">
               총 {pagination.total}개의 작품
             </div>
           </>
