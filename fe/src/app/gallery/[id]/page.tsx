@@ -173,14 +173,14 @@ export default function ArtworkDetailPage() {
           {/* Artwork Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-5xl font-bold text-gray-900 mb-2">
                 {artwork.title}
               </h1>
-              <p className="text-gray-600 mb-4">
+              <p className="text-xl text-gray-600 mb-4">
                 by {artwork.author_name}
               </p>
               {artwork.description && (
-                <p className="text-gray-700 mb-4">
+                <p className="text-xl text-gray-700 mb-4">
                   {artwork.description}
                 </p>
               )}
@@ -191,11 +191,11 @@ export default function ArtworkDetailPage() {
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-white">{artwork.views}</div>
-                  <div className="text-sm text-gray-600">조회수</div>
+                  <div className="text-base text-gray-600">조회수</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{artwork.likes}</div>
-                  <div className="text-sm text-gray-600">좋아요</div>
+                  <div className="text-base text-gray-600">좋아요</div>
                 </div>
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function ArtworkDetailPage() {
                     : 'bg-gray-600 hover:bg-gray-700'
                 } text-white disabled:opacity-50`}
               >
-                {isLiking ? '처리 중...' : (liked ? '♥ 좋아요 취소' : '♡ 좋아요')}
+                {isLiking ? '처리 중...' : (liked ? '좋아요 취소' : '좋아요')}
               </button>
               
               <Link
@@ -230,7 +230,7 @@ export default function ArtworkDetailPage() {
             </div>
 
             {/* Metadata */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2 text-sm">
+            <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2 text-base">
               <div className="flex justify-between">
                 <span className="text-gray-600">크기:</span>
                 <span className="text-white">{artwork.width} × {artwork.height}</span>
@@ -246,7 +246,7 @@ export default function ArtworkDetailPage() {
         {/* Related Artworks */}
         {artwork.related && artwork.related.length > 0 && (
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-white mb-6">관련 작품</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">관련 작품</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {artwork.related.map((relatedArtwork) => (
                 <Link 
@@ -262,10 +262,10 @@ export default function ArtworkDetailPage() {
                     />
                   </div>
                   <div className="p-2">
-                    <h3 className="text-white text-sm font-medium truncate">
+                    <h3 className="text-white text-base font-medium truncate">
                       {relatedArtwork.title}
                     </h3>
-                    <p className="text-gray-600 text-xs truncate">
+                    <p className="text-gray-600 text-sm truncate">
                       {relatedArtwork.author_name}
                     </p>
                   </div>

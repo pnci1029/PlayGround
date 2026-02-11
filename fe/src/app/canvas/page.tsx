@@ -291,7 +291,7 @@ export default function CanvasPage() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-5xl font-bold text-gray-900">
               {editId ? '작품 편집' : '실시간 그림판'}
             </h1>
             {editId && loadedArtwork && (

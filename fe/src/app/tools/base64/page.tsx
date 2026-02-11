@@ -53,8 +53,8 @@ export default function Base64Page() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-4">Base64 인코더/디코더</h1>
-          <p className="text-text-secondary text-lg">텍스트를 Base64로 안전하게 인코딩하거나 디코딩하세요</p>
+          <h1 className="text-5xl font-bold text-text-primary mb-4">Base64 인코더/디코더</h1>
+          <p className="text-text-secondary text-xl">텍스트를 Base64로 안전하게 인코딩하거나 디코딩하세요</p>
         </div>
 
         {/* Main Content */}
@@ -63,7 +63,7 @@ export default function Base64Page() {
           {/* Input Section */}
           <div className="space-y-6">
             <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+              <h2 className="text-2xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
               
               <textarea
                 value={input}
@@ -84,14 +84,14 @@ export default function Base64Page() {
                 disabled={!input.trim()}
                 className="btn btn-primary flex-1"
               >
-                Base64 인코딩 🔐
+                Base64 인코딩
               </button>
               <button
                 onClick={handleDecode}
                 disabled={!input.trim()}
                 className="btn btn-secondary flex-1"
               >
-                Base64 디코딩 📖
+                Base64 디코딩
               </button>
             </div>
             
@@ -106,20 +106,20 @@ export default function Base64Page() {
           {/* Output Section */}
           <div className="space-y-6">
             <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">결과</h2>
+              <h2 className="text-2xl font-semibold text-text-primary mb-4">결과</h2>
               
               <div className="space-y-4">
                 {/* Encoded Output */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-text-secondary text-sm font-medium">Base64 인코딩 결과</label>
+                    <label className="text-text-secondary text-base font-medium">Base64 인코딩 결과</label>
                     {encoded && (
                       <button
                         onClick={() => copyToClipboard(encoded)}
                         className="text-primary hover:text-accent-success text-sm transition-colors"
                         title="클립보드에 복사"
                       >
-                        복사 📋
+                        복사
                       </button>
                     )}
                   </div>
@@ -134,14 +134,14 @@ export default function Base64Page() {
                 {/* Decoded Output */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="text-text-secondary text-sm font-medium">Base64 디코딩 결과</label>
+                    <label className="text-text-secondary text-base font-medium">Base64 디코딩 결과</label>
                     {decoded && (
                       <button
                         onClick={() => copyToClipboard(decoded)}
                         className="text-primary hover:text-accent-success text-sm transition-colors"
                         title="클립보드에 복사"
                       >
-                        복사 📋
+                        복사
                       </button>
                     )}
                   </div>
@@ -161,13 +161,13 @@ export default function Base64Page() {
         <div className="mt-12">
           <div className="card bg-surface/50 hover:bg-surface/70 transition-colors duration-300">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary">Base64 인코딩이란?</h3>
+              <h3 className="text-2xl font-semibold text-text-primary">Base64 인코딩이란?</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-base">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🔐</span>
+                  <span className="text-xl font-bold text-blue-600">B64</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">안전한 전송</h4>
                 <p className="text-text-muted">바이너리 데이터를 안전한 ASCII 문자로 변환</p>
@@ -175,7 +175,7 @@ export default function Base64Page() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">📧</span>
+                  <span className="text-xl font-bold text-green-600">MSG</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">이메일 & 웹</h4>
                 <p className="text-text-muted">이메일, URL, HTML에서 데이터 전송 시 활용</p>
@@ -183,7 +183,7 @@ export default function Base64Page() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🌍</span>
+                  <span className="text-xl font-bold text-purple-600">UTF</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">유니코드 지원</h4>
                 <p className="text-text-muted">한글과 특수문자도 안전하게 처리</p>

@@ -45,8 +45,8 @@ export default function JsonFormatterPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('tools.json.title')}</h1>
-          <p className="text-gray-600">{t('tools.json.subtitle')}</p>
+          <h1 className="text-5xl font-bold text-gray-900 mb-2">{t('tools.json.title')}</h1>
+          <p className="text-xl text-gray-600">{t('tools.json.subtitle')}</p>
         </div>
 
         {/* Controls */}
@@ -77,7 +77,7 @@ export default function JsonFormatterPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Input */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-base font-medium text-gray-700">
               입력 (JSON)
             </label>
             <textarea
@@ -90,7 +90,7 @@ export default function JsonFormatterPage() {
 
           {/* Output */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-base font-medium text-gray-700">
               출력 (포맷된 JSON)
             </label>
             <textarea
@@ -104,8 +104,8 @@ export default function JsonFormatterPage() {
 
         {/* Info */}
         <div className="mt-8 p-4 bg-white/50 border border-border rounded-lg">
-          <h3 className="text-gray-900 font-medium mb-2">사용법</h3>
-          <ul className="text-gray-600 text-sm space-y-1">
+          <h3 className="text-lg text-gray-900 font-semibold mb-2">사용법</h3>
+          <ul className="text-gray-600 text-base space-y-1">
             <li>• 왼쪽에 JSON 데이터를 입력하세요</li>
             <li>• '포맷팅' 버튼을 클릭하면 오른쪽에 정리된 JSON이 표시됩니다</li>
             <li>• 잘못된 JSON 형식은 에러 메시지가 표시됩니다</li>
