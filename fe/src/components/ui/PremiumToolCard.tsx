@@ -98,7 +98,7 @@ export default function PremiumToolCard({
           
           {/* 제목 */}
           <h3 className={`
-            text-lg font-semibold leading-tight
+            text-xl font-semibold leading-tight
             transition-colors duration-300
             ${isDisabled 
               ? 'text-gray-500' 
@@ -111,7 +111,7 @@ export default function PremiumToolCard({
           {/* 설명 (있는 경우) */}
           {description && (
             <p className={`
-              text-sm leading-relaxed
+              text-base leading-relaxed
               ${isDisabled ? 'text-gray-400' : 'text-gray-500'}
             `}>
               {description}

@@ -124,14 +124,14 @@ export default function HomePage() {
       }
     ],
 
-    'AI 도구': [
+    '커뮤니케이션': [
       {
-        title: 'AI Assistant',
+        title: '실시간 채팅',
         href: '/chat',
-        category: 'AI 도구',
+        category: '커뮤니케이션',
         icon: renderPremiumIcon('brain'),
         status: 'active' as const,
-        description: '인공지능과 대화하며 도움을 받아보세요'
+        description: '실시간으로 다른 사용자들과 채팅할 수 있습니다'
       }
     ]
   }
@@ -143,10 +143,10 @@ export default function HomePage() {
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20 lg:py-24">
           <div className="text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-6xl lg:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
               PlayGround
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               개발부터 재미까지, 다양한 웹 도구를 한 곳에서
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
               
               {/* 카테고리 헤더 - FreeTools.org 스타일 */}
               <div className="space-y-3">
-                <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
                   {categoryName}
                 </h2>
                 <div className="h-0.5 w-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full"></div>
@@ -189,10 +189,10 @@ export default function HomePage() {
         {/* 하단 정보 섹션 */}
         <div className="mt-32 pt-16 border-t border-gray-200">
           <div className="text-center space-y-4">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-base">
               개인 프로젝트 · 지속적인 개선 중
             </p>
-            <div className="flex justify-center space-x-2 text-xs text-gray-600">
+            <div className="flex justify-center space-x-2 text-sm text-gray-600">
               <span>Made with</span>
               <span className="text-red-500">♥</span>
               <span>by Developer</span>

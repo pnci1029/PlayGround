@@ -55,7 +55,7 @@ export default function ProjectsPage() {
           id: 2,
           name: 'menu',
           display_name: '맛집 추천',
-          description: 'AI 기반 맛집 추천 서비스',
+          description: '맛집 추천 서비스',
           subdomain: 'menu',
           git_repo: 'https://github.com/user/menu-app',
           branch: 'develop',
@@ -152,7 +152,7 @@ export default function ProjectsPage() {
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold">프로젝트 관리</h1>
+            <h1 className="text-2xl font-bold">프로젝트 관리</h1>
             <button
               onClick={() => setShowCreateModal(true)}
               className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-sm transition-colors"
