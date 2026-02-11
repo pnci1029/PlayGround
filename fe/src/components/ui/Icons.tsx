@@ -1,12 +1,21 @@
+// 고품질 FreeTools.org 스타일 아이콘
 const icons = {
+  // JSON 포맷터 - 코드 블록과 중괄호
   code: (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+    <svg fill="none" stroke="currentColor" viewBox="0 0 32 32" className="w-full h-full">
+      <rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+      <path d="M10 12l-2 2 2 2m6-4l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="20" cy="16" r="1" fill="currentColor"/>
+      <circle cx="22" cy="16" r="1" fill="currentColor"/>
     </svg>
   ),
+  
+  // 변수 생성기 - 연필과 변수 기호
   edit: (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    <svg fill="none" stroke="currentColor" viewBox="0 0 32 32" className="w-full h-full">
+      <path d="M8 20l12-12m0 0l3 3m-3-3v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M16 4l12 12-8 8H8v-8l8-12z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6 26h20M10 22v4m8-4v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   ),
   palette: (
@@ -67,6 +76,39 @@ const icons = {
   search: (
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  ),
+  dice: (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" strokeWidth={2}/>
+      <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+      <circle cx="16" cy="8" r="1.5" fill="currentColor"/>
+      <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      <circle cx="8" cy="16" r="1.5" fill="currentColor"/>
+      <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
+    </svg>
+  ),
+  food: (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+    </svg>
+  ),
+  ladder: (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v20m8-20v20M8 6h8m-8 4h8m-8 4h8m-8 4h8" />
+    </svg>
+  ),
+  wheel: (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+      <circle cx="12" cy="12" r="10" strokeWidth={2}/>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v20m-10-10h20" />
+      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+    </svg>
+  ),
+  coin: (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-full h-full">
+      <circle cx="12" cy="12" r="10" strokeWidth={2}/>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01" />
     </svg>
   )
 }

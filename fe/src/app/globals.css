@@ -13,48 +13,48 @@ html, body {
 }
 
 :root {
-  /* Main brand colors */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #3b82f6;
+  /* FreeTools.org 기반 색상 시스템 */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #60a5fa;
   
-  /* Background system */
-  --background: #0f0f23;
-  --background-secondary: #1a1a2e;
-  --surface: #16213e;
-  --surface-elevated: #1f2937;
-  --surface-hover: rgba(37, 99, 235, 0.08);
+  /* 밝은 배경 시스템 */
+  --background: #ffffff;
+  --background-secondary: #f9fafb;
+  --surface: #ffffff;
+  --surface-elevated: #f9fafb;
+  --surface-hover: rgba(59, 130, 246, 0.05);
   
-  /* Text hierarchy */
-  --foreground: #f8fafc;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* 텍스트 계층 */
+  --foreground: #111827;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
   
-  /* Status colors */
+  /* 상태 색상 */
   --accent-success: #10b981;
   --accent-warning: #f59e0b;
   --accent-error: #ef4444;
   
-  /* Border system */
-  --border: #334155;
-  --border-bright: #475569;
+  /* 테두리 시스템 */
+  --border: #e5e7eb;
+  --border-bright: #d1d5db;
   
-  /* Essential gradients */
-  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  --gradient-bg: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f23 100%);
+  /* 그라데이션 */
+  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --gradient-bg: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
   
-  /* Shadow system */
-  --shadow-sm: 0 2px 8px rgba(37, 99, 235, 0.15);
-  --shadow-md: 0 4px 16px rgba(37, 99, 235, 0.2);
-  --shadow-lg: 0 8px 32px rgba(37, 99, 235, 0.25);
+  /* 그림자 시스템 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   
-  /* Subtle glow effect */
-  --glow-primary: 0 0 24px rgba(37, 99, 235, 0.3);
+  /* 호버 효과 */
+  --glow-primary: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Utility Classes */
-.font-sans { font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; }
+.font-sans { font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, sans-serif; }
 .font-bold { font-weight: bold; }
 .font-semibold { font-weight: 600; }
 .font-medium { font-weight: 500; }
@@ -90,7 +90,7 @@ html, body {
 .text-emerald-400 { color: #34d399; }
 
 /* Background Colors */
-.bg-black { background-color: black; }
+.bg-black { background-color: white; }
 .bg-white { background-color: white; }
 .bg-surface-elevated { background-color: var(--surface-elevated); }
 .bg-surface-hover { background-color: var(--surface-hover); }
@@ -100,11 +100,11 @@ html, body {
 .bg-red-400 { background-color: #f87171; }
 
 /* Background colors with opacity */
-.bg-white\/5 { background-color: rgba(255, 255, 255, 0.05); }
-.bg-white\/10 { background-color: rgba(255, 255, 255, 0.1); }
-.bg-white\/20 { background-color: rgba(255, 255, 255, 0.2); }
-.bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
-.bg-black\/80 { background-color: rgba(0, 0, 0, 0.8); }
+.bg-white\/5 { background-color: rgba(249, 250, 251, 0.5); }
+.bg-white\/10 { background-color: rgba(249, 250, 251, 0.7); }
+.bg-white\/20 { background-color: rgba(249, 250, 251, 0.9); }
+.bg-gray\/40 { background-color: rgba(229, 231, 235, 0.4); }
+.bg-gray\/80 { background-color: rgba(209, 213, 219, 0.8); }
 
 /* Spacing */
 .p-1 { padding: 0.25rem; }
@@ -470,11 +470,116 @@ html, body {
 }
 
 body {
-  background: var(--gradient-bg);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 프리미엄 스크롤바 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 선택 색상 최적화 */
+::selection {
+  background: rgba(59, 130, 246, 0.2);
+  color: #1e40af;
+}
+
+/* 포커스 링 최적화 */
+*:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+}
+
+/* 부드러운 페이드인 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* 기본 리셋 개선 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 이미지 최적화 */
+img {
+  max-width: 100%;
+  height: auto;
+  border-style: none;
+}
+
+/* 버튼 최적화 */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* 링크 최적화 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 입력 필드 최적화 */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* 프리미엄 그림자 유틸리티 */
+.shadow-premium {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.shadow-premium-lg {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 그라데이션 유틸리티 */
+.gradient-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Component styles */
@@ -621,7 +726,7 @@ body {
 
 /* 입력 필드 스타일 */
 .input {
-  background: rgba(26, 26, 36, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem 1.5rem;
@@ -646,7 +751,7 @@ body {
 
 .search-input {
   width: 100%;
-  background: rgba(26, 26, 36, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border: 2px solid var(--border);
   border-radius: 50px;
   padding: 1.4rem 3.5rem 1.4rem 2rem;
