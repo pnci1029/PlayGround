@@ -54,8 +54,8 @@ export default function UrlEncoderPage() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-4">URL 인코더/디코더</h1>
-          <p className="text-text-secondary text-lg">URL을 안전하게 인코딩하거나 디코딩하여 웹에서 사용하세요</p>
+          <h1 className="text-5xl font-bold text-text-primary mb-4">URL 인코더/디코더</h1>
+          <p className="text-text-secondary text-xl">URL을 안전하게 인코딩하거나 디코딩하여 웹에서 사용하세요</p>
         </div>
 
         {/* Main Content */}
@@ -87,14 +87,14 @@ export default function UrlEncoderPage() {
                 disabled={!input.trim()}
                 className="btn btn-primary flex-1"
               >
-                URL 인코딩 🔗
+                URL 인코딩
               </button>
               <button
                 onClick={handleDecode}
                 disabled={!input.trim()}
                 className="btn btn-secondary flex-1"
               >
-                URL 디코딩 🔓
+                URL 디코딩
               </button>
             </div>
             
@@ -122,7 +122,7 @@ export default function UrlEncoderPage() {
                         className="text-primary hover:text-accent-success text-sm transition-colors"
                         title="클립보드에 복사"
                       >
-                        복사 📋
+                        복사
                       </button>
                     )}
                   </div>
@@ -144,7 +144,7 @@ export default function UrlEncoderPage() {
                         className="text-primary hover:text-accent-success text-sm transition-colors"
                         title="클립보드에 복사"
                       >
-                        복사 📋
+                        복사
                       </button>
                     )}
                   </div>
@@ -170,7 +170,7 @@ export default function UrlEncoderPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🌐</span>
+                  <span className="text-xl font-bold text-blue-600">WEB</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">웹 호환성</h4>
                 <p className="text-text-muted">브라우저와 서버 간 안전한 데이터 전송</p>
@@ -178,7 +178,7 @@ export default function UrlEncoderPage() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🔤</span>
+                  <span className="text-xl font-bold text-green-600">ABC</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">특수문자 처리</h4>
                 <p className="text-text-muted">한글, 공백, 특수기호를 URL에 포함</p>
@@ -186,7 +186,7 @@ export default function UrlEncoderPage() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🔒</span>
+                  <span className="text-xl font-bold text-purple-600">RFC</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">표준 준수</h4>
                 <p className="text-text-muted">RFC 3986 URL 표준 규격 준수</p>
@@ -195,7 +195,7 @@ export default function UrlEncoderPage() {
             
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
               <div className="bg-surface-elevated rounded-lg p-4 border border-border hover:border-primary transition-all duration-300 hover:scale-[1.01]">
-                <h4 className="font-medium text-text-primary mb-2">🔗 인코딩 예시</h4>
+                <h4 className="font-medium text-text-primary mb-2">인코딩 예시</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-text-muted">공백</span>
@@ -217,7 +217,7 @@ export default function UrlEncoderPage() {
               </div>
               
               <div className="bg-surface-elevated rounded-lg p-4 border border-border hover:border-primary transition-all duration-300 hover:scale-[1.01]">
-                <h4 className="font-medium text-text-primary mb-2">💡 활용 사례</h4>
+                <h4 className="font-medium text-text-primary mb-2">활용 사례</h4>
                 <ul className="text-text-muted space-y-1">
                   <li>• API 요청 URL 생성</li>
                   <li>• 검색 쿼리 매개변수</li>

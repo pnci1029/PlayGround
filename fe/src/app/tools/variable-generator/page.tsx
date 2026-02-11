@@ -57,8 +57,8 @@ export default function VariableGeneratorPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">변수명 생성기</h1>
-          <p className="text-gray-600">텍스트를 다양한 네이밍 컨벤션으로 변환합니다</p>
+          <h1 className="text-5xl font-bold text-gray-900 mb-2">변수명 생성기</h1>
+          <p className="text-xl text-gray-600">텍스트를 다양한 네이밍 컨벤션으로 변환합니다</p>
         </div>
 
         {/* Controls */}

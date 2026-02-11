@@ -63,21 +63,21 @@ export default function HashPage() {
       key: 'sha1' as keyof typeof hashes, 
       name: 'SHA-1', 
       description: '160비트 해시 (40자리 16진수)',
-      icon: '🔓',
+      icon: 'SHA1',
       warning: '보안상 취약하여 새로운 용도로는 권장하지 않음'
     },
     { 
       key: 'sha256' as keyof typeof hashes, 
       name: 'SHA-256', 
       description: '256비트 해시 (64자리 16진수)',
-      icon: '🔒',
+      icon: 'SHA256',
       warning: ''
     },
     { 
       key: 'sha512' as keyof typeof hashes, 
       name: 'SHA-512', 
       description: '512비트 해시 (128자리 16진수)',
-      icon: '🔐',
+      icon: 'SHA512',
       warning: ''
     },
   ]
@@ -88,8 +88,8 @@ export default function HashPage() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-4">해시 생성기</h1>
-          <p className="text-text-secondary text-lg">텍스트의 무결성을 검증하는 다양한 해시값을 생성하세요</p>
+          <h1 className="text-5xl font-bold text-text-primary mb-4">해시 생성기</h1>
+          <p className="text-text-secondary text-xl">텍스트의 무결성을 검증하는 다양한 해시값을 생성하세요</p>
         </div>
 
         {/* Main Content */}
@@ -98,7 +98,7 @@ export default function HashPage() {
           {/* Input Section */}
           <div className="space-y-6">
             <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+              <h2 className="text-2xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
               
               <textarea
                 value={input}
@@ -119,7 +119,7 @@ export default function HashPage() {
                 disabled={!input.trim()}
                 className="btn btn-primary flex-1"
               >
-                해시 생성 🔐
+                해시 생성
               </button>
               <button
                 onClick={clearAll}
@@ -133,7 +133,7 @@ export default function HashPage() {
           {/* Output Section */}
           <div className="space-y-6">
             <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">해시 결과</h2>
+              <h2 className="text-2xl font-semibold text-text-primary mb-4">해시 결과</h2>
               
               <div className="space-y-4">
                 {hashTypes.map(({ key, name, description, icon, warning }) => (
@@ -142,7 +142,7 @@ export default function HashPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-lg">{icon}</span>
                         <div>
-                          <label className="text-text-secondary text-sm font-medium">{name}</label>
+                          <label className="text-text-secondary text-base font-medium">{name}</label>
                           <p className="text-text-muted text-xs">{description}</p>
                           {warning && <p className="text-accent-warning text-xs mt-1">{warning}</p>}
                         </div>
@@ -153,7 +153,7 @@ export default function HashPage() {
                           className="text-primary hover:text-accent-success text-sm transition-colors"
                           title="클립보드에 복사"
                         >
-                          복사 📋
+                          복사
                         </button>
                       )}
                     </div>
@@ -174,10 +174,10 @@ export default function HashPage() {
         <div className="mt-12">
           <div className="card bg-surface/50 hover:bg-surface/70 transition-colors duration-300">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary">해시 함수의 활용</h3>
+              <h3 className="text-2xl font-semibold text-text-primary">해시 함수의 활용</h3>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-base">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
                   <span className="text-xl">🛡️</span>
@@ -196,7 +196,7 @@ export default function HashPage() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">📊</span>
+                  <span className="text-xl font-semibold">Stats</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">디지털 서명</h4>
                 <p className="text-text-muted">블록체인과 암호화폐에서 거래 검증</p>

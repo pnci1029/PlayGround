@@ -161,7 +161,7 @@ export default function ChatPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">익명 채팅방</h1>
+          <h1 className="text-5xl font-bold text-gray-900 mb-2">익명 채팅방</h1>
           <div className="flex items-center gap-4">
             <p className="text-gray-600">자유롭게 대화를 나누어보세요</p>
             <div className="flex items-center gap-4">
@@ -197,11 +197,11 @@ export default function ChatPage() {
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-600 mt-8">
                     <p>아직 메시지가 없습니다.</p>
-                    <p className="text-sm mt-2">첫 번째 메시지를 보내보세요! 🎉</p>
+                    <p className="text-sm mt-2">첫 번째 메시지를 보내보세요!</p>
                     {connectionStatus === 'disconnected' && (
                       <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-600/30 rounded-lg">
                         <p className="text-yellow-400 text-xs">
-                          🔥 채팅 서버가 오프라인입니다. 메시지는 로컬에서만 표시됩니다.
+                          채팅 서버가 오프라인입니다. 메시지는 로컬에서만 표시됩니다.
                         </p>
                       </div>
                     )}

@@ -81,7 +81,7 @@ export default function GalleryPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">작품 갤러리</h1>
+            <h1 className="text-5xl font-bold text-gray-900">작품 갤러리</h1>
             <Link 
               href="/canvas"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
@@ -159,17 +159,17 @@ export default function GalleryPage() {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-gray-900 font-medium mb-1 truncate">
+                      <h3 className="text-gray-900 text-lg font-semibold mb-1 truncate">
                         {artwork.title}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-2">
+                      <p className="text-gray-600 text-base mb-2">
                         by {artwork.author_name}
                       </p>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-sm text-gray-500">
                         <span>조회 {artwork.views}회</span>
-                        <span>♥ {artwork.likes}</span>
+                        <span>좋아요 {artwork.likes}</span>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-sm text-gray-500 mt-1">
                         {formatDate(artwork.created_at)}
                       </div>
                     </div>
@@ -204,7 +204,7 @@ export default function GalleryPage() {
             )}
 
             {/* Stats */}
-            <div className="text-center text-gray-600 text-sm mt-6">
+            <div className="text-center text-gray-600 text-base mt-6">
               총 {pagination.total}개의 작품
             </div>
           </>

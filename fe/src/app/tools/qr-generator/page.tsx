@@ -57,8 +57,8 @@ export default function QRGeneratorPage() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-4">QR 코드 생성기</h1>
-          <p className="text-text-secondary text-lg">텍스트나 URL을 QR 코드로 간단히 변환하세요</p>
+          <h1 className="text-5xl font-bold text-text-primary mb-4">QR 코드 생성기</h1>
+          <p className="text-text-secondary text-xl">텍스트나 URL을 QR 코드로 간단히 변환하세요</p>
         </div>
 
         {/* Main Content */}
@@ -67,7 +67,7 @@ export default function QRGeneratorPage() {
           {/* Input Section */}
           <div className="space-y-6">
             <div className="card">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+              <h2 className="text-2xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
               
               <textarea
                 value={input}
@@ -168,7 +168,7 @@ export default function QRGeneratorPage() {
                 ) : (
                   <div className="text-center text-text-muted">
                     <div className="w-20 h-20 border-2 border-dashed border-border rounded-lg mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-2xl">📱</span>
+                      <span className="text-2xl font-bold text-blue-600">QR</span>
                     </div>
                     <p>텍스트를 입력하고 생성 버튼을 클릭하세요</p>
                   </div>
@@ -188,7 +188,7 @@ export default function QRGeneratorPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl">🔗</span>
+                  <span className="text-xl font-bold text-blue-600">URL</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">URL 공유</h4>
                 <p className="text-text-muted">웹사이트 링크를 쉽게 공유하세요</p>
@@ -196,7 +196,7 @@ export default function QRGeneratorPage() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl">📞</span>
+                  <span className="text-xl font-bold text-green-600">TEL</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">연락처</h4>
                 <p className="text-text-muted">전화번호나 이메일을 빠르게 전달</p>
@@ -204,7 +204,7 @@ export default function QRGeneratorPage() {
               
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl">📱</span>
+                  <span className="text-xl font-bold text-purple-600">SMS</span>
                 </div>
                 <h4 className="font-medium text-text-primary mb-2">모바일 최적화</h4>
                 <p className="text-text-muted">스마트폰으로 쉽게 스캔 가능</p>
