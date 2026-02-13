@@ -56,9 +56,8 @@ export default function QRGeneratorPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-text-primary mb-4">QR 코드 생성기</h1>
-          <p className="text-text-secondary text-xl">텍스트나 URL을 QR 코드로 간단히 변환하세요</p>
+        <div className="mb-8">
+          <h1 className="text-5xl font-bold text-gray-900 mb-2">QR 코드 생성기</h1>
         </div>
 
         {/* Main Content */}
@@ -67,24 +66,24 @@ export default function QRGeneratorPage() {
           {/* Input Section */}
           <div className="space-y-6">
             <div className="card">
-              <h2 className="text-2xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+              <h2 className="text-lg font-medium text-gray-700 mb-4">입력</h2>
               
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="QR 코드로 변환할 텍스트나 URL을 입력하세요..."
+                placeholder="텍스트나 URL 입력"
                 className="w-full h-32 bg-surface border border-border text-text-primary p-4 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 maxLength={2048}
               />
               
               <div className="flex justify-between items-center mt-2">
-                <span className="text-text-muted text-sm">{input.length}/2048 문자</span>
+                <span className="text-gray-500 text-sm">{input.length}/2048 문자</span>
               </div>
             </div>
 
             {/* Settings */}
             <div className="card">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">설정</h2>
+              <h2 className="text-lg font-medium text-gray-700 mb-4">설정</h2>
               
               <div className="space-y-4">
                 {/* Size */}
@@ -148,7 +147,7 @@ export default function QRGeneratorPage() {
           {/* QR Code Display */}
           <div className="space-y-6">
             <div className="card">
-              <h2 className="text-xl font-semibold text-text-primary mb-4">미리보기</h2>
+              <h2 className="text-lg font-medium text-gray-700 mb-4">미리보기</h2>
               
               <div className="bg-surface-elevated rounded-lg p-8 flex items-center justify-center min-h-[400px]">
                 {qrDataUrl ? (
@@ -162,7 +161,7 @@ export default function QRGeneratorPage() {
                       onClick={downloadQR}
                       className="btn btn-primary mt-6"
                     >
-                      PNG 다운로드 📥
+                      PNG 다운로드
                     </button>
                   </div>
                 ) : (
@@ -178,40 +177,6 @@ export default function QRGeneratorPage() {
           </div>
         </div>
 
-        {/* Info Section */}
-        <div className="mt-12">
-          <div className="card bg-surface/50">
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary">QR 코드 사용 팁</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl font-bold text-blue-600">URL</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">URL 공유</h4>
-                <p className="text-text-muted">웹사이트 링크를 쉽게 공유하세요</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl font-bold text-green-600">TEL</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">연락처</h4>
-                <p className="text-text-muted">전화번호나 이메일을 빠르게 전달</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-xl font-bold text-purple-600">SMS</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">모바일 최적화</h4>
-                <p className="text-text-muted">스마트폰으로 쉽게 스캔 가능</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>

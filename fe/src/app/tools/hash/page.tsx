@@ -87,9 +87,8 @@ export default function HashPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-text-primary mb-4">해시 생성기</h1>
-          <p className="text-text-secondary text-xl">텍스트의 무결성을 검증하는 다양한 해시값을 생성하세요</p>
+        <div className="mb-8">
+          <h1 className="text-5xl font-bold text-gray-900 mb-2">해시 생성기</h1>
         </div>
 
         {/* Main Content */}
@@ -97,13 +96,13 @@ export default function HashPage() {
           
           {/* Input Section */}
           <div className="space-y-6">
-            <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-2xl font-semibold text-text-primary mb-4">텍스트 입력</h2>
+            <div className="card">
+              <h2 className="text-lg font-medium text-gray-700 mb-4">입력</h2>
               
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="해시를 생성할 텍스트를 입력하세요..."
+                placeholder="텍스트 입력"
                 className="w-full h-32 bg-surface border border-border text-text-primary p-4 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary transition-colors font-mono text-sm"
               />
               
@@ -132,8 +131,8 @@ export default function HashPage() {
 
           {/* Output Section */}
           <div className="space-y-6">
-            <div className="card hover:border-primary transition-all duration-300 hover:scale-[1.02]">
-              <h2 className="text-2xl font-semibold text-text-primary mb-4">해시 결과</h2>
+            <div className="card">
+              <h2 className="text-lg font-medium text-gray-700 mb-4">결과</h2>
               
               <div className="space-y-4">
                 {hashTypes.map(({ key, name, description, icon, warning }) => (
@@ -170,40 +169,6 @@ export default function HashPage() {
           </div>
         </div>
 
-        {/* Info Section */}
-        <div className="mt-12">
-          <div className="card bg-surface/50 hover:bg-surface/70 transition-colors duration-300">
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-semibold text-text-primary">해시 함수의 활용</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-base">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent-success rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🛡️</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">무결성 검증</h4>
-                <p className="text-text-muted">파일이나 데이터가 변조되지 않았는지 확인</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent-success to-accent-warning rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl">🔑</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">패스워드 저장</h4>
-                <p className="text-text-muted">안전한 패스워드 해싱과 검증</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent-warning to-primary rounded-xl flex items-center justify-center mx-auto mb-3 hover:scale-110 transition-transform duration-300">
-                  <span className="text-xl font-semibold">Stats</span>
-                </div>
-                <h4 className="font-medium text-text-primary mb-2">디지털 서명</h4>
-                <p className="text-text-muted">블록체인과 암호화폐에서 거래 검증</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
