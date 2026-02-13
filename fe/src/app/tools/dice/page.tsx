@@ -13,15 +13,45 @@ export default function DicePage() {
     setIsRolling(true)
     setResult(null)
     
-    // 롤링 애니메이션 지속 시간
-    const rollDuration = 2000
+    const finalResult = Math.floor(Math.random() * 6) + 1
     
+    // CSS 애니메이션 완료 후 올바른 면으로 설정
     setTimeout(() => {
-      const diceResult = Math.floor(Math.random() * 6) + 1
-      setResult(diceResult)
-      setHistory(prev => [diceResult, ...prev.slice(0, 9)]) // 최근 10개까지 저장
-      setIsRolling(false)
-    }, rollDuration)
+      setIsRolling(false) // 애니메이션 중단
+      // 약간의 지연 후 올바른 면 표시
+      setTimeout(() => {
+        setResult(finalResult)
+      }, 100)
+    }, 3000) // CSS 애니메이션과 정확히 맞춤
+    
+    // 굴리는 동안 랜덤 숫자 표시 (시각적 효과만)
+    let rollCount = 0
+    const maxRolls = 20
+    
+    const showRolls = () => {
+      if (rollCount >= maxRolls) return
+      
+      // 마지막 1초 전까지만 랜덤 표시
+      if (rollCount < 15) {
+        const faceToShow = Math.floor(Math.random() * 6) + 1
+        setResult(faceToShow)
+      }
+      
+      rollCount++
+      
+      let nextDelay
+      if (rollCount < 8) {
+        nextDelay = 100
+      } else if (rollCount < 15) {
+        nextDelay = 150 + (rollCount - 8) * 20
+      } else {
+        nextDelay = 200 // 마지막엔 표시 중단
+      }
+      
+      setTimeout(showRolls, nextDelay)
+    }
+    
+    showRolls()
   }
 
   const clearHistory = () => {
@@ -43,13 +73,15 @@ export default function DicePage() {
           {/* 3D Dice */}
           <div className="relative" style={{ perspective: '1000px' }}>
             <div 
-              className={`dice-container ${isRolling ? 'rolling' : ''} ${result ? `show-${result}` : ''}`}
+              className={`dice-container ${isRolling ? 'rolling' : ''} ${result && !isRolling ? `show-${result}` : ''}`}
+              onClick={rollDice}
               style={{
                 width: '120px',
                 height: '120px',
                 position: 'relative',
                 transformStyle: 'preserve-3d',
                 transition: isRolling ? 'none' : 'transform 0.6s ease-out',
+                cursor: isRolling ? 'not-allowed' : 'pointer'
               }}
             >
               {/* 주사위 각 면 */}
@@ -96,42 +128,19 @@ export default function DicePage() {
               <p className="text-gray-600 text-base sm:text-lg">결과가 나왔습니다!</p>
             </div>
           )}
+          
+          {/* 멈춤 상태 표시 */}
+          {isRolling && result === null && (
+            <div className="text-center px-4">
+              <div className="text-2xl text-gray-500 animate-pulse">🎲</div>
+              <p className="text-gray-500 text-sm">결과 확인 중...</p>
+            </div>
+          )}
 
-          {/* Roll Button */}
-          <button
-            onClick={rollDice}
-            disabled={isRolling}
-            className={`px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl font-semibold rounded-xl transition-all duration-300 w-full max-w-xs ${
-              isRolling 
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 active:scale-95'
-            } shadow-lg hover:shadow-xl`}
-          >
-            {isRolling ? '주사위 굴리는 중...' : '🎲 주사위 굴리기'}
-          </button>
-
-          {/* History */}
-          {history.length > 0 && (
-            <div className="w-full max-w-md">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-700">최근 기록</h3>
-                <button
-                  onClick={clearHistory}
-                  className="text-sm text-gray-500 hover:text-red-500 transition-colors"
-                >
-                  초기화
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {history.map((num, index) => (
-                  <div
-                    key={index}
-                    className="w-8 h-8 bg-white border border-gray-200 rounded-md flex items-center justify-center text-sm font-medium shadow-sm"
-                  >
-                    {num}
-                  </div>
-                ))}
-              </div>
+          {/* 클릭 힌트 */}
+          {!isRolling && (
+            <div className="text-center">
+              <p className="text-gray-500 text-base">주사위를 클릭해서 굴려보세요!</p>
             </div>
           )}
         </div>
@@ -143,7 +152,7 @@ export default function DicePage() {
           }
 
           .rolling {
-            animation: rollDice 2s ease-out infinite;
+            animation: rollAndMove 3s ease-out;
           }
 
           .dice-face {
@@ -191,12 +200,34 @@ export default function DicePage() {
           .show-5 { transform: rotateY(0deg) rotateX(-90deg); }
           .show-6 { transform: rotateY(0deg) rotateX(90deg); }
 
-          @keyframes rollDice {
-            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-            25% { transform: rotateX(90deg) rotateY(180deg) rotateZ(90deg); }
-            50% { transform: rotateX(180deg) rotateY(360deg) rotateZ(180deg); }
-            75% { transform: rotateX(270deg) rotateY(540deg) rotateZ(270deg); }
-            100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
+          @keyframes rollAndMove {
+            0% { 
+              transform: translateX(0px) translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+            }
+            15% { 
+              transform: translateX(80px) translateY(-20px) rotateX(180deg) rotateY(360deg) rotateZ(180deg) scale(1.1);
+            }
+            30% { 
+              transform: translateX(-60px) translateY(-10px) rotateX(360deg) rotateY(720deg) rotateZ(360deg) scale(0.9);
+            }
+            45% { 
+              transform: translateX(40px) translateY(-15px) rotateX(540deg) rotateY(1080deg) rotateZ(540deg) scale(1.05);
+            }
+            60% { 
+              transform: translateX(-30px) translateY(-5px) rotateX(720deg) rotateY(1440deg) rotateZ(720deg) scale(0.95);
+            }
+            75% { 
+              transform: translateX(15px) translateY(-8px) rotateX(900deg) rotateY(1800deg) rotateZ(900deg) scale(1.02);
+            }
+            85% { 
+              transform: translateX(-8px) translateY(-3px) rotateX(1000deg) rotateY(2000deg) rotateZ(1000deg) scale(0.98);
+            }
+            95% { 
+              transform: translateX(3px) translateY(-1px) rotateX(1080deg) rotateY(2160deg) rotateZ(1080deg) scale(1.01);
+            }
+            100% { 
+              transform: translateX(0px) translateY(0px) rotateX(1080deg) rotateY(2160deg) rotateZ(1080deg) scale(1);
+            }
           }
         `}</style>
       </div>
