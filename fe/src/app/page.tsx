@@ -119,15 +119,15 @@ export default function HomePage() {
         href: '/tools/dice',
         category: '재미 도구',
         icon: renderPremiumIcon('dice'),
-        status: 'coming-soon' as const,
-        description: '랜덤한 숫자로 재미있는 게임을 즐겨보세요'
+        status: 'active' as const,
+        description: '3D 주사위로 랜덤한 숫자를 뽑아보세요'
       },
       {
         title: '사다리타기',
         href: '/tools/ladder',
         category: '재미 도구',
         icon: renderPremiumIcon('ladder'),
-        status: 'coming-soon' as const,
+        status: 'active' as const,
         description: '공정한 선택을 위한 전통적인 사다리타기 게임'
       },
       {
@@ -135,16 +135,16 @@ export default function HomePage() {
         href: '/tools/wheel',
         category: '재미 도구',
         icon: renderPremiumIcon('wheel'),
-        status: 'coming-soon' as const,
-        description: '원형 룰렛으로 랜덤한 선택을 만들어보세요'
+        status: 'active' as const,
+        description: '커스터마이징 가능한 룰렛으로 선택해보세요'
       },
       {
         title: '동전 던지기',
         href: '/tools/coin',
         category: '재미 도구',
         icon: renderPremiumIcon('coin'),
-        status: 'coming-soon' as const,
-        description: '간단한 동전 던지기로 yes/no 결정을 내려보세요'
+        status: 'active' as const,
+        description: '3D 동전으로 간단한 선택을 결정해보세요'
       }
     ],
 
@@ -165,12 +165,12 @@ export default function HomePage() {
       
       {/* 히어로 섹션 */}
       <div className="bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-20 lg:py-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24">
           <div className="text-center">
-            <h1 className="text-6xl lg:text-7xl font-bold text-gray-900 mb-6 tracking-tight font-sans">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 tracking-tight font-sans">
               PlayGround
             </h1>
-            <p className="text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-sans">
+            <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-sans px-4">
               개발부터 재미까지, 다양한 웹 도구를 한 곳에서
             </p>
           </div>
@@ -178,8 +178,8 @@ export default function HomePage() {
       </div>
 
       {/* 메인 컨텐츠 영역 */}
-      <div className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="space-y-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 lg:pb-20">
+        <div className="space-y-6 sm:space-y-8 lg:space-y-10">
           {Object.entries(toolCategories).map(([categoryName, tools]) => {
             const isOpen = openCategories.includes(categoryName)
             const toolCount = tools.length
@@ -190,14 +190,14 @@ export default function HomePage() {
                 {/* 아코디언 헤더 - 클릭 가능한 영역 */}
                 <div 
                   onClick={() => toggleCategory(categoryName)}
-                  className="p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group"
+                  className="p-4 sm:p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <h2 className="text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
                         {categoryName}
                       </h2>
-                      <span className="bg-blue-50 text-blue-600 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">
+                      <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100">
                         {toolCount}개
                       </span>
                     </div>
@@ -226,11 +226,11 @@ export default function HomePage() {
                     ? 'max-h-[2000px] opacity-100' 
                     : 'max-h-0 opacity-0'
                 }`}>
-                  <div className="px-6 pb-6">
-                    <div className="h-px bg-gray-100 mb-6"></div>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
                     
                     {/* 도구 카드 그리드 */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                       {tools.map((tool, index) => (
                         <PremiumToolCard
                           key={`${categoryName}-${index}`}
@@ -239,7 +239,7 @@ export default function HomePage() {
                           category={tool.category}
                           icon={tool.icon}
                           status={tool.status}
-                          isExternal={tool.isExternal}
+                          isExternal={tool.isExternal || false}
                           description={tool.description}
                         />
                       ))}
@@ -252,12 +252,12 @@ export default function HomePage() {
         </div>
 
         {/* 하단 정보 섹션 */}
-        <div className="mt-32 pt-16 border-t border-gray-200">
-          <div className="text-center space-y-4">
-            <p className="text-gray-500 text-base font-sans">
+        <div className="mt-16 sm:mt-24 lg:mt-32 pt-8 sm:pt-12 lg:pt-16 border-t border-gray-200">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <p className="text-gray-500 text-sm sm:text-base font-sans px-4">
               개인 프로젝트 · 지속적인 개선 중
             </p>
-            <div className="flex justify-center space-x-2 text-sm text-gray-600 font-sans">
+            <div className="flex justify-center space-x-2 text-xs sm:text-sm text-gray-600 font-sans">
               <span>Made with</span>
               <span className="text-red-500">♥</span>
               <span>by Developer</span>
