@@ -1,10 +1,34 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import PremiumToolCard from '@/components/ui/PremiumToolCard'
 import { renderPremiumIcon } from '@/components/ui/PremiumIcons'
 
 export default function HomePage() {
+  // 아코디언 상태 관리
+  const [openCategories, setOpenCategories] = useState<string[]>(['개발 도구'])
+  
+  // localStorage에서 상태 복원
+  useEffect(() => {
+    const saved = localStorage.getItem('openCategories')
+    if (saved) {
+      setOpenCategories(JSON.parse(saved))
+    }
+  }, [])
+  
+  // 상태 변경 시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('openCategories', JSON.stringify(openCategories))
+  }, [openCategories])
+  
+  const toggleCategory = (categoryName: string) => {
+    setOpenCategories(prev => 
+      prev.includes(categoryName) 
+        ? prev.filter(name => name !== categoryName)
+        : [...prev, categoryName]
+    )
+  }
+  
   // 프리미엄 도구 데이터 - FreeTools.org 스타일
   const toolCategories = {
     '개발 도구': [
@@ -143,10 +167,10 @@ export default function HomePage() {
       <div className="bg-white">
         <div className="max-w-6xl mx-auto px-6 py-20 lg:py-24">
           <div className="text-center">
-            <h1 className="text-6xl lg:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
+            <h1 className="text-6xl lg:text-7xl font-bold text-gray-900 mb-6 tracking-tight font-sans">
               PlayGround
             </h1>
-            <p className="text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed font-sans">
               개발부터 재미까지, 다양한 웹 도구를 한 곳에서
             </p>
           </div>
@@ -155,44 +179,85 @@ export default function HomePage() {
 
       {/* 메인 컨텐츠 영역 */}
       <div className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="space-y-20">
-          {Object.entries(toolCategories).map(([categoryName, tools]) => (
-            <section key={categoryName} className="space-y-8">
-              
-              {/* 카테고리 헤더 - FreeTools.org 스타일 */}
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-                  {categoryName}
-                </h2>
-                <div className="h-0.5 w-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full"></div>
-              </div>
+        <div className="space-y-10">
+          {Object.entries(toolCategories).map(([categoryName, tools]) => {
+            const isOpen = openCategories.includes(categoryName)
+            const toolCount = tools.length
+            
+            return (
+              <section key={categoryName} className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:border-gray-200 hover:shadow-md">
+                
+                {/* 아코디언 헤더 - 클릭 가능한 영역 */}
+                <div 
+                  onClick={() => toggleCategory(categoryName)}
+                  className="p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <h2 className="text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
+                        {categoryName}
+                      </h2>
+                      <span className="bg-blue-50 text-blue-600 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">
+                        {toolCount}개
+                      </span>
+                    </div>
+                    
+                    {/* 화살표 아이콘 */}
+                    <div className={`transform transition-transform duration-300 ${
+                      isOpen ? 'rotate-90' : 'rotate-0'
+                    }`}>
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        className="text-gray-400 group-hover:text-blue-600 transition-colors duration-200"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
 
-              {/* 도구 카드 그리드 - 정밀한 간격 조정 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {tools.map((tool, index) => (
-                  <PremiumToolCard
-                    key={`${categoryName}-${index}`}
-                    title={tool.title}
-                    href={tool.href}
-                    category={tool.category}
-                    icon={tool.icon}
-                    status={tool.status}
-                    isExternal={tool.isExternal}
-                    description={tool.description}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
+                {/* 아코디언 컨텐츠 - 애니메이션 포함 */}
+                <div className={`transition-all duration-500 ease-out overflow-hidden ${
+                  isOpen 
+                    ? 'max-h-[2000px] opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="px-6 pb-6">
+                    <div className="h-px bg-gray-100 mb-6"></div>
+                    
+                    {/* 도구 카드 그리드 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {tools.map((tool, index) => (
+                        <PremiumToolCard
+                          key={`${categoryName}-${index}`}
+                          title={tool.title}
+                          href={tool.href}
+                          category={tool.category}
+                          icon={tool.icon}
+                          status={tool.status}
+                          isExternal={tool.isExternal}
+                          description={tool.description}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )
+          })}
         </div>
 
         {/* 하단 정보 섹션 */}
         <div className="mt-32 pt-16 border-t border-gray-200">
           <div className="text-center space-y-4">
-            <p className="text-gray-500 text-base">
+            <p className="text-gray-500 text-base font-sans">
               개인 프로젝트 · 지속적인 개선 중
             </p>
-            <div className="flex justify-center space-x-2 text-sm text-gray-600">
+            <div className="flex justify-center space-x-2 text-sm text-gray-600 font-sans">
               <span>Made with</span>
               <span className="text-red-500">♥</span>
               <span>by Developer</span>

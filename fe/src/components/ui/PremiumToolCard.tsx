@@ -39,7 +39,7 @@ export default function PremiumToolCard({
     <div
       onClick={handleClick}
       className={`
-        group relative
+        group relative font-sans
         bg-white rounded-2xl border border-gray-100
         transition-all duration-300 ease-out
         ${isClickable 
