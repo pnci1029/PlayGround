@@ -54,7 +54,7 @@ export default function PremiumToolCard({
     >
       
       {/* 상태 배지 */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
         {status === 'beta' && (
           <div className="bg-orange-50 text-orange-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-orange-100">
             Beta
@@ -75,30 +75,30 @@ export default function PremiumToolCard({
       </div>
 
       {/* 메인 컨테이너 */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         
         {/* 아이콘 영역 */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <div className={`
-            w-16 h-16 rounded-xl flex items-center justify-center
+            w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center
             transition-all duration-300 ease-out
             ${isDisabled 
               ? 'bg-gray-50 text-gray-400' 
               : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100 group-hover:scale-110'
             }
           `}>
-            <div className="w-8 h-8">
+            <div className="w-6 h-6 sm:w-8 sm:h-8">
               {icon}
             </div>
           </div>
         </div>
 
         {/* 텍스트 영역 */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           
           {/* 제목 */}
           <h3 className={`
-            text-xl font-semibold leading-tight
+            text-lg sm:text-xl font-semibold leading-tight
             transition-colors duration-300
             ${isDisabled 
               ? 'text-gray-500' 
@@ -111,7 +111,7 @@ export default function PremiumToolCard({
           {/* 설명 (있는 경우) */}
           {description && (
             <p className={`
-              text-base leading-relaxed
+              text-sm sm:text-base leading-relaxed
               ${isDisabled ? 'text-gray-400' : 'text-gray-500'}
             `}>
               {description}

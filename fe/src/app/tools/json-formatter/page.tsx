@@ -42,25 +42,24 @@ export default function JsonFormatterPage() {
 
   return (
     <div className="min-h-screen" style={{background: 'var(--background)'}}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-5xl font-bold text-gray-900 mb-2">{t('tools.json.title')}</h1>
-          <p className="text-xl text-gray-600">{t('tools.json.subtitle')}</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">{t('tools.json.title')}</h1>
         </div>
 
         {/* Controls */}
-        <div className="mb-6 flex gap-4">
+        <div className="mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
             onClick={formatJson}
             disabled={isLoading || !input.trim()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-gray-900 px-6 py-2 rounded-lg transition-colors"
+            className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
           >
             {isLoading ? '처리중...' : '포맷팅'}
           </button>
           <button
             onClick={clearAll}
-            className="bg-gray-700 hover:bg-gray-600 text-gray-900 px-6 py-2 rounded-lg transition-colors"
+            className="flex-1 sm:flex-none bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
           >
             초기화
           </button>
