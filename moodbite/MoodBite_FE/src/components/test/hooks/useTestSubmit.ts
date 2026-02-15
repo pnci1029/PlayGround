@@ -11,7 +11,11 @@ export function useTestSubmit() {
             if (window.confirm("결과를 확인하시겠습니까?")) {
                 try {
                     const result = await dispatch(submitTestResultAsync(dto));
-                    return result.payload;
+                    if (result.meta.requestStatus === 'fulfilled') {
+                        return result.payload.aiRecommendation;
+                    } else {
+                        throw new Error('API 호출 실패');
+                    }
                 } catch (e) {
                     console.error('Error submitting test result:', e);
                     throw e;
