@@ -1,6 +1,5 @@
 package com.example.moodbite.domain.executed
 
-import com.example.moodbite.domain.executed.enums.Gender
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
@@ -10,32 +9,27 @@ class TestExecuted(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    var joyRate: Int,
-    var nervousRate: Int,
-    var angerRate: Int,
-    var tirednessRate: Int,
+    var tired: Int,
+    var anger: Int,
+    var stress: Int,
+    var appetite: Int,
+    var budget: Int,
 
-    @Enumerated(EnumType.STRING)
-    var gender: Gender,
-
-    var mealTime: String, // lunch, dinner ...
-    var mealType: String, // snack, meal...
-    var lastMeal: String,
+    var dining: String, // ALONE, FRIENDS, FAMILY, DATE, COWORKERS, ETC
+    var mealTime: String?, // MORNING, LUNCH, DINNER, MIDNIGHT_SNACK
 
     @CreatedDate
-    var createdAt: LocalDateTime? = null
+    var createdAt: LocalDateTime? = LocalDateTime.now()
 ) {
-    // 필요한 경우 생성자나 메서드를 추가
     protected constructor() : this(
         id = null,
-        joyRate = 0,
-        nervousRate = 0,
-        angerRate = 0,
-        tirednessRate = 0,
-        gender = Gender.NONE,  // Gender enum에 NONE 값이 있다고 가정
-        mealTime = "",
-        mealType = "",
-        lastMeal = "",
-        createdAt = null
+        tired = 0,
+        anger = 0,
+        stress = 0,
+        appetite = 0,
+        budget = 0,
+        dining = "",
+        mealTime = null,
+        createdAt = LocalDateTime.now()
     )
 }

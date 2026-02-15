@@ -32,6 +32,12 @@ export interface TestResultPostDTO{
   mealTime: MealTime | null;
 }
 
+export interface TestResultResponseDTO{
+  id: number;
+  message: string;
+  aiRecommendation?: string;
+}
+
 export interface Scores {
   tired: number;
   anger: number;
