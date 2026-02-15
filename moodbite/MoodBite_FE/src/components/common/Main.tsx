@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
-import {Heart, MapPin, Menu, User, X} from 'lucide-react';
 import style from "../../style/main.module.scss";
 import {Test} from "../test/Test";
 import {TestExecuted} from "../test/TestExecuted";
 import {TestResultPostDTO} from "../../types/test";
+import {Header} from "../layout/Header";
+import {BottomNavigation} from "../layout/BottomNavigation";
+import {SideMenu} from "../layout/SideMenu";
+import {HomeContent} from "../home/HomeContent";
 
 export function Main() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,6 +28,23 @@ export function Main() {
         setAiRecommendation('');
     };
 
+    // 네비게이션 핸들러들
+    const handleNearbyRestaurants = () => {
+        console.log('주변 맛집 기능');
+        // TODO: 주변 맛집 페이지로 이동
+    };
+
+    const handleFavorites = () => {
+        console.log('찜목록 기능');
+        // TODO: 찜목록 페이지로 이동
+    };
+
+    const handleProfile = () => {
+        console.log('마이페이지 기능');
+        // TODO: 마이페이지로 이동
+    };
+
+    // 조건부 렌더링: 테스트 결과 화면
     if (showResult && testResult) {
         return <TestExecuted
             onBack={handleBackFromResult}
@@ -33,6 +53,7 @@ export function Main() {
         />;
     }
 
+    // 조건부 렌더링: 테스트 화면
     if (showTest) {
         return <Test
             onBack={() => setShowTest(false)}
@@ -40,70 +61,26 @@ export function Main() {
         />;
     }
 
+    // 메인 홈 화면
     return (
         <div className={style.container}>
-            {/* 상단 헤더 */}
-            <header className={style.header}>
-                <div className={style.headerContent}>
-                    <h1 className={style.logo}>오늘의 한끼</h1>
-                    <button
-                        className={style.menuButton}
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
-            </header>
+            <Header 
+                isMenuOpen={isMenuOpen}
+                onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+            />
 
-            {/* 메인 콘텐츠 */}
-            <main className={style.mainContent}>
-                <div className={style.homeContent}>
-                    <h2 className={style.mainTitle}>오늘 뭐먹지?</h2>
-                    <button
-                        className={style.recommendButton}
-                        onClick={() => setShowTest(true)}
-                    >
-                        내 기분에 맞는 음식 추천받기!
-                    </button>
-                </div>
-            </main>
+            <HomeContent onStartTest={() => setShowTest(true)} />
 
-            {/* 하단 네비게이션 */}
-            <nav className={style.bottomNav}>
-                <button className={style.navButton}>
-                    <MapPin size={24} />
-                    <span>주변맛집</span>
-                </button>
-                <button className={style.navButton}>
-                    <Heart size={24} />
-                    <span>찜목록</span>
-                </button>
-                <button className={style.navButton}>
-                    <User size={24} />
-                    <span>마이</span>
-                </button>
-            </nav>
+            <BottomNavigation
+                onNearbyRestaurants={handleNearbyRestaurants}
+                onFavorites={handleFavorites}
+                onProfile={handleProfile}
+            />
 
-            {/* 사이드 메뉴 */}
-            {isMenuOpen && (
-                <div className={style.sideMenu}>
-                    <div className={style.menuHeader}>
-                        <h2>메뉴</h2>
-                        <button
-                            className={style.closeButton}
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            <X size={24} />
-                        </button>
-                    </div>
-                    <ul className={style.menuList}>
-                        <li>공지사항</li>
-                        <li>설정</li>
-                        <li>고객센터</li>
-                        <li>앱 정보</li>
-                    </ul>
-                </div>
-            )}
+            <SideMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+            />
         </div>
     );
 }
