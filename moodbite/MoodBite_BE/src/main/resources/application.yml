@@ -1,27 +1,32 @@
 spring:
   profiles:
     include: secret
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-    #
+  
+  # 개발환경용 H2 설정
   h2:
     console:
       enabled: true
+      
+  # 데이터베이스 설정 (프로필별)
   datasource:
-    url: jdbc:h2:~/testdb
-    driver-class-name: org.h2.Driver
-    username: sar
-    password:
+    url: ${DB_URL:jdbc:h2:~/testdb}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sar}
+    password: ${DB_PASSWORD:}
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.H2Dialect}
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
         show_sql: true
+        default_schema: ${DB_SCHEMA:}
 
   sql:
     init:
@@ -49,3 +54,9 @@ openRouter:
   api:
     url: 'https://openrouter.ai/api/v1/chat/completions'
     key: ${secret.openrouter.api.key}
+
+kakao:
+  maps:
+    api:
+      url: 'https://dapi.kakao.com/v2/local/search/keyword.json'
+      key: ${secret.kakao.api.key}
