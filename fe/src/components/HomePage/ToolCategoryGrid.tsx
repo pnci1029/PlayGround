@@ -9,6 +9,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
 } from '@dnd-kit/core'
 import {
   arrayMove,
@@ -28,12 +30,16 @@ function SortableCategory({
   categoryName, 
   tools, 
   isOpen, 
-  onToggle 
+  onToggle,
+  isDraggedOver,
+  draggedId 
 }: {
   categoryName: string
   tools: any[]
   isOpen: boolean
   onToggle: () => void
+  isDraggedOver: boolean
+  draggedId: string | null
 }) {
   const {
     attributes,
@@ -46,19 +52,55 @@ function SortableCategory({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.6 : 1,
+    // 드래그 중일 때 크기 유지
+    scale: 1,
   }
 
+  // 화살표 클릭으로만 아코디언 토글
+  const handleArrowClick = (e: React.MouseEvent) => {
+    e.stopPropagation() // 이벤트 버블링 방지
+    onToggle()
+  }
+
+  // 제목 영역 클릭 처리 - 마우스 이벤트 기반
+  const [mouseDownTime, setMouseDownTime] = useState(0)
+  const [mouseDownPosition, setMouseDownPosition] = useState({ x: 0, y: 0 })
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setMouseDownTime(Date.now())
+    setMouseDownPosition({ x: e.clientX, y: e.clientY })
+  }
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    const timeDiff = Date.now() - mouseDownTime
+    const distance = Math.sqrt(
+      Math.pow(e.clientX - mouseDownPosition.x, 2) + 
+      Math.pow(e.clientY - mouseDownPosition.y, 2)
+    )
+    
+    // 빠른 클릭이고 움직임이 적으면 아코디언 토글
+    if (timeDiff < 200 && distance < 5) {
+      onToggle()
+    }
+  }
+
+  // 현재 아이템이 드래그되고 있지 않고, 다른 아이템이 이 위치로 드래그될 때만 간격 추가
+  const shouldShowGap = isDraggedOver && draggedId !== categoryName && draggedId !== null
+  
   return (
-    <section 
-      ref={setNodeRef} 
-      style={style}
-      className={`bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:border-gray-200 hover:shadow-md ${
-        isDragging ? 'shadow-2xl z-10' : ''
-      }`}
-    >
-      {/* 아코디언 헤더 - 드래그 핸들 포함 */}
+    <div className={`transition-all duration-300 ${
+      shouldShowGap ? 'mb-12' : ''
+    }`}>
+      <section 
+        ref={setNodeRef} 
+        style={style}
+        className={`bg-white rounded-2xl border overflow-hidden transition-all duration-300 border-gray-100 hover:border-gray-200 hover:shadow-md ${
+          isDragging ? 'shadow-2xl z-50 ring-4 ring-blue-300' : ''
+        }`}
+      >
+      {/* 아코디언 헤더 */}
       <div className="flex">
         {/* 드래그 핸들 */}
         <div 
@@ -77,14 +119,17 @@ function SortableCategory({
           </svg>
         </div>
         
-        {/* 클릭 가능한 영역 */}
+        {/* 제목 영역 - 클릭과 드래그 모두 지원 */}
         <div 
-          onClick={onToggle}
-          className="flex-1 p-4 sm:p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group"
+          {...attributes}
+          {...listeners}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          className="flex-1 p-4 sm:p-6 select-none transition-all duration-200 group cursor-move hover:bg-gray-50"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 sm:space-x-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
+              <h2 className="text-xl sm:text-2xl font-bold font-sans transition-colors duration-200 text-gray-900 group-hover:text-blue-600">
                 {categoryName}
               </h2>
               <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100">
@@ -92,17 +137,20 @@ function SortableCategory({
               </span>
             </div>
             
-            {/* 화살표 아이콘 */}
-            <div className={`transform transition-transform duration-300 ${
-              isOpen ? 'rotate-90' : 'rotate-0'
-            }`}>
+            {/* 화살표 아이콘 - 클릭으로 아코디언 토글 */}
+            <div 
+              onClick={handleArrowClick}
+              className={`transform transition-all duration-300 cursor-pointer p-2 -mr-2 rounded hover:bg-gray-100 ${
+                isOpen ? 'rotate-90' : 'rotate-0'
+              }`}
+            >
               <svg 
                 width="20" 
                 height="20" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
-                className="text-gray-400 group-hover:text-blue-600 transition-colors duration-200"
+                className="text-gray-400 hover:text-blue-600 transition-colors duration-200"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -111,10 +159,12 @@ function SortableCategory({
         </div>
       </div>
 
-      {/* 아코디언 컨텐츠 - 애니메이션 포함 */}
+      {/* 아코디언 컨텐츠 - 드래그 중에는 상태 유지 */}
       <div className={`transition-all duration-500 ease-out overflow-hidden ${
-        isOpen 
+        isOpen && !isDragging
           ? 'max-h-[2000px] opacity-100' 
+          : isDragging && isOpen
+          ? 'max-h-[2000px] opacity-100'
           : 'max-h-0 opacity-0'
       }`}>
         <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
@@ -137,11 +187,15 @@ function SortableCategory({
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </div>
   )
 }
 
 export default function ToolCategoryGrid() {
+  // 하이드레이션 상태 관리
+  const [isHydrated, setIsHydrated] = useState(false)
+  
   // 아코디언 상태 관리
   const [openCategories, setOpenCategories] = useState<string[]>(['개발 도구'])
   
@@ -149,6 +203,10 @@ export default function ToolCategoryGrid() {
   const [categoryOrder, setCategoryOrder] = useState<string[]>(() => 
     Object.keys(toolCategories)
   )
+  
+  // 드래그 상태 관리
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
   
   // 드래그앤드랍 센서 설정
   const sensors = useSensors(
@@ -158,8 +216,12 @@ export default function ToolCategoryGrid() {
     })
   )
   
-  // localStorage에서 상태 복원
+  // 하이드레이션 및 localStorage에서 상태 복원
   useEffect(() => {
+    // 하이드레이션 완료 표시
+    setIsHydrated(true)
+    
+    // localStorage에서 상태 복원
     const savedOpen = localStorage.getItem('openCategories')
     const savedOrder = localStorage.getItem('categoryOrder')
     
@@ -188,6 +250,16 @@ export default function ToolCategoryGrid() {
     )
   }
   
+  // 드래그 시작
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+  }
+
+  // 드래그 중
+  const handleDragOver = (event: DragOverEvent) => {
+    setOverId(event.over?.id as string || null)
+  }
+
   // 드래그 완료 시 호출
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -200,12 +272,100 @@ export default function ToolCategoryGrid() {
         return arrayMove(items, oldIndex, newIndex)
       })
     }
+
+    // 드래그 상태 초기화
+    setActiveId(null)
+    setOverId(null)
+  }
+
+  // 하이드레이션 전에는 정적 렌더링
+  if (!isHydrated) {
+    return (
+      <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+        {Object.entries(toolCategories).map(([categoryName, tools]) => {
+          const isOpen = categoryName === '개발 도구' // 기본값
+          
+          return (
+            <section 
+              key={categoryName} 
+              className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:border-gray-200 hover:shadow-md"
+            >
+              <div className="flex">
+                <div className="flex items-center justify-center w-8 bg-gray-50 hover:bg-gray-100 cursor-move transition-colors duration-200">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400">
+                    <circle cx="9" cy="12" r="1"/>
+                    <circle cx="9" cy="5" r="1"/>
+                    <circle cx="9" cy="19" r="1"/>
+                    <circle cx="15" cy="12" r="1"/>
+                    <circle cx="15" cy="5" r="1"/>
+                    <circle cx="15" cy="19" r="1"/>
+                  </svg>
+                </div>
+                
+                <div className="flex-1 p-4 sm:p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
+                        {categoryName}
+                      </h2>
+                      <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100">
+                        {tools.length}개
+                      </span>
+                    </div>
+                    
+                    <div className={`transform transition-transform duration-300 ${
+                      isOpen ? 'rotate-90' : 'rotate-0'
+                    }`}>
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        className="text-gray-400 group-hover:text-blue-600 transition-colors duration-200"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`transition-all duration-500 ease-out overflow-hidden ${
+                isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
+                  <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {tools.map((tool, index) => (
+                      <PremiumToolCard
+                        key={`${categoryName}-${index}`}
+                        title={tool.title}
+                        href={tool.href}
+                        category={tool.category}
+                        icon={tool.icon}
+                        status={tool.status}
+                        isExternal={tool.isExternal || false}
+                        description={tool.description}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )
+        })}
+      </div>
+    )
   }
 
   return (
     <DndContext 
       sensors={sensors}
       collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <SortableContext 
@@ -226,6 +386,8 @@ export default function ToolCategoryGrid() {
                 tools={tools}
                 isOpen={isOpen}
                 onToggle={() => toggleCategory(categoryName)}
+                isDraggedOver={overId === categoryName}
+                draggedId={activeId}
               />
             )
           })}
