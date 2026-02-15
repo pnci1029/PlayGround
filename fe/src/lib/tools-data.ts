@@ -133,6 +133,18 @@ export const toolCategories: ToolCategories = {
     }
   ],
 
+  '정보 도구': [
+    {
+      title: '실시간 트렌드',
+      href: 'http://localhost:3002',
+      category: '정보 도구',
+      icon: renderPremiumIcon('trending-up'),
+      status: 'active',
+      isExternal: true,
+      description: '전 세계 실시간 트렌드를 무료로 확인하세요'
+    }
+  ],
+
   '커뮤니케이션': [
     {
       title: '실시간 채팅',
