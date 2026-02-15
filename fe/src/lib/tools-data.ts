@@ -136,7 +136,7 @@ export const toolCategories: ToolCategories = {
   '정보 도구': [
     {
       title: '실시간 트렌드',
-      href: 'http://localhost:3002',
+      href: 'http://localhost:3003',
       category: '정보 도구',
       icon: renderPremiumIcon('trending-up'),
       status: 'active',

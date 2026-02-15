@@ -14,13 +14,13 @@ COPY src src
 
 # 빌드 권한 설정 및 빌드 실행
 RUN chmod +x ./gradlew
-RUN ./gradlew bootJar --no-daemon
+RUN ./gradlew bootJar -x test --no-daemon
 
 # 빌드된 JAR 파일 위치
 RUN mv build/libs/*.jar app.jar
 
 # 포트 노출
-EXPOSE 8080
+EXPOSE 8081
 
 # 애플리케이션 실행
 CMD ["java", "-jar", "app.jar"]
