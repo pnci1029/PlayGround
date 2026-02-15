@@ -38,6 +38,53 @@ export interface TestResultResponseDTO{
   aiRecommendation?: string;
 }
 
+// Location-based types
+export interface LocationDTO {
+  latitude: number;
+  longitude: number;
+}
+
+export interface LocationBasedTestResultRequestDTO {
+  scores: {
+    tired: number;
+    anger: number;
+    stress: number;
+    appetite: number;
+    budget: number;
+  };
+  dining: DiningOption;
+  mealTime: MealTime | null;
+  location?: LocationDTO;
+}
+
+export interface FoodRecommendationDTO {
+  primaryFood: string;
+  alternativefoods: string[];
+  reason: string;
+}
+
+export interface RestaurantRecommendationDTO {
+  name: string;
+  category: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  distance: number;
+  priceLevel: number;
+  phone?: string;
+  isOpen: boolean;
+  matchScore: number;
+  estimatedWalkTime: string;
+}
+
+export interface LocationBasedRecommendationResponseDTO {
+  id: number;
+  message: string;
+  foodRecommendation: FoodRecommendationDTO;
+  nearbyRestaurants: RestaurantRecommendationDTO[];
+}
+
 export interface Scores {
   tired: number;
   anger: number;
