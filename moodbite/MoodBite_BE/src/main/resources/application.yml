@@ -33,6 +33,7 @@ logging:
 
 # 한글 인코딩 문제
 server:
+  port: 8081  # 메인 프로젝트와의 포트 충돌 방지
   servlet:
     encoding:
       force-response: true
