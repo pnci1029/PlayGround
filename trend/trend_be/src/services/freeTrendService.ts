@@ -1,4 +1,5 @@
 import { TrendData, TrendCache } from '../types/trend.types'
+import { databaseService, StoredTrendData } from './database'
 
 // API 응답 타입 정의
 interface HackerNewsStory {
@@ -258,8 +259,8 @@ export class FreeTrendService {
     return allTrends
   }
 
-  // 6. 모든 합법적 소스 통합
-  async getAllTrends(): Promise<TrendData[]> {
+  // 6. 모든 합법적 소스 통합 (DB 저장 포함)
+  async getAllTrends(forceRefresh: boolean = false): Promise<TrendData[]> {
     console.log('🚀 전체 트렌드 수집 시작...')
     const startTime = Date.now()
     
@@ -282,19 +283,51 @@ export class FreeTrendService {
     const endTime = Date.now()
     console.log(`🎉 총 ${allTrends.length}개 트렌드 수집 완료 (${endTime - startTime}ms)`)
 
+    // 데이터베이스에 저장
+    if (allTrends.length > 0) {
+      try {
+        await databaseService.saveTrends(allTrends)
+        console.log(`💾 ${allTrends.length}개 트렌드 DB 저장 완료`)
+      } catch (error) {
+        console.error('❌ DB 저장 실패:', error)
+        // DB 저장 실패해도 메모리 데이터는 반환
+      }
+    }
+
     return allTrends
   }
 
-  // 7. 캐시된 트렌드 (5분 캐시)
+  // 7. 캐시된 트렌드 (DB 우선, 메모리 캐시 백업)
   async getCachedTrends(): Promise<TrendData[]> {
     const cacheKey = 'all_trends'
     const cached = this.cache.get(cacheKey)
     
+    // 1. 메모리 캐시 확인
     if (cached && new Date() < cached.expiry) {
-      console.log('💾 캐시된 데이터 반환')
+      console.log('💾 메모리 캐시 데이터 반환')
       return cached.data
     }
     
+    // 2. DB에서 최신 데이터 확인 (24시간 이내)
+    try {
+      const dbTrends = await databaseService.getLatestTrends(100)
+      if (dbTrends.length > 0) {
+        console.log(`💽 DB에서 ${dbTrends.length}개 트렌드 반환`)
+        
+        // 메모리 캐시 업데이트
+        this.cache.set(cacheKey, {
+          data: dbTrends,
+          lastUpdate: new Date(),
+          expiry: new Date(Date.now() + this.CACHE_DURATION)
+        })
+        
+        return dbTrends
+      }
+    } catch (error) {
+      console.warn('⚠️ DB 조회 실패, 새 데이터 수집:', error)
+    }
+    
+    // 3. DB에 데이터가 없거나 실패 시 새로 수집
     console.log('🔄 새로운 데이터 수집')
     const trends = await this.getAllTrends()
     
@@ -306,6 +339,52 @@ export class FreeTrendService {
     })
     
     return trends
+  }
+
+  // 8. 카테고리별 트렌드 조회
+  async getTrendsByCategory(category: string): Promise<TrendData[]> {
+    try {
+      return await databaseService.getTrendsByCategory(category)
+    } catch (error) {
+      console.error('❌ 카테고리별 조회 실패:', error)
+      // 메모리 캐시에서 필터링
+      const allTrends = await this.getCachedTrends()
+      return allTrends.filter(trend => trend.category.toLowerCase().includes(category.toLowerCase()))
+    }
+  }
+
+  // 9. 트렌드 검색
+  async searchTrends(query: string): Promise<TrendData[]> {
+    try {
+      return await databaseService.searchTrends(query)
+    } catch (error) {
+      console.error('❌ 검색 실패:', error)
+      // 메모리 캐시에서 검색
+      const allTrends = await this.getCachedTrends()
+      return allTrends.filter(trend => 
+        trend.keyword.toLowerCase().includes(query.toLowerCase()) ||
+        trend.category.toLowerCase().includes(query.toLowerCase())
+      )
+    }
+  }
+
+  // 10. 통계 데이터 조회
+  async getStatistics(): Promise<any> {
+    try {
+      const [sourceStats, categoryStats] = await Promise.all([
+        databaseService.getSourceStats(),
+        databaseService.getCategoryStats()
+      ])
+      
+      return {
+        sourceStats,
+        categoryStats,
+        timestamp: new Date()
+      }
+    } catch (error) {
+      console.error('❌ 통계 조회 실패:', error)
+      return { sourceStats: [], categoryStats: [], timestamp: new Date() }
+    }
   }
 
   // 소스별 트렌드 가져오기

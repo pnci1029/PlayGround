@@ -1,9 +1,14 @@
 import Fastify, { FastifyInstance } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifyWebsocket from '@fastify/websocket'
+import { config } from 'dotenv'
 import { trendRoutes } from './routes/trends'
 import { trendWebSocketService } from './services/trendWebSocket'
+import { databaseService } from './services/database'
 import { randomUUID } from 'crypto'
+
+// 환경변수 로드
+config()
 
 const PORT = parseInt(process.env.PORT || '8002')
 const WS_PORT = parseInt(process.env.WS_PORT || '8012')
@@ -89,6 +94,13 @@ async function startServers() {
   console.log(`📍 HTTP API: http://localhost:${PORT}`)
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}/ws`)
   
+  // 데이터베이스 연결 테스트
+  console.log('🔗 PostgreSQL 연결 테스트 중...')
+  const dbConnected = await databaseService.testConnection()
+  if (!dbConnected) {
+    console.warn('⚠️ DB 연결 실패, 메모리 캐시로만 운영됩니다')
+  }
+  
   await Promise.all([
     startHttpServer(),
     startWebSocketServer()
@@ -98,6 +110,9 @@ async function startServers() {
   console.log('🔍 API 엔드포인트:')
   console.log(`   GET  http://localhost:${PORT}/api/trends`)
   console.log(`   GET  http://localhost:${PORT}/api/trends/:source`)
+  console.log(`   GET  http://localhost:${PORT}/api/trends/category/:category`)
+  console.log(`   GET  http://localhost:${PORT}/api/trends/search?q=`)
+  console.log(`   GET  http://localhost:${PORT}/api/trends/stats`)
   console.log(`   POST http://localhost:${PORT}/api/trends/refresh`)
   console.log(`   GET  http://localhost:${PORT}/api/trends/status`)
 }
@@ -107,7 +122,8 @@ process.on('SIGINT', async () => {
   console.log('\n🛑 서버 종료 중...')
   await Promise.all([
     httpServer.close(),
-    wsServer.close()
+    wsServer.close(),
+    databaseService.close()
   ])
   console.log('✅ 서버가 안전하게 종료되었습니다')
   process.exit(0)
