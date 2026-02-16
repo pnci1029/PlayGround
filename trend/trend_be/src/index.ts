@@ -1,0 +1,124 @@
+import Fastify, { FastifyInstance } from 'fastify'
+import fastifyCors from '@fastify/cors'
+import fastifyWebsocket from '@fastify/websocket'
+import { trendRoutes } from './routes/trends'
+import { trendWebSocketService } from './services/trendWebSocket'
+import { randomUUID } from 'crypto'
+
+const PORT = parseInt(process.env.PORT || '8002')
+const WS_PORT = parseInt(process.env.WS_PORT || '8012')
+
+// HTTP 서버 (API)
+const httpServer: FastifyInstance = Fastify({
+  logger: {
+    level: 'info',
+    transport: {
+      target: 'pino-pretty'
+    }
+  }
+})
+
+// WebSocket 서버 (실시간 업데이트)
+const wsServer: FastifyInstance = Fastify({
+  logger: {
+    level: 'info',
+    transport: {
+      target: 'pino-pretty'
+    }
+  }
+})
+
+async function startHttpServer() {
+  try {
+    // CORS 설정
+    await httpServer.register(fastifyCors, {
+      origin: ['http://localhost:3002', 'http://trend.localhost', 'http://localhost:3000'],
+      credentials: true
+    })
+
+    // 라우트 등록
+    await httpServer.register(trendRoutes)
+
+    // 헬스체크
+    httpServer.get('/health', async (request, reply) => {
+      return reply.send({
+        status: 'healthy',
+        service: 'trend-backend',
+        timestamp: new Date(),
+        port: PORT
+      })
+    })
+
+    await httpServer.listen({ port: PORT, host: '0.0.0.0' })
+    console.log(`🚀 Trend HTTP Server running on port ${PORT}`)
+  } catch (error) {
+    console.error('❌ HTTP Server 시작 실패:', error)
+    process.exit(1)
+  }
+}
+
+async function startWebSocketServer() {
+  try {
+    // WebSocket 플러그인 등록
+    await wsServer.register(fastifyWebsocket)
+
+    // WebSocket 핸들러
+    wsServer.get('/ws', { websocket: true }, (connection, request) => {
+      const connectionId = randomUUID()
+      trendWebSocketService.addConnection(connectionId, connection.socket)
+    })
+
+    // 헬스체크
+    wsServer.get('/health', async (request, reply) => {
+      const stats = trendWebSocketService.getStats()
+      return reply.send({
+        status: 'healthy',
+        service: 'trend-websocket',
+        timestamp: new Date(),
+        port: WS_PORT,
+        ...stats
+      })
+    })
+
+    await wsServer.listen({ port: WS_PORT, host: '0.0.0.0' })
+    console.log(`🔌 Trend WebSocket Server running on port ${WS_PORT}`)
+  } catch (error) {
+    console.error('❌ WebSocket Server 시작 실패:', error)
+    process.exit(1)
+  }
+}
+
+// 서버 시작
+async function startServers() {
+  console.log('🎯 Trend Backend 시작 중...')
+  console.log(`📍 HTTP API: http://localhost:${PORT}`)
+  console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}/ws`)
+  
+  await Promise.all([
+    startHttpServer(),
+    startWebSocketServer()
+  ])
+
+  console.log('✅ 모든 서버가 성공적으로 시작되었습니다!')
+  console.log('🔍 API 엔드포인트:')
+  console.log(`   GET  http://localhost:${PORT}/api/trends`)
+  console.log(`   GET  http://localhost:${PORT}/api/trends/:source`)
+  console.log(`   POST http://localhost:${PORT}/api/trends/refresh`)
+  console.log(`   GET  http://localhost:${PORT}/api/trends/status`)
+}
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 서버 종료 중...')
+  await Promise.all([
+    httpServer.close(),
+    wsServer.close()
+  ])
+  console.log('✅ 서버가 안전하게 종료되었습니다')
+  process.exit(0)
+})
+
+startServers().catch((error) => {
+  console.error('❌ 서버 시작 실패:', error)
+  process.exit(1)
+})
