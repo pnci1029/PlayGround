@@ -9,6 +9,7 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -66,9 +67,17 @@ services:
     image: moodbite-backend:latest
     container_name: moodbite_backend
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=jdbc:postgresql://postgres:5432/playground
+      - DB_DRIVER=org.postgresql.Driver
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - DB_SCHEMA=moodbite
+    depends_on:
+      - postgres
     restart: unless-stopped
     networks:
       - playground_network
@@ -84,9 +93,46 @@ services:
       - "3001:3000"
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=http://localhost:8080
+      - REACT_APP_API_URL=http://localhost:8081
     depends_on:
       - moodbite-backend
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Trend 백엔드 서비스 (Node.js + TypeScript)
+  trend-backend:
+    build:
+      context: ./trend/trend_be
+      dockerfile: Dockerfile
+    image: trend-backend:latest
+    container_name: trend_backend
+    ports:
+      - "8002:8002"  # HTTP API
+      - "8012:8012"  # WebSocket
+    environment:
+      - NODE_ENV=development
+      - PORT=8002
+      - WS_PORT=8012
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Trend 프론트엔드 서비스 (Next.js)
+  trend-frontend:
+    build:
+      context: ./trend/trend_fe
+      dockerfile: Dockerfile
+    image: trend-frontend:latest
+    container_name: trend_frontend
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8002
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8012
+    depends_on:
+      - trend-backend
     restart: unless-stopped
     networks:
       - playground_network
@@ -110,6 +156,8 @@ services:
       - backend
       - moodbite-frontend
       - moodbite-backend
+      - trend-frontend
+      - trend-backend
 
 volumes:
   postgres_data:

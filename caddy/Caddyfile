@@ -34,6 +34,24 @@ api.moodbite.localhost, api.moodbite.playground.local {
 	reverse_proxy moodbite-backend:8081
 }
 
+# Trend 서브도메인 (통합형 - 단일 도메인에서 경로 기반 라우팅)
+trend.localhost, trend.playground.local {
+	tls internal
+	
+	# WebSocket 경로
+	handle_path /ws/* {
+		reverse_proxy trend-backend:8012
+	}
+	
+	# API 경로는 백엔드로
+	handle_path /api/* {
+		reverse_proxy trend-backend:8002
+	}
+	
+	# 나머지는 프론트엔드로
+	reverse_proxy trend-frontend:3000
+}
+
 # 미래 서브도메인들
 menu.localhost, menu.playground.local {
 	reverse_proxy frontend:3000
