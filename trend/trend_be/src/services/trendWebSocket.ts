@@ -1,6 +1,6 @@
-import { WebSocket } from 'ws'
 import { WebSocketMessage } from '../types/trend.types'
 import { freeTrendService } from './freeTrendService'
+import { WebSocket } from 'ws'
 
 export class TrendWebSocketService {
   private connections: Map<string, WebSocket> = new Map()
@@ -28,7 +28,7 @@ export class TrendWebSocketService {
       }
     })
 
-    ws.on('error', (error) => {
+    ws.on('error', (error: Error) => {
       console.error(`❌ WebSocket 오류 (${connectionId}):`, error)
       this.connections.delete(connectionId)
     })
@@ -98,8 +98,12 @@ export class TrendWebSocketService {
   }
 
   private sendMessage(ws: WebSocket, message: WebSocketMessage) {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(message))
+    try {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message))
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error)
     }
   }
 
@@ -107,9 +111,14 @@ export class TrendWebSocketService {
     const messageStr = JSON.stringify(message)
     
     this.connections.forEach((ws, connectionId) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(messageStr)
-      } else {
+      try {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(messageStr)
+        } else {
+          this.connections.delete(connectionId)
+        }
+      } catch (error) {
+        console.error(`Failed to send to ${connectionId}:`, error)
         this.connections.delete(connectionId)
       }
     })

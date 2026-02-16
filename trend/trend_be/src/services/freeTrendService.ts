@@ -1,5 +1,46 @@
 import { TrendData, TrendCache } from '../types/trend.types'
 
+// API 응답 타입 정의
+interface HackerNewsStory {
+  id: number
+  title: string
+  url?: string
+  score: number
+}
+
+interface RedditPost {
+  data: {
+    title: string
+    score: number
+    subreddit_name_prefixed: string
+    permalink: string
+  }
+}
+
+interface RedditResponse {
+  data: {
+    children: RedditPost[]
+  }
+}
+
+interface GitHubRepo {
+  name: string
+  description?: string
+  stargazers_count: number
+  language?: string
+  html_url: string
+}
+
+interface GitHubSearchResponse {
+  items: GitHubRepo[]
+}
+
+interface DevToArticle {
+  title: string
+  public_reactions_count: number
+  url: string
+}
+
 export class FreeTrendService {
   private cache = new Map<string, TrendCache>()
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5분 캐시
@@ -13,16 +54,16 @@ export class FreeTrendService {
       const storyIds = await response.json()
       
       // 상위 15개 스토리만 가져오기
-      const storyPromises = storyIds.slice(0, 15).map(async (id: number) => {
+      const storyPromises = (storyIds as number[]).slice(0, 15).map(async (id: number) => {
         const storyResponse = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
         return storyResponse.json()
       })
       
-      const stories = await Promise.all(storyPromises)
+      const stories = await Promise.all(storyPromises) as HackerNewsStory[]
       
       const trends = stories
-        .filter(story => story && story.title)
-        .map((story, index) => ({
+        .filter((story: HackerNewsStory) => story && story.title)
+        .map((story: HackerNewsStory, index: number) => ({
           keyword: story.title,
           interest: story.score || 0,
           category: 'Tech News',
@@ -52,10 +93,10 @@ export class FreeTrendService {
       for (const subreddit of subreddits) {
         try {
           const response = await fetch(`https://www.reddit.com/r/${subreddit}/hot.json?limit=8`)
-          const data = await response.json()
+          const data = await response.json() as RedditResponse
           
           if (data?.data?.children) {
-            const posts = data.data.children.map((post: any, index: number) => ({
+            const posts = data.data.children.map((post: RedditPost, index: number) => ({
               keyword: post.data.title.length > 80 
                 ? post.data.title.substring(0, 77) + '...' 
                 : post.data.title,
@@ -105,9 +146,9 @@ export class FreeTrendService {
         return []
       }
       
-      const data = await response.json()
+      const data = await response.json() as GitHubSearchResponse
       
-      const trends = (data.items || []).map((repo: any, index: number) => ({
+      const trends = (data.items || []).map((repo: GitHubRepo, index: number) => ({
         keyword: `${repo.name}${repo.description ? ` - ${repo.description.substring(0, 60)}` : ''}`,
         interest: repo.stargazers_count || 0,
         category: repo.language || 'Code',
@@ -132,9 +173,9 @@ export class FreeTrendService {
       console.log('🔍 Dev.to 트렌드 수집 중...')
       
       const response = await fetch('https://dev.to/api/articles?top=7&per_page=12')
-      const articles = await response.json()
+      const articles = await response.json() as DevToArticle[]
       
-      const trends = articles.map((article: any, index: number) => ({
+      const trends = articles.map((article: DevToArticle, index: number) => ({
         keyword: article.title,
         interest: article.public_reactions_count || 0,
         category: 'Dev Article',

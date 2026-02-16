@@ -20,8 +20,15 @@ interface WebSocketMessage {
   timestamp: number
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8012'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
+
+const getWebSocketUrl = () => {
+  if (typeof window === 'undefined') return 'ws://localhost:8012/ws'
+  
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const host = window.location.host
+  return `${protocol}//${host}/ws`
+}
 
 export function useTrends() {
   const [trends, setTrends] = useState<TrendData[]>([])
@@ -43,7 +50,7 @@ export function useTrends() {
 
     try {
       console.log('🔌 WebSocket 연결 시도...')
-      const ws = new WebSocket(`${WS_URL}/ws`)
+      const ws = new WebSocket(getWebSocketUrl())
       wsRef.current = ws
 
       ws.onopen = () => {

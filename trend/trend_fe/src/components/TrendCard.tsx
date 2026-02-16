@@ -8,26 +8,26 @@ interface TrendCardProps {
 }
 
 export default function TrendCard({ trend, index }: TrendCardProps) {
-  const getSourceIcon = (source: string) => {
-    const icons = {
-      hackernews: '🔶',
-      reddit: '🤖', 
-      github: '⭐',
-      devto: '💻',
-      rss: '📡'
-    }
-    return icons[source as keyof typeof icons] || '📊'
-  }
-
   const getSourceColor = (source: string) => {
     const colors = {
-      hackernews: 'bg-orange-100 text-orange-800',
-      reddit: 'bg-red-100 text-red-800',
-      github: 'bg-gray-100 text-gray-800',
-      devto: 'bg-blue-100 text-blue-800',
-      rss: 'bg-green-100 text-green-800'
+      hackernews: 'text-orange-400',
+      reddit: 'text-red-400',
+      github: 'text-gray-300',
+      devto: 'text-green-400',
+      rss: 'text-yellow-400'
     }
-    return colors[source as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+    return colors[source as keyof typeof colors] || 'text-gray-300'
+  }
+
+  const getBadgeColor = (source: string) => {
+    const colors = {
+      hackernews: 'bg-orange-900 text-orange-200',
+      reddit: 'bg-red-900 text-red-200',
+      github: 'bg-gray-800 text-gray-200',
+      devto: 'bg-green-900 text-green-200',
+      rss: 'bg-yellow-900 text-yellow-200'
+    }
+    return colors[source as keyof typeof colors] || 'bg-gray-800 text-gray-200'
   }
 
   const formatInterest = (interest: number) => {
@@ -51,7 +51,7 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
 
   return (
     <div 
-      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-200 group"
+      className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-gray-600 group"
       onClick={handleCardClick}
       style={{
         animationDelay: `${index * 100}ms`
@@ -60,19 +60,19 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           {trend.rank && (
-            <span className="text-2xl font-bold text-blue-600">
+            <span className="text-2xl font-bold text-orange-400">
               #{trend.rank}
             </span>
           )}
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSourceColor(trend.source)}`}>
-            {getSourceIcon(trend.source)} {trend.source.toUpperCase()}
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBadgeColor(trend.source)}`}>
+            {trend.source.toUpperCase()}
           </span>
         </div>
         <div className="text-right">
-          <div className="text-sm font-medium text-gray-900">
+          <div className="text-sm font-medium text-white">
             {formatInterest(trend.interest)}
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-400">
             {trend.source === 'github' ? 'stars' : 
              trend.source === 'reddit' ? 'upvotes' : 
              trend.source === 'hackernews' ? 'points' : 'score'}
@@ -80,12 +80,12 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
         </div>
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-3 group-hover:text-blue-600 transition-colors">
+      <h3 className="text-lg font-semibold text-white mb-3 line-clamp-3 group-hover:text-orange-400 transition-colors">
         {trend.keyword}
       </h3>
 
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+      <div className="flex items-center justify-between text-sm text-gray-400">
+        <span className="px-2 py-1 bg-gray-700 rounded text-xs text-gray-200">
           {trend.category}
         </span>
         <span className="text-xs">
@@ -93,15 +93,15 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
         </span>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-gray-100">
+      <div className="mt-4 pt-3 border-t border-gray-700">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-500">
             {trend.timestamp.toLocaleTimeString('ko-KR', {
               hour: '2-digit',
               minute: '2-digit'
             })}
           </span>
-          <div className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="text-xs text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">
             클릭하여 확인 →
           </div>
         </div>
