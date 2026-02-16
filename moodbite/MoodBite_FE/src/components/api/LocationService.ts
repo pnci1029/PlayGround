@@ -2,10 +2,6 @@ import { LocationDTO } from "../../types/test";
 
 export class LocationService {
   
-  /**
-   * 사용자의 현재 위치를 가져옵니다.
-   * @returns Promise<LocationDTO | null> 위치 정보 또는 null (권한 거부/에러 시)
-   */
   static async getCurrentLocation(): Promise<LocationDTO | null> {
     return new Promise((resolve) => {
       if (!navigator.geolocation) {
@@ -26,7 +22,6 @@ export class LocationService {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           };
-          console.log("위치 정보를 성공적으로 가져왔습니다:", location);
           resolve(location);
         },
         (error) => {
@@ -52,10 +47,6 @@ export class LocationService {
     });
   }
 
-  /**
-   * 위치 권한이 허용되어 있는지 확인합니다.
-   * @returns Promise<boolean> 권한 상태
-   */
   static async checkLocationPermission(): Promise<boolean> {
     if (!navigator.permissions) {
       return false;
@@ -70,21 +61,10 @@ export class LocationService {
     }
   }
 
-  /**
-   * 위치 권한 요청을 위한 사용자 안내 메시지
-   */
   static getLocationPermissionMessage(): string {
-    return "더 정확한 맛집 추천을 위해 위치 정보 권한을 허용해 주세요. 브라우저 설정에서 위치 권한을 활성화할 수 있습니다.";
+    return "위치 권한이 필요합니다.";
   }
 
-  /**
-   * 거리 계산 (두 좌표 간의 직선거리)
-   * @param lat1 위도 1
-   * @param lng1 경도 1
-   * @param lat2 위도 2
-   * @param lng2 경도 2
-   * @returns 미터 단위 거리
-   */
   static calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
     const R = 6371000; // 지구 반지름 (미터)
     const dLat = (lat2 - lat1) * Math.PI / 180;

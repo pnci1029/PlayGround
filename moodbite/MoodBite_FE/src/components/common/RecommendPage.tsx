@@ -27,12 +27,12 @@ export function RecommendPage({onBack}:Args) {
                 <section className={style.moodSection}>
                     <h2 className={style.sectionTitle}>지금 당신의 기분은?</h2>
                     <div className={style.moodGrid}>
-                        <button className={style.moodButton}>😊 행복해요</button>
-                        <button className={style.moodButton}>😔 우울해요</button>
-                        <button className={style.moodButton}>😫 피곤해요</button>
-                        <button className={style.moodButton}>😡 화나요</button>
-                        <button className={style.moodButton}>🤔 고민중이에요</button>
-                        <button className={style.moodButton}>🥳 신나요</button>
+                        <button className={style.moodButton}>행복해요</button>
+                        <button className={style.moodButton}>우울해요</button>
+                        <button className={style.moodButton}>피곤해요</button>
+                        <button className={style.moodButton}>화나요</button>
+                        <button className={style.moodButton}>고민중이에요</button>
+                        <button className={style.moodButton}>신나요</button>
                     </div>
                 </section>
 

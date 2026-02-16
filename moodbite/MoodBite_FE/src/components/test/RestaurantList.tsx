@@ -15,7 +15,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
         borderRadius: '12px',
         color: '#6c757d'
       }}>
-        <p>🗺️ 주변 맛집 정보를 찾을 수 없습니다.</p>
+        <p>주변 맛집 정보를 찾을 수 없습니다.</p>
         <p>위치 권한을 허용하시면 더 정확한 맛집 정보를 제공받을 수 있습니다.</p>
       </div>
     );
@@ -23,11 +23,11 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
 
   const getPriceLevelText = (priceLevel: number): string => {
     switch (priceLevel) {
-      case 1: return '💰';
-      case 2: return '💰💰';
-      case 3: return '💰💰💰';
-      case 4: return '💰💰💰💰';
-      default: return '💰💰';
+      case 1: return '뢰사니';
+      case 2: return '보통';
+      case 3: return '비싸';
+      case 4: return '매우 비싸';
+      default: return '보통';
     }
   };
 
@@ -146,7 +146,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
 
   return (
     <div style={styles.restaurantList}>
-      <h3 style={styles.title}>🍽️ 추천 맛집 ({restaurants.length}곳)</h3>
+      <h3 style={styles.title}>추천 맛집 ({restaurants.length}곳)</h3>
       
       {restaurants.map((restaurant, index) => (
         <div key={index} style={styles.restaurantCard}>
@@ -164,27 +164,27 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
           
           <div style={styles.restaurantInfo}>
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>📍 위치:</span>
+              <span style={styles.infoLabel}>위치:</span>
               <span style={styles.infoValue}>{restaurant.address}</span>
             </div>
             
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>🏷️ 분류:</span>
+              <span style={styles.infoLabel}>분류:</span>
               <span style={styles.infoValue}>{restaurant.category}</span>
             </div>
             
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>⭐ 평점:</span>
+              <span style={styles.infoLabel}>평점:</span>
               <span style={styles.infoValue}>{restaurant.rating.toFixed(1)}/5.0</span>
             </div>
             
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>💰 가격대:</span>
+              <span style={styles.infoLabel}>가격대:</span>
               <span style={styles.infoValue}>{getPriceLevelText(restaurant.priceLevel)}</span>
             </div>
             
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>🚶 거리:</span>
+              <span style={styles.infoLabel}>거리:</span>
               <span style={styles.infoValue}>
                 {formatDistance(restaurant.distance)} ({restaurant.estimatedWalkTime})
               </span>
@@ -192,7 +192,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
             
             {restaurant.phone && (
               <div style={styles.infoRow}>
-                <span style={styles.infoLabel}>📞 전화:</span>
+                <span style={styles.infoLabel}>전화:</span>
                 <span style={styles.infoValue}>
                   <a href={`tel:${restaurant.phone}`} style={styles.link}>{restaurant.phone}</a>
                 </span>
@@ -200,7 +200,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
             )}
             
             <div style={styles.infoRow}>
-              <span style={styles.infoLabel}>🎯 추천도:</span>
+              <span style={styles.infoLabel}>추천도:</span>
               <span 
                 style={{
                   ...styles.infoValue,
@@ -221,7 +221,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
                 window.open(url, '_blank');
               }}
             >
-              🗺️ 길찾기
+              길찾기
             </button>
             
             {restaurant.phone && (
@@ -229,7 +229,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
                 style={{...styles.btnBase, ...styles.btnCall}}
                 onClick={() => window.open(`tel:${restaurant.phone}`)}
               >
-                📞 전화
+                전화
               </button>
             )}
           </div>

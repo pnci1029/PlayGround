@@ -17,19 +17,19 @@ export function SideMenu({ isOpen, onClose, menuItems }: SideMenuProps) {
     const defaultMenuItems: MenuItem[] = [
         {
             label: '공지사항',
-            onClick: () => console.log('공지사항 클릭')
+            onClick: () => {}
         },
         {
             label: '설정',
-            onClick: () => console.log('설정 클릭')
+            onClick: () => {}
         },
         {
             label: '고객센터',
-            onClick: () => console.log('고객센터 클릭')
+            onClick: () => {}
         },
         {
             label: '앱 정보',
-            onClick: () => console.log('앱 정보 클릭')
+            onClick: () => {}
         }
     ];
 
