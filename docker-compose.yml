@@ -19,7 +19,7 @@ services:
   # 백엔드 서비스
   backend:
     build:
-      context: ./be
+      context: ./playground/be
       dockerfile: Dockerfile
     image: playground-backend:latest
     container_name: playground_backend
@@ -44,7 +44,7 @@ services:
   # 프론트엔드 서비스
   frontend:
     build:
-      context: ./fe
+      context: ./playground/fe
       dockerfile: Dockerfile  
     image: playground-frontend:latest
     container_name: playground_frontend
@@ -114,6 +114,13 @@ services:
       - NODE_ENV=development
       - PORT=8002
       - WS_PORT=8012
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=playground
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+    depends_on:
+      - postgres
     restart: unless-stopped
     networks:
       - playground_network
