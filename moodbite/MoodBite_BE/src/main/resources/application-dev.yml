@@ -1,0 +1,35 @@
+# 로컬 개발환경 설정 - H2 사용
+spring:
+  h2:
+    console:
+      enabled: true
+      
+  datasource:
+    url: jdbc:h2:~/testdb
+    driver-class-name: org.h2.Driver
+    username: sar
+    password: 
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+# PostgreSQL 사용하려면 위 설정을 주석처리하고 아래 활성화:
+# spring:
+#   datasource:
+#     url: jdbc:postgresql://localhost:5432/playground
+#     driver-class-name: org.postgresql.Driver
+#     username: postgres
+#     password: password
+#   jpa:
+#     database-platform: org.hibernate.dialect.PostgreSQLDialect
+#     hibernate:
+#       ddl-auto: update
+#     properties:
+#       hibernate:
+#         default_schema: moodbite

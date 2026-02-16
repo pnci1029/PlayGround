@@ -1,0 +1,28 @@
+# Docker 배포환경 설정
+spring:
+  # H2 콘솔 비활성화
+  h2:
+    console:
+      enabled: false
+      
+  datasource:
+    url: jdbc:postgresql://postgres:5432/playground
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        default_schema: moodbite
+
+# 로깅 레벨 조정 (운영 환경)
+logging:
+  level:
+    com.example.pro.controller: info
+    org.hibernate: warn
