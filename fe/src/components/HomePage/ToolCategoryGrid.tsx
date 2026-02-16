@@ -24,6 +24,8 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import PremiumToolCard from '@/components/ui/PremiumToolCard'
 import { toolCategories } from '@/lib/tools-data'
+import { LoadingSkeleton, CardSkeleton } from '@/components/ui/LoadingSpinner'
+import { ErrorState, LoadError } from '@/components/ui/ErrorState'
 
 // 드래그 가능한 카테고리 컴포넌트
 function SortableCategory({ 
@@ -196,6 +198,12 @@ export default function ToolCategoryGrid() {
   // 하이드레이션 상태 관리
   const [isHydrated, setIsHydrated] = useState(false)
   
+  // 로딩 상태 관리
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // 에러 상태 관리
+  const [error, setError] = useState<string | null>(null)
+  
   // 아코디언 상태 관리
   const [openCategories, setOpenCategories] = useState<string[]>(['개발 도구'])
   
@@ -218,20 +226,73 @@ export default function ToolCategoryGrid() {
   
   // 하이드레이션 및 localStorage에서 상태 복원
   useEffect(() => {
-    // 하이드레이션 완료 표시
-    setIsHydrated(true)
-    
-    // localStorage에서 상태 복원
-    const savedOpen = localStorage.getItem('openCategories')
-    const savedOrder = localStorage.getItem('categoryOrder')
-    
-    if (savedOpen) {
-      setOpenCategories(JSON.parse(savedOpen))
+    // 로딩 시뮬레이션 (실제로는 데이터 페칭)
+    const loadData = async () => {
+      try {
+        // 로딩 시간 시뮬레이션
+        await new Promise(resolve => setTimeout(resolve, 800))
+        
+        // 에러 시뮬레이션 (10% 확률)
+        if (Math.random() < 0.1) {
+          throw new Error('데이터 로딩 실패')
+        }
+        
+        // localStorage에서 상태 복원
+        const savedOpen = localStorage.getItem('openCategories')
+        const savedOrder = localStorage.getItem('categoryOrder')
+        
+        if (savedOpen) {
+          setOpenCategories(JSON.parse(savedOpen))
+        }
+        if (savedOrder) {
+          setCategoryOrder(JSON.parse(savedOrder))
+        }
+        
+        // 로딩 완료
+        setIsLoading(false)
+        setIsHydrated(true)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다')
+        setIsLoading(false)
+      }
     }
-    if (savedOrder) {
-      setCategoryOrder(JSON.parse(savedOrder))
-    }
+    
+    loadData()
   }, [])
+  
+  // 다시 시도 함수
+  const handleRetry = () => {
+    setError(null)
+    setIsLoading(true)
+    setIsHydrated(false)
+    // useEffect가 다시 실행되도록 상태를 초기화
+    setTimeout(() => {
+      const loadData = async () => {
+        try {
+          await new Promise(resolve => setTimeout(resolve, 800))
+          
+          const savedOpen = localStorage.getItem('openCategories')
+          const savedOrder = localStorage.getItem('categoryOrder')
+          
+          if (savedOpen) {
+            setOpenCategories(JSON.parse(savedOpen))
+          }
+          if (savedOrder) {
+            setCategoryOrder(JSON.parse(savedOrder))
+          }
+          
+          setIsLoading(false)
+          setIsHydrated(true)
+          setError(null)
+        } catch (err) {
+          setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다')
+          setIsLoading(false)
+        }
+      }
+      loadData()
+    }, 100)
+  }
   
   // 상태 변경 시 localStorage에 저장
   useEffect(() => {
@@ -278,7 +339,54 @@ export default function ToolCategoryGrid() {
     setOverId(null)
   }
 
-  // 하이드레이션 전에는 정적 렌더링
+  // 에러 상태 렌더링
+  if (error) {
+    return (
+      <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+        <LoadError onRetry={handleRetry} />
+      </div>
+    )
+  }
+
+  // 로딩 중이거나 하이드레이션 전에는 로딩 스켈레톤 또는 정적 렌더링
+  if (isLoading) {
+    return (
+      <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            {/* 스켈레톤 헤더 */}
+            <div className="flex">
+              <div className="flex items-center justify-center w-8 bg-gray-50">
+                <LoadingSkeleton className="w-4 h-4" />
+              </div>
+              <div className="flex-1 p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <LoadingSkeleton className="h-7 w-32" />
+                    <LoadingSkeleton className="h-6 w-12 rounded-full" />
+                  </div>
+                  <LoadingSkeleton className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+            
+            {/* 스켈레톤 컨텐츠 (일부만 열린 상태로) */}
+            {index === 0 && (
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
+                <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {Array.from({ length: 6 }).map((_, cardIndex) => (
+                    <CardSkeleton key={cardIndex} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
+  
   if (!isHydrated) {
     return (
       <div className="space-y-6 sm:space-y-8 lg:space-y-10">
