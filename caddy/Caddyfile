@@ -49,7 +49,7 @@ trend.localhost, trend.playground.local {
 	}
 	
 	# 나머지는 프론트엔드로
-	reverse_proxy trend-frontend:3000
+	reverse_proxy trend-frontend:3002
 }
 
 # 미래 서브도메인들

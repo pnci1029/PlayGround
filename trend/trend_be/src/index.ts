@@ -10,29 +10,24 @@ const WS_PORT = parseInt(process.env.WS_PORT || '8012')
 
 // HTTP 서버 (API)
 const httpServer: FastifyInstance = Fastify({
-  logger: {
-    level: 'info',
-    transport: {
-      target: 'pino-pretty'
-    }
-  }
+  logger: true
 })
 
 // WebSocket 서버 (실시간 업데이트)
 const wsServer: FastifyInstance = Fastify({
-  logger: {
-    level: 'info',
-    transport: {
-      target: 'pino-pretty'
-    }
-  }
+  logger: true
 })
 
 async function startHttpServer() {
   try {
     // CORS 설정
     await httpServer.register(fastifyCors, {
-      origin: ['http://localhost:3002', 'http://trend.localhost', 'http://localhost:3000'],
+      origin: [
+        'http://localhost:3002', 
+        'http://trend.localhost', 
+        'https://trend.localhost',
+        'http://localhost:3000'
+      ],
       credentials: true
     })
 
@@ -65,7 +60,7 @@ async function startWebSocketServer() {
     // WebSocket 핸들러
     wsServer.get('/ws', { websocket: true }, (connection, request) => {
       const connectionId = randomUUID()
-      trendWebSocketService.addConnection(connectionId, connection.socket)
+      trendWebSocketService.addConnection(connectionId, connection)
     })
 
     // 헬스체크
