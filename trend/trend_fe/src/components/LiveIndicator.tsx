@@ -8,34 +8,46 @@ interface LiveIndicatorProps {
 
 export default function LiveIndicator({ isConnected, lastUpdate, activeUsers }: LiveIndicatorProps) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-6 animate-fade-in">
       {/* 연결 상태 */}
-      <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+      <div className={`glass flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
         isConnected 
-          ? 'bg-green-900 text-green-200' 
-          : 'bg-red-900 text-red-200'
+          ? 'border-accent-green/30' 
+          : 'border-accent-red/30'
       }`}>
-        <div className={`w-2 h-2 rounded-full ${
-          isConnected ? 'bg-green-400 animate-pulse-glow' : 'bg-red-400'
-        }`} />
-        {isConnected ? '실시간 연결' : '연결 끊김'}
+        <div className={`w-3 h-3 rounded-full relative ${
+          isConnected ? 'bg-accent-green animate-pulse-glow' : 'bg-accent-red'
+        }`}>
+          {isConnected && (
+            <div className="absolute inset-0 w-3 h-3 rounded-full bg-accent-green animate-ping opacity-30"></div>
+          )}
+        </div>
+        <span className={isConnected ? 'text-accent-green' : 'text-accent-red'}>
+          {isConnected ? '🔴 LIVE 연결' : '❌ 연결 끊김'}
+        </span>
       </div>
 
       {/* 활성 사용자 수 */}
       {isConnected && activeUsers !== undefined && (
-        <div className="bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm font-medium">
-          {activeUsers}명 접속 중
+        <div className="glass px-4 py-2.5 rounded-xl text-sm font-semibold text-primary flex items-center gap-2">
+          <span className="text-lg">👥</span>
+          <span>{activeUsers}명 접속 중</span>
         </div>
       )}
 
       {/* 마지막 업데이트 시간 */}
       {lastUpdate && (
-        <div className="text-sm text-gray-300">
-          마지막 업데이트: {lastUpdate.toLocaleTimeString('ko-KR', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })}
+        <div className="text-sm text-text-muted flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+          <span>
+            마지막 업데이트: <span className="text-text-secondary font-medium">
+              {lastUpdate.toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </span>
+          </span>
         </div>
       )}
     </div>

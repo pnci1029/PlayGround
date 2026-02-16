@@ -21,13 +21,13 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
 
   const getBadgeColor = (source: string) => {
     const colors = {
-      hackernews: 'bg-orange-900 text-orange-200',
-      reddit: 'bg-red-900 text-red-200',
-      github: 'bg-gray-800 text-gray-200',
-      devto: 'bg-green-900 text-green-200',
-      rss: 'bg-yellow-900 text-yellow-200'
+      hackernews: 'source-badge source-hackernews',
+      reddit: 'source-badge source-reddit',
+      github: 'source-badge source-github',
+      devto: 'source-badge source-devto',
+      rss: 'source-badge source-rss'
     }
-    return colors[source as keyof typeof colors] || 'bg-gray-800 text-gray-200'
+    return colors[source as keyof typeof colors] || 'source-badge source-github'
   }
 
   const formatInterest = (interest: number) => {
@@ -51,28 +51,28 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
 
   return (
     <div 
-      className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-gray-600 group"
+      className="trend-card p-6 cursor-pointer group animate-fade-in hover-lift"
       onClick={handleCardClick}
       style={{
         animationDelay: `${index * 100}ms`
       }}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
           {trend.rank && (
-            <span className="text-2xl font-bold text-orange-400">
+            <span className="text-2xl font-bold gradient-text">
               #{trend.rank}
             </span>
           )}
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBadgeColor(trend.source)}`}>
+          <span className={getBadgeColor(trend.source)}>
             {trend.source.toUpperCase()}
           </span>
         </div>
         <div className="text-right">
-          <div className="text-sm font-medium text-white">
+          <div className="text-lg font-bold text-text-primary mb-1">
             {formatInterest(trend.interest)}
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-text-muted">
             {trend.source === 'github' ? 'stars' : 
              trend.source === 'reddit' ? 'upvotes' : 
              trend.source === 'hackernews' ? 'points' : 'score'}
@@ -80,29 +80,32 @@ export default function TrendCard({ trend, index }: TrendCardProps) {
         </div>
       </div>
 
-      <h3 className="text-lg font-semibold text-white mb-3 line-clamp-3 group-hover:text-orange-400 transition-colors">
+      <h3 className="text-lg font-semibold text-text-primary mb-4 line-clamp-3 group-hover:text-primary transition-all duration-300">
         {trend.keyword}
       </h3>
 
-      <div className="flex items-center justify-between text-sm text-gray-400">
-        <span className="px-2 py-1 bg-gray-700 rounded text-xs text-gray-200">
+      <div className="flex items-center justify-between mb-4">
+        <span className="glass px-3 py-1 rounded-lg text-xs text-text-secondary font-medium">
           {trend.category}
         </span>
-        <span className="text-xs">
+        <span className="text-xs text-text-muted flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
           {trend.region}
         </span>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-gray-700">
+      <div className="pt-4 border-t border-glass-border">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-text-muted flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
             {trend.timestamp.toLocaleTimeString('ko-KR', {
               hour: '2-digit',
               minute: '2-digit'
             })}
           </span>
-          <div className="text-xs text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">
-            클릭하여 확인 →
+          <div className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1">
+            <span>클릭하여 확인</span>
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
           </div>
         </div>
       </div>

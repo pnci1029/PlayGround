@@ -5,7 +5,7 @@
 ### 1단계: 사전 준비 (5분)
 ```bash
 # 1. 빌드 테스트
-cd fe && npm run build
+cd playground/fe && npm run build
 cd ../be && npm run build
 
 # 2. 환경변수 파일 생성
@@ -74,7 +74,7 @@ echo "🚀 Starting deployment..."
 
 # Build & Test
 echo "📦 Building frontend..."
-cd fe && npm run build
+cd playground/fe && npm run build
 echo "📦 Building backend..."
 cd ../be && npm run build
 
@@ -133,8 +133,9 @@ echo "✅ Environment variables updated!"
 ## 📁 디렉토리 구조 정리
 ```
 /
-├── fe/                 # Frontend (Cloudflare Pages)
-├── be/                 # Backend (Koyeb)
+├── playground/         # Main project
+│   ├── fe/             # Frontend (Cloudflare Pages)
+│   └── be/             # Backend (Koyeb)
 ├── scripts/           # 배포 스크립트
 │   ├── deploy.sh
 │   ├── check-health.sh

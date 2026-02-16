@@ -17,17 +17,20 @@ const SOURCES = [
 
 export default function SourceFilter({ selectedSource, onSourceChange, isLoading }: SourceFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2 mb-6">
-      {SOURCES.map((source) => (
+    <div className="flex flex-wrap gap-3 mb-8">
+      {SOURCES.map((source, index) => (
         <button
           key={source.id}
           onClick={() => !isLoading && onSourceChange(source.id)}
           disabled={isLoading}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+          className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 hover-lift animate-fade-in ${
             selectedSource === source.id
-              ? 'bg-orange-600 text-white shadow-md'
-              : 'bg-gray-800 text-gray-200 border border-gray-700 hover:bg-gray-700 hover:border-orange-400'
-          } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+              ? 'bg-gradient-primary text-white shadow-glow'
+              : 'btn-secondary hover-glow'
+          } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          style={{
+            animationDelay: `${index * 50}ms`
+          }}
         >
           {source.name}
         </button>

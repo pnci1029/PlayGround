@@ -70,10 +70,65 @@ src/
 - **CSS 변수**: 컬러 시스템 관리
 - **반응형**: mobile-first 설계
 
+### TypeScript 코딩 가이드라인
+
+#### 타입 안전성 원칙
+- **`any` 타입 사용 금지**: 모든 변수, 함수 매개변수, 반환값에 구체적인 타입 명시
+- **`Object` 타입 사용 금지**: 구체적인 인터페이스나 타입 정의 사용
+- **타입 어설션 최소화**: `as` 키워드 사용 시 반드시 타입 가드와 함께 사용
+
+#### 인터페이스/타입 정의
+```typescript
+// ❌ 잘못된 예시
+function processData(data: any): any {
+  return data.someProperty;
+}
+
+const config: Object = { api: '/api' };
+
+// ✅ 올바른 예시
+interface ApiResponse {
+  data: string[];
+  status: number;
+  message?: string;
+}
+
+interface AppConfig {
+  apiUrl: string;
+  timeout: number;
+  retries?: number;
+}
+
+function processApiData(response: ApiResponse): string[] {
+  return response.data;
+}
+
+const config: AppConfig = { 
+  apiUrl: '/api',
+  timeout: 5000 
+};
+```
+
+#### 유니온 타입과 리터럴 타입 활용
+```typescript
+// 상태 관리
+type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+
+// 이벤트 핸들러
+type ButtonVariant = 'primary' | 'secondary' | 'danger';
+
+interface ButtonProps {
+  variant: ButtonVariant;
+  onClick: () => void;
+  disabled?: boolean;
+}
+```
+
 ### 컴포넌트 원칙
 - **재사용성**: 공통 컴포넌트 활용
 - **접근성**: semantic HTML 사용
 - **성능**: Next.js 최적화 활용
+- **타입 안전성**: Props, State, 이벤트 핸들러 모두 타입 정의
 
 ## 브랜드 가이드
 

@@ -3,8 +3,8 @@
 # 이미지 빌드
 build:
 	@echo "Building images..."
-	docker build -t playground-frontend:latest ./fe
-	docker build -t playground-backend:latest ./be
+	docker build -t playground-frontend:latest ./playground/fe
+	docker build -t playground-backend:latest ./playground/be
 	@echo "Build complete!"
 
 # 서비스 시작
@@ -44,8 +44,8 @@ logs:
 
 # 프론트엔드만 빌드
 build-fe:
-	docker build -t playground-frontend:latest ./fe
+	docker build -t playground-frontend:latest ./playground/fe
 
 # 백엔드만 빌드  
 build-be:
-	docker build -t playground-backend:latest ./be
+	docker build -t playground-backend:latest ./playground/be

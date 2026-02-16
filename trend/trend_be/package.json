@@ -21,9 +21,12 @@
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "ws": "^8.19.0"
+    "ws": "^8.19.0",
+    "pg": "^8.13.1",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "@types/pg": "^8.12.0"
   }
 }
