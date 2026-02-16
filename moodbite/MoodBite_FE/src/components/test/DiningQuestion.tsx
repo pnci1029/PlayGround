@@ -8,13 +8,13 @@ interface DiningQuestionProps {
 }
 
 export function DiningQuestion({selectedOption, onOptionSelect}: DiningQuestionProps) {
-    const options: {value: DiningOption; label: string; emoji: string}[] = [
-        {value: 'ALONE', label: '혼자', emoji: '🧍'},
-        {value: 'FRIENDS', label: '친구와', emoji: '👥'},
-        {value: 'FAMILY', label: '가족과', emoji: '👨‍👩‍👧'},
-        {value: 'DATE', label: '데이트', emoji: '💑'},
-        {value: 'COWORKERS', label: '직장 동료와', emoji: '💼'},
-        {value: 'ETC', label: '기타', emoji: '✨'},
+    const options: {value: DiningOption; label: string}[] = [
+        {value: 'ALONE', label: '혼자'},
+        {value: 'FRIENDS', label: '친구와'},
+        {value: 'FAMILY', label: '가족과'},
+        {value: 'DATE', label: '데이트'},
+        {value: 'COWORKERS', label: '직장 동료와'},
+        {value: 'ETC', label: '기타'},
     ];
 
     return (
@@ -28,7 +28,6 @@ export function DiningQuestion({selectedOption, onOptionSelect}: DiningQuestionP
                         onClick={() => onOptionSelect(option.value)}
                         aria-selected={selectedOption === option.value}
                     >
-                        <span className={style.optionEmoji}>{option.emoji}</span>
                         <span className={style.optionLabel}>{option.label}</span>
                     </button>
                 ))}

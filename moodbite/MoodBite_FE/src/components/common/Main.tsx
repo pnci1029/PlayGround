@@ -30,18 +30,12 @@ export function Main() {
 
     // 네비게이션 핸들러들
     const handleNearbyRestaurants = () => {
-        console.log('주변 맛집 기능');
-        // TODO: 주변 맛집 페이지로 이동
     };
 
     const handleFavorites = () => {
-        console.log('찜목록 기능');
-        // TODO: 찜목록 페이지로 이동
     };
 
     const handleProfile = () => {
-        console.log('마이페이지 기능');
-        // TODO: 마이페이지로 이동
     };
 
     // 조건부 렌더링: 테스트 결과 화면

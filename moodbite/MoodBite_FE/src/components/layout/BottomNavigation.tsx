@@ -23,17 +23,17 @@ export function BottomNavigation({
         {
             icon: <MapPin size={24} />,
             label: '주변맛집',
-            onClick: onNearbyRestaurants || (() => console.log('주변맛집 기능 준비중'))
+            onClick: onNearbyRestaurants || (() => {})
         },
         {
             icon: <Heart size={24} />,
             label: '찜목록',
-            onClick: onFavorites || (() => console.log('찜목록 기능 준비중'))
+            onClick: onFavorites || (() => {})
         },
         {
             icon: <User size={24} />,
             label: '마이',
-            onClick: onProfile || (() => console.log('마이페이지 기능 준비중'))
+            onClick: onProfile || (() => {})
         }
     ];
 
