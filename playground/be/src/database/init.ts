@@ -29,7 +29,7 @@ export class DatabaseInitializer {
     try {
       const username = process.env.ADMIN_DEFAULT_USERNAME || 'admin'
       const email = process.env.ADMIN_DEFAULT_EMAIL || 'admin@localhost'
-      const password = process.env.ADMIN_DEFAULT_PASSWORD || 'admin123'
+      const password = process.env.ADMIN_DEFAULT_PASSWORD || 'please_change_admin_password'
 
       // 이미 관리자가 있는지 확인
       const existingAdmin = await AdminModel.findByUsername(username)

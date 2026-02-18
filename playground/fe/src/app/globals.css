@@ -76,6 +76,32 @@ html, body {
 
 /* Text Colors */
 .text-white { color: white; }
+
+/* Canvas 버튼 전용 스타일 */
+.canvas-save-button {
+  background-color: #16a34a !important;
+  color: #000000 !important;
+  border: 2px solid #15803d !important;
+  padding: 0.5rem 1.5rem !important;
+  border-radius: 0.25rem !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.canvas-delete-button {
+  background-color: #dc2626 !important;
+  color: #000000 !important;
+  border: 2px solid #b91c1c !important;
+  padding: 0.5rem 1.5rem !important;
+  border-radius: 0.25rem !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.canvas-save-button:hover,
+.canvas-delete-button:hover {
+  color: #000000 !important;
+}
 .text-text-primary { color: var(--text-primary); }
 .text-text-secondary { color: var(--text-secondary); }
 .text-text-muted { color: var(--text-muted); }
