@@ -164,20 +164,130 @@ body {
     box-shadow: var(--shadow-glow);
   }
   
-  /* Card Styles */
+  /* Card Styles - Enhanced */
   .trend-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .trend-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+    opacity: 0.6;
   }
   
   .trend-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary);
-    box-shadow: 0 8px 32px rgba(96, 165, 250, 0.2);
+    transform: translateY(-6px);
+    border-color: var(--border-bright);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: rgba(42, 42, 42, 0.9);
+  }
+  
+  /* Card Variants */
+  .trend-card-elevated {
+    background: rgba(42, 42, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .trend-card-featured {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(31, 31, 31, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 12px 48px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Ranking Card Styles */
+  .ranking-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .ranking-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .ranking-card:hover::before {
+    opacity: 1;
+  }
+  
+  .ranking-card-elevated {
+    background: rgba(42, 42, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .ranking-card-featured {
+    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(31, 31, 31, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 12px 48px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+    position: relative;
+  }
+  
+  .ranking-card-featured::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: var(--gradient-primary);
+    border-radius: 18px;
+    z-index: -1;
+    opacity: 0.3;
+  }
+  
+  /* Timeframe Selector */
+  .timeframe-selector {
+    margin: 0 auto;
+    max-width: fit-content;
+  }
+  
+  .timeframe-selector button:hover {
+    transform: translateY(-1px);
+  }
+  
+  .timeframe-selector button.active {
+    transform: translateY(-2px) scale(1.05);
   }
   
   /* Button Styles */
@@ -277,4 +387,117 @@ body {
 
 .animate-shimmer {
   animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Enhanced Layout System */
+.container-centered {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.content-section {
+  margin-bottom: 4rem;
+}
+
+.content-section:last-child {
+  margin-bottom: 2rem;
+}
+
+/* Enhanced Grid System */
+.grid-trends {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
+  align-items: start;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .grid-trends {
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-trends {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-trends {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+  }
+}
+
+/* Stats Grid Enhancement */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stats-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-bright);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.stats-card:hover::before {
+  opacity: 1;
+}
+
+.stats-card-primary::before {
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+/* Enhanced Spacing */
+.section-spacing {
+  padding: 4rem 0;
+}
+
+.section-spacing-large {
+  padding: 6rem 0;
+}
+
+/* Visual Hierarchy */
+.visual-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 3rem 0;
+}
+
+.visual-separator-thick {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+  margin: 4rem 0;
 }
