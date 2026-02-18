@@ -4,9 +4,9 @@ services:
     image: postgres:15-alpine
     container_name: playground_postgres
     environment:
-      POSTGRES_DB: playground
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-playground}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-please_change_this_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
@@ -29,10 +29,10 @@ services:
       - NODE_ENV=production
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=playground
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
+      - JWT_SECRET=${JWT_SECRET:-please_change_this_jwt_secret_in_production}
       - JWT_EXPIRES_IN=24h
       - PORT=8000
     depends_on:
@@ -67,13 +67,13 @@ services:
     image: moodbite-backend:latest
     container_name: moodbite_backend
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - DB_URL=jdbc:postgresql://postgres:5432/playground
+      - DB_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-playground}
       - DB_DRIVER=org.postgresql.Driver
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=password
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
       - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - DB_SCHEMA=moodbite
     depends_on:
@@ -116,9 +116,9 @@ services:
       - WS_PORT=8012
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=playground
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
     depends_on:
       - postgres
     restart: unless-stopped
