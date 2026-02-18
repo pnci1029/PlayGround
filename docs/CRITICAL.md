@@ -13,22 +13,101 @@ fe/.env*
 
 #### Backend (.env)
 ```bash
-PORT=8000
+PORT=8085
 NODE_ENV=development
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://localhost:8085
 ```
 
 #### Frontend (.env.local)
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:8000
+# API 설정 (매우 중요!)
+NEXT_PUBLIC_API_URL=http://localhost:8085
+NEXT_PUBLIC_API_PREFIX=/api
+
+# WebSocket 설정
+NEXT_PUBLIC_WS_URL=ws://localhost:8084
+
+# 개발/운영 환경 구분
+NODE_ENV=development
+
+# 기타 설정
+NEXT_PUBLIC_APP_NAME=PlayGround
+NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
+
+## 🔗 API 공통화 처리 (중요!)
+
+### 📋 API URL 관리 체계
+
+#### 중앙화된 설정 파일 (`src/lib/config.ts`)
+```typescript
+// API 설정 중앙 관리
+export const config = {
+  api: {
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085',
+    prefix: process.env.NEXT_PUBLIC_API_PREFIX || '/api',
+  }
+} as const
+
+// API URL 생성 헬퍼 함수들
+export const apiUrls = {
+  artworks: `${config.api.baseUrl}${config.api.prefix}/artworks`,
+  artwork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}`,
+  artworkLike: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/like`,
+  artworkFork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/fork`,
+  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8084',
+} as const
+
+// 이미지 URL 생성 헬퍼 함수
+export const imageUrls = {
+  artwork: (path: string) => `${config.api.baseUrl}${path}`,
+  thumbnail: (path: string) => `${config.api.baseUrl}${path}`,
+} as const
+```
+
+### 🚫 절대 금지사항
+1. **API URL 하드코딩 절대 금지!**
+   ```typescript
+   // ❌ 절대 금지
+   fetch('http://localhost:8085/api/artworks')
+   
+   // ✅ 올바른 방법
+   fetch(apiUrls.artworks)
+   ```
+
+2. **이미지 URL 하드코딩 절대 금지!**
+   ```jsx
+   // ❌ 절대 금지
+   <img src={`http://localhost:8085${artwork.image_url}`} />
+   
+   // ✅ 올바른 방법
+   <img src={imageUrls.artwork(artwork.image_url)} />
+   ```
+
+### 🔧 사용 방법
+```typescript
+// 컴포넌트에서 import
+import { apiUrls, imageUrls } from '@/lib/config'
+
+// API 호출
+const response = await fetch(apiUrls.artwork('123'))
+
+// 이미지 URL 생성
+<img src={imageUrls.thumbnail(artwork.thumbnail_url)} />
+```
+
+### 🌍 환경별 설정
+- **개발환경**: `http://localhost:8085`
+- **운영환경**: 환경변수로 실제 도메인 설정
+- **포트 변경**: `.env.local`에서 `NEXT_PUBLIC_API_URL` 수정만 하면 전체 적용
 
 ## 🛡️ 보안 주의사항
 
 ### 절대 하면 안 되는 것들
-1. **환경 변수를 코드에 하드코딩**
-2. **API 키를 클라이언트에 노출**
-3. **민감한 정보를 로그에 출력**
+1. **API URL을 코드에 하드코딩** ← **매우 중요!**
+2. **환경 변수를 코드에 하드코딩**
+3. **API 키를 클라이언트에 노출**
+4. **민감한 정보를 로그에 출력**
 
 ## 📁 절대 삭제하면 안 되는 파일들
 

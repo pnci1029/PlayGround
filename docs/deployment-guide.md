@@ -140,8 +140,75 @@ Images: Supabase Storage
 - 도메인: $3/월
 - 확장 서비스: $5-7/월
 
+## 🔗 환경변수 및 API 공통화 설정
+
+### 🚨 배포 전 필수 작업
+
+#### 1. 환경변수 설정
+각 플랫폼에서 다음 환경변수들을 설정해야 합니다:
+
+**Frontend (Cloudflare Pages/Vercel)**:
+```bash
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+NEXT_PUBLIC_API_PREFIX=/api
+NEXT_PUBLIC_WS_URL=wss://api.yourdomain.com
+NODE_ENV=production
+NEXT_PUBLIC_APP_NAME=PlayGround
+NEXT_PUBLIC_APP_VERSION=1.0.0
+```
+
+**Backend (Koyeb/Render)**:
+```bash
+PORT=8085
+NODE_ENV=production
+DATABASE_URL=your_neon_connection_string
+CORS_ORIGINS=https://yourdomain.com,https://tools.yourdomain.com
+```
+
+#### 2. API URL 검증
+배포 전에 다음 사항을 반드시 확인:
+
+```bash
+# 하드코딩된 URL이 있는지 검사
+grep -r "localhost:808" src/
+grep -r "http://localhost" src/
+
+# 모든 결과가 0이어야 함!
+```
+
+#### 3. 도메인별 환경변수 예시
+
+**개발환경 (.env.local)**:
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8085
+NEXT_PUBLIC_WS_URL=ws://localhost:8084
+```
+
+**스테이징 환경**:
+```bash
+NEXT_PUBLIC_API_URL=https://api-staging.yourdomain.com
+NEXT_PUBLIC_WS_URL=wss://api-staging.yourdomain.com
+```
+
+**프로덕션 환경**:
+```bash
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+NEXT_PUBLIC_WS_URL=wss://api.yourdomain.com
+```
+
+### 🔧 배포 체크리스트
+
+- [ ] `src/lib/config.ts` 파일이 올바르게 구성되어 있는가?
+- [ ] 모든 API 호출이 `apiUrls.*` 함수를 사용하는가?
+- [ ] 모든 이미지 URL이 `imageUrls.*` 함수를 사용하는가?
+- [ ] 환경변수가 각 플랫폼에 올바르게 설정되었는가?
+- [ ] CORS 설정이 프론트엔드 도메인을 포함하는가?
+- [ ] WebSocket URL이 HTTPS 환경에서 WSS를 사용하는가?
+
 ## 주의사항
 
+- **API URL 하드코딩 절대 금지**: 환경변수와 헬퍼 함수만 사용
 - Vercel은 트래픽 급증 시 갑작스런 서비스 중단 위험
 - 프로덕션 환경에서는 모니터링과 백업 필수
 - 무료 티어 제한을 정기적으로 확인
+- 환경변수 변경 후 반드시 재배포 필요
