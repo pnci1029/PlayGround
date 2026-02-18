@@ -19,11 +19,11 @@ export interface StoredTrendData extends TrendData {
 }
 
 export class DatabaseService {
-  private pool: Pool
+  public pool: Pool
   
   constructor() {
     this.pool = new Pool({
-      host: process.env.DB_HOST || 'postgres',
+      host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432'),
       database: process.env.DB_NAME || 'playground',
       user: process.env.DB_USER || 'postgres',
@@ -50,6 +50,12 @@ export class DatabaseService {
       console.error('❌ PostgreSQL 연결 실패:', error)
       return false
     }
+  }
+
+  // 편의 메서드 - 직접 쿼리 실행
+  async query(text: string, params?: any[]): Promise<any[]> {
+    const result = await this.pool.query(text, params)
+    return result.rows
   }
 
   // 트렌드 데이터 저장

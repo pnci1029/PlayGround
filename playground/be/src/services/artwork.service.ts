@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Pool } from 'pg'
 import { imageService } from './image.service'
+import '../types/fastify'
 import { 
   Artwork, 
   CreateArtworkRequest, 
@@ -341,7 +342,7 @@ export class ArtworkService {
     try {
       const { id } = request.params
       const userIp = request.ip
-      const userSession = request.session?.sessionId || `ip_${userIp}`
+      const userSession = (request as any).session?.sessionId || `ip_${userIp}`
 
       // Check if already liked
       const likeCheck = await this.pool.query(

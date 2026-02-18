@@ -5,7 +5,7 @@ export const dbConfig = {
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'playground',
-  password: process.env.DB_PASSWORD || 'password',
+  password: process.env.DB_PASSWORD || 'please_change_this_password',
   port: parseInt(process.env.DB_PORT || '5432'),
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 }

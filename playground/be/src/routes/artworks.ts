@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { ArtworkService } from '../services/artwork.service'
+import '../types/fastify'
 
 export async function artworkRoutes(fastify: FastifyInstance) {
   // Register multipart support
@@ -9,7 +10,7 @@ export async function artworkRoutes(fastify: FastifyInstance) {
     }
   })
 
-  const artworkService = new ArtworkService(fastify.pg)
+  const artworkService = new ArtworkService((fastify as any).pg)
 
   // Create artwork (POST /api/artworks)
   fastify.post('/api/artworks', {
@@ -248,8 +249,9 @@ export async function artworkRoutes(fastify: FastifyInstance) {
   })
 
   // Serve static files
+  const path = require('path')
   fastify.register(require('@fastify/static'), {
-    root: fastify.uploadsDir,
+    root: path.join(__dirname, '../../uploads'),
     prefix: '/uploads/'
   })
 
