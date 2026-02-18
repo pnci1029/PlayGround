@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, MouseEvent } from 'react'
 import { useSearchParams } from 'next/navigation'
 import SaveModal from '@/components/canvas/SaveModal'
+import { apiUrls, logger } from '@/lib/config'
 
 export default function CanvasPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -55,11 +56,11 @@ export default function CanvasPage() {
 
   const loadArtworkForEdit = async (artworkId: string) => {
     try {
-      const response = await fetch(`http://localhost:8085/api/artworks/${artworkId}`)
+      const response = await fetch(apiUrls.artwork(artworkId))
       if (response.ok) {
         const artwork = await response.json()
         setLoadedArtwork(artwork)
-        
+
         // Canvas에 기존 작품 로드
         if (artwork.canvas_data && artwork.canvas_data.imageData) {
           const canvas = canvasRef.current
@@ -73,7 +74,7 @@ export default function CanvasPage() {
             // Canvas 크기를 작품 크기로 설정
             canvas.width = artwork.width || 800
             canvas.height = artwork.height || 600
-            
+
             // 기존 이미지 그리기
             ctx.drawImage(img, 0, 0)
           }
@@ -102,15 +103,15 @@ export default function CanvasPage() {
           })
         }
         break
-        
+
       case 'draw':
         drawFromEvent(data.data)
         break
-        
+
       case 'clear':
         clearCanvas()
         break
-        
+
       case 'user_join':
       case 'user_leave':
         // 사용자 수 업데이트는 서버에서 별도로 관리
@@ -132,14 +133,14 @@ export default function CanvasPage() {
 
     ctx.beginPath()
     ctx.moveTo(prevX, prevY)
-    
+
     if (tool === 'pen') {
       ctx.globalCompositeOperation = 'source-over'
       ctx.strokeStyle = color
     } else {
       ctx.globalCompositeOperation = 'destination-out'
     }
-    
+
     ctx.lineWidth = brushSize
     ctx.lineTo(x, y)
     ctx.stroke()
@@ -222,55 +223,91 @@ export default function CanvasPage() {
   }
 
   const saveArtwork = async (title: string, description: string, authorName: string) => {
+    logger.log('🎨 저장 시작:', { title, description, authorName })
+
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      console.error('❌ Canvas를 찾을 수 없음')
+      return
+    }
+
+    console.log('📏 Canvas 크기:', { width: canvas.width, height: canvas.height })
 
     setIsSaving(true)
     try {
-      // Canvas를 Blob으로 변환
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob)
-        }, 'image/png', 0.9)
-      })
+      // Canvas 데이터 추출
+      console.log('🖼️ Canvas 데이터 추출 중...')
+      const imageData = canvas.toDataURL('image/png')
+      console.log('📊 이미지 데이터 크기:', imageData.length, 'bytes')
 
-      // Canvas 데이터 추출 (향후 편집용)
       const canvasData = {
+        id: editId || Date.now().toString(),
+        title,
+        description,
+        author_name: authorName,
         width: canvas.width,
         height: canvas.height,
-        imageData: canvas.toDataURL('image/png')
+        imageData: imageData,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
 
-      // FormData 생성
-      const formData = new FormData()
-      formData.append('file', blob, 'artwork.png')
-      formData.append('title', title)
-      formData.append('description', description)
-      formData.append('author_name', authorName)
-      formData.append('canvas_data', JSON.stringify(canvasData))
-      formData.append('width', canvas.width.toString())
-      formData.append('height', canvas.height.toString())
+      console.log('💾 localStorage 저장 중...')
+      // 임시로 localStorage에 저장 (백엔드 복구 전까지)
+      const existingArtworks = JSON.parse(localStorage.getItem('artworks') || '[]')
+      console.log('📚 기존 작품 개수:', existingArtworks.length)
 
-      // API 호출 (편집 모드면 PUT, 새 작품이면 POST)
-      const url = editId 
-        ? `http://localhost:8085/api/artworks/${editId}`
-        : 'http://localhost:8085/api/artworks'
-      
-      const response = await fetch(url, {
-        method: editId ? 'PUT' : 'POST',
-        body: formData
-      })
-
-      if (!response.ok) {
-        throw new Error('저장에 실패했습니다')
+      if (editId) {
+        // 기존 작품 업데이트
+        console.log('✏️ 기존 작품 업데이트:', editId)
+        const index = existingArtworks.findIndex((art: any) => art.id === editId)
+        if (index !== -1) {
+          existingArtworks[index] = { ...existingArtworks[index], ...canvasData }
+          console.log('✅ 작품 업데이트 완료')
+        } else {
+          console.error('❌ 편집할 작품을 찾을 수 없음')
+        }
+      } else {
+        // 새 작품 추가
+        console.log('➕ 새 작품 추가')
+        existingArtworks.unshift(canvasData)
       }
 
-      const result = await response.json()
-      console.log('Artwork saved:', result)
-      
+      localStorage.setItem('artworks', JSON.stringify(existingArtworks))
+      console.log('✅ localStorage 저장 완료, 총 작품 수:', existingArtworks.length)
+
       // 성공 알림
-      alert('작품이 성공적으로 저장되었습니다!')
+      console.log('🎉 저장 성공!')
+      alert('작품이 성공적으로 저장되었습니다!\n(현재 임시 저장 모드)')
       setShowSaveModal(false)
+
+      // 백엔드 API 시도 (실패해도 무시)
+      try {
+        const formData = new FormData()
+        const blob = await new Promise<Blob>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (blob) resolve(blob)
+          }, 'image/png', 0.9)
+        })
+        formData.append('file', blob, 'artwork.png')
+        formData.append('title', title)
+        formData.append('description', description)
+        formData.append('author_name', authorName)
+        formData.append('canvas_data', JSON.stringify(canvasData))
+        formData.append('width', canvas.width.toString())
+        formData.append('height', canvas.height.toString())
+
+        const url = editId
+          ? apiUrls.artwork(editId)
+          : apiUrls.artworks
+
+        await fetch(url, {
+          method: editId ? 'PUT' : 'POST',
+          body: formData
+        })
+      } catch (apiError) {
+        console.log('API 저장 실패 (임시 저장은 성공):', apiError)
+      }
 
     } catch (error) {
       console.error('Save error:', error)
@@ -281,7 +318,7 @@ export default function CanvasPage() {
   }
 
   const colors = [
-    '#ffffff', '#ff0000', '#00ff00', '#0000ff', 
+    '#ffffff', '#ff0000', '#00ff00', '#0000ff',
     '#ffff00', '#ff00ff', '#00ffff', '#ffa500'
   ]
 
@@ -308,9 +345,9 @@ export default function CanvasPage() {
         </div>
 
         {/* Tools Panel */}
-        <div className="mb-6 p-4 bg-white border border-border rounded-lg">
+        <div className="mb-6 p-4 bg-white border border-gray-300 rounded-lg">
           <div className="flex flex-wrap items-center gap-6">
-            
+
             {/* Tool Selection */}
             <div className="flex items-center gap-2">
               <label className="text-sm text-gray-700">도구:</label>
@@ -372,17 +409,29 @@ export default function CanvasPage() {
             {/* Save Button */}
             <button
               onClick={() => setShowSaveModal(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded text-sm transition-colors"
+              className="px-6 py-2 rounded transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              style={{ 
+                border: '2px solid #000000',
+                color: '#000000',
+                fontWeight: 'normal',
+                fontSize: '14px'
+              }}
             >
-              {editId ? '업데이트' : '저장'}
+              💾 저장
             </button>
 
             {/* Clear Button */}
             <button
               onClick={clearCanvas}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-sm transition-colors"
+              className="px-6 py-2 rounded transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              style={{ 
+                border: '2px solid #000000',
+                color: '#000000',
+                fontWeight: 'normal',
+                fontSize: '14px'
+              }}
             >
-              전체 지우기
+              🗑️ 삭제
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { apiUrls } from '@/lib/config'
 
 interface ChatMessage {
   type: 'message' | 'user_join' | 'user_leave' | 'user_list'
@@ -41,7 +42,7 @@ export default function ChatPage() {
   const connectWebSocket = () => {
     try {
       setConnectionStatus('connecting')
-      const ws = new WebSocket('ws://localhost:8084')
+      const ws = new WebSocket(apiUrls.chat)
       wsRef.current = ws
 
       ws.onopen = () => {

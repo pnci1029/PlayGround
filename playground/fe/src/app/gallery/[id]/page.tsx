@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { apiUrls, imageUrls, logger } from '@/lib/config'
 
 interface Artwork {
   id: number
@@ -42,15 +43,15 @@ export default function ArtworkDetailPage() {
   const fetchArtwork = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://localhost:8085/api/artworks/${params.id}`)
+      const response = await fetch(apiUrls.artwork(params.id as string))
       if (response.ok) {
         const data = await response.json()
         setArtwork(data)
       } else {
-        // Handle 404 or other errors
+        logger.error('Failed to fetch artwork:', response.status, response.statusText)
       }
     } catch (error) {
-      console.error('Failed to fetch artwork:', error)
+      logger.error('Failed to fetch artwork:', error)
     } finally {
       setLoading(false)
     }
@@ -61,7 +62,7 @@ export default function ArtworkDetailPage() {
     
     setIsLiking(true)
     try {
-      const response = await fetch(`http://localhost:8085/api/artworks/${artwork.id}/like`, {
+      const response = await fetch(apiUrls.artworkLike(artwork.id.toString()), {
         method: 'POST'
       })
       
@@ -74,7 +75,7 @@ export default function ArtworkDetailPage() {
         } : null)
       }
     } catch (error) {
-      console.error('Failed to like artwork:', error)
+      logger.error('Failed to like artwork:', error)
     } finally {
       setIsLiking(false)
     }
@@ -87,7 +88,7 @@ export default function ArtworkDetailPage() {
     if (!authorName) return
 
     try {
-      const response = await fetch(`http://localhost:8085/api/artworks/${artwork.id}/fork`, {
+      const response = await fetch(apiUrls.artworkFork(artwork.id.toString()), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -102,7 +103,7 @@ export default function ArtworkDetailPage() {
         alert(`작품이 성공적으로 포크되었습니다! (ID: ${result.id})`)
       }
     } catch (error) {
-      console.error('Failed to fork artwork:', error)
+      logger.error('Failed to fork artwork:', error)
       alert('포크 중 오류가 발생했습니다.')
     }
   }
@@ -163,7 +164,7 @@ export default function ArtworkDetailPage() {
           <div className="lg:col-span-2">
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
               <img
-                src={`http://localhost:8085${artwork.image_url}`}
+                src={imageUrls.artwork(artwork.image_url)}
                 alt={artwork.title}
                 className="w-full h-auto"
               />
@@ -256,7 +257,7 @@ export default function ArtworkDetailPage() {
                 >
                   <div className="aspect-square">
                     <img
-                      src={`http://localhost:8085${relatedArtwork.thumbnail_url}`}
+                      src={imageUrls.thumbnail(relatedArtwork.thumbnail_url)}
                       alt={relatedArtwork.title}
                       className="w-full h-full object-cover"
                     />
