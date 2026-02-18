@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { apiUrls, imageUrls, logger } from '@/lib/config'
 
 interface Artwork {
   id: number
@@ -42,24 +43,84 @@ export default function GalleryPage() {
   const fetchArtworks = async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-        sort: sortBy
-      })
-
+      // 임시로 localStorage에서 데이터 가져오기 (백엔드 복구 전까지)
+      logger.log('📚 localStorage에서 작품 목록 가져오는 중...')
+      const storedArtworks = JSON.parse(localStorage.getItem('artworks') || '[]')
+      logger.log('🎨 저장된 작품 수:', storedArtworks.length)
+      
+      let filteredArtworks = [...storedArtworks]
+      
+      // 검색 필터링
       if (searchTerm) {
-        params.append('search', searchTerm)
+        filteredArtworks = filteredArtworks.filter(artwork => 
+          artwork.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          artwork.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (artwork.description && artwork.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        )
       }
+      
+      // 정렬
+      if (sortBy === 'latest') {
+        filteredArtworks.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      } else if (sortBy === 'popular') {
+        filteredArtworks.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+      } else if (sortBy === 'views') {
+        filteredArtworks.sort((a, b) => (b.views || 0) - (a.views || 0))
+      }
+      
+      // 페이지네이션
+      const startIndex = (pagination.page - 1) * pagination.limit
+      const endIndex = startIndex + pagination.limit
+      const paginatedArtworks = filteredArtworks.slice(startIndex, endIndex)
+      
+      // localStorage 데이터를 API 형식에 맞게 변환
+      const transformedArtworks = paginatedArtworks.map((artwork, index) => ({
+        id: parseInt(artwork.id) || index + 1,
+        title: artwork.title,
+        description: artwork.description || '',
+        author_name: artwork.author_name,
+        thumbnail_url: artwork.imageData, // localStorage에 저장된 base64 이미지 사용
+        image_url: artwork.imageData,
+        views: artwork.views || 0,
+        likes: artwork.likes || 0,
+        created_at: artwork.created_at,
+        version: artwork.version || 1
+      }))
+      
+      setArtworks(transformedArtworks)
+      setPagination(prev => ({
+        ...prev,
+        total: filteredArtworks.length,
+        totalPages: Math.ceil(filteredArtworks.length / prev.limit)
+      }))
+      
+      logger.log('✅ 갤러리 데이터 로드 완료:', transformedArtworks.length, '개 작품')
+      
+      // 백엔드 API도 시도해보기 (실패해도 무시)
+      try {
+        const params = new URLSearchParams({
+          page: pagination.page.toString(),
+          limit: pagination.limit.toString(),
+          sort: sortBy
+        })
 
-      const response = await fetch(`http://localhost:8085/api/artworks?${params}`)
-      if (response.ok) {
-        const data = await response.json()
-        setArtworks(data.artworks)
-        setPagination(data.pagination)
+        if (searchTerm) {
+          params.append('search', searchTerm)
+        }
+
+        const response = await fetch(`${apiUrls.artworks}?${params}`)
+        if (response.ok) {
+          const data = await response.json()
+          logger.log('🌐 백엔드 API에서도 데이터 가져옴:', data.artworks.length, '개')
+          // 백엔드 데이터가 있으면 localStorage 데이터와 합치거나 대체할 수 있음
+        }
+      } catch (apiError) {
+        logger.log('🚫 백엔드 API 호출 실패 (localStorage 데이터 사용):', apiError)
       }
+      
     } catch (error) {
       console.error('Failed to fetch artworks:', error)
+      setArtworks([])
     } finally {
       setLoading(false)
     }
@@ -153,7 +214,7 @@ export default function GalleryPage() {
                   <Link href={`/gallery/${artwork.id}`}>
                     <div className="aspect-video relative">
                       <img
-                        src={`http://localhost:8085${artwork.thumbnail_url}`}
+                        src={imageUrls.thumbnail(artwork.thumbnail_url)}
                         alt={artwork.title}
                         className="w-full h-full object-cover"
                       />

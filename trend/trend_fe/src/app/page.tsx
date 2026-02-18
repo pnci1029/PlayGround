@@ -1,121 +1,127 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { useTrends } from '../hooks/useTrends'
-import TrendCard from '../components/TrendCard'
-import SourceFilter from '../components/SourceFilter'
+import { useState } from 'react'
+import { useTrendingRankings } from '../hooks/useTrendingRankings'
+import RankingCard from '../components/RankingCard'
+import TimeframeSelector from '../components/TimeframeSelector'
 import LiveIndicator from '../components/LiveIndicator'
 
-export default function TrendPage() {
+export default function TrendRankingPage() {
   const { 
-    trends, 
+    rankings, 
     isLoading, 
-    isConnected, 
-    lastUpdate, 
     error,
-    fetchTrends,
-    refreshTrends 
-  } = useTrends()
-  
-  const [selectedSource, setSelectedSource] = useState<string>('all')
+    lastUpdate, 
+    timeframe,
+    setTimeframe,
+    refreshRankings,
+    stats 
+  } = useTrendingRankings('1h')
 
-  // 선택된 소스에 따라 트렌드 필터링
-  const filteredTrends = useMemo(() => {
-    if (selectedSource === 'all') {
-      return trends
-    }
-    return trends.filter(trend => trend.source === selectedSource)
-  }, [trends, selectedSource])
-
-  const handleSourceChange = (source: string) => {
-    setSelectedSource(source)
-    
-    // 'all'이 아닌 특정 소스 선택 시 해당 소스의 최신 데이터 가져오기
-    if (source !== 'all') {
-      fetchTrends(source)
-    }
-  }
+  // 페이지 렌더링 상태 로깅
+  console.log('🖥️ TrendRankingPage 렌더링:', {
+    rankingsCount: rankings.length,
+    isLoading,
+    error,
+    timeframe,
+    lastUpdate: lastUpdate?.toLocaleTimeString(),
+    hasStats: !!stats
+  })
 
   const handleRefresh = () => {
-    refreshTrends()
+    console.log('🔄 새로고침 버튼 클릭')
+    refreshRankings()
   }
 
-  // 소스별 통계
-  const sourceStats = useMemo(() => {
-    const stats = trends.reduce((acc, trend) => {
-      acc[trend.source] = (acc[trend.source] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-    
-    return stats
-  }, [trends])
+  const getTimeframeName = (tf: string) => {
+    const names = {
+      '1h': '1시간',
+      '6h': '6시간', 
+      '1d': '1일',
+      '3d': '3일',
+      '1w': '1주일'
+    }
+    return names[tf as keyof typeof names] || tf
+  }
 
   return (
     <div className="min-h-screen bg-gradient-bg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container-centered py-12">
         
         {/* Header */}
-        <div className="mb-8 animate-fade-in">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-5xl font-bold mb-2">
-                <span className="gradient-text">실시간 트렌드</span>
-              </h1>
-              <p className="text-xl text-text-secondary">
-                전 세계 최신 트렌드를 <span className="text-primary font-semibold">실시간</span>으로 확인하세요
-              </p>
-            </div>
+        <div className="content-section animate-fade-in">
+          <div className="text-center mb-12">
+            <h1 className="text-6xl font-bold mb-4">
+              <span className="gradient-text">트렌드 순위</span>
+            </h1>
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto mb-8">
+              화제성 기반 키워드 순위
+            </p>
             
             {/* 새로고침 버튼 */}
             <button
               onClick={handleRefresh}
               disabled={isLoading}
-              className="btn-primary flex items-center gap-2 hover-lift"
+              className="btn-primary flex items-center gap-3 mx-auto hover-lift px-8 py-4 text-lg"
             >
               {isLoading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   업데이트 중...
                 </>
               ) : (
                 <>
-                  ✨ 새로고침
+                  <span className="text-2xl">🏆</span>
+                  새로고침
                 </>
               )}
             </button>
           </div>
 
           {/* 상태 표시 */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex justify-center mb-8">
             <LiveIndicator 
-              isConnected={isConnected} 
+              isConnected={true} 
               lastUpdate={lastUpdate}
             />
           </div>
+        </div>
 
-          {/* 소스 필터 */}
-          <SourceFilter 
-            selectedSource={selectedSource}
-            onSourceChange={handleSourceChange}
-            isLoading={isLoading}
-          />
+        <div className="visual-separator"></div>
+
+        {/* 컨트롤 섹션 */}
+        <div className="content-section">
+          {/* 시간대 선택기 */}
+          <div className="flex justify-center mb-8">
+            <TimeframeSelector 
+              value={timeframe}
+              onChange={setTimeframe}
+              isLoading={isLoading}
+            />
+          </div>
 
           {/* 통계 */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
-            <div className="glass hover-lift rounded-xl p-4 text-center animate-pulse-glow">
-              <div className="text-2xl font-bold text-primary mb-1">{trends.length}</div>
-              <div className="text-sm text-text-secondary">총 트렌드</div>
+          <div className="stats-grid">
+            <div className="stats-card stats-card-primary hover-lift animate-pulse-glow">
+              <div className="text-3xl font-bold text-primary mb-2">{rankings.length}</div>
+              <div className="text-sm text-text-secondary font-semibold">순위 키워드</div>
             </div>
-            {Object.entries(sourceStats).slice(0, 5).map(([source, count], index) => (
-              <div 
-                key={source} 
-                className="glass hover-lift rounded-xl p-4 text-center transition-all duration-300"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="text-xl font-bold text-text-primary mb-1">{count}</div>
-                <div className="text-xs text-text-muted uppercase tracking-wider">{source}</div>
-              </div>
-            ))}
+            {stats && (
+              <>
+                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '100ms' }}>
+                  <div className="text-2xl font-bold text-text-primary mb-2">{stats.maxScore}</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">최고 점수</div>
+                </div>
+                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '200ms' }}>
+                  <div className="text-2xl font-bold text-text-primary mb-2">{stats.avgScore}</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">평균 점수</div>
+                </div>
+                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '300ms' }}>
+                  <div className="text-2xl font-bold text-text-primary mb-2">{getTimeframeName(timeframe)}</div>
+                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">기준 시간</div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -137,43 +143,56 @@ export default function TrendPage() {
         )}
 
         {/* 로딩 상태 */}
-        {isLoading && trends.length === 0 && (
+        {isLoading && rankings.length === 0 && (
           <div className="text-center py-16">
             <div className="relative mx-auto mb-6">
               <div className="w-20 h-20 border-4 border-surface border-t-primary rounded-full animate-spin mx-auto"></div>
               <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-r-secondary rounded-full animate-spin mx-auto" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
             </div>
             <h3 className="text-2xl font-bold text-text-primary mb-3 gradient-text">
-              데이터 수집 중...
+              데이터 로딩 중
             </h3>
             <p className="text-text-secondary max-w-md mx-auto">
-              다양한 소스에서 <span className="text-primary font-semibold">최신 트렌드 데이터</span>를 가져오고 있습니다
+              순위 데이터를 계산하고 있습니다
             </p>
           </div>
         )}
 
-        {/* 트렌드 그리드 */}
-        {!isLoading || trends.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTrends.map((trend, index) => (
-              <TrendCard 
-                key={`${trend.source}-${trend.keyword}-${index}`}
-                trend={trend}
-                index={index}
-              />
-            ))}
+        {/* 순위 그리드 */}
+        {!isLoading || rankings.length > 0 ? (
+          <div className="content-section">
+            <div className="visual-separator-thick mb-12"></div>
+            
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-text-primary mb-4">
+                {getTimeframeName(timeframe)} 화제성 순위
+              </h2>
+              <p className="text-text-secondary">
+                {rankings.length}개 키워드 순위
+              </p>
+            </div>
+            
+            <div className="grid-trends">
+              {rankings.map((ranking, index) => (
+                <RankingCard 
+                  key={`${ranking.keyword}-${ranking.rank}`}
+                  ranking={ranking}
+                  index={index}
+                />
+              ))}
+            </div>
           </div>
         ) : null}
 
         {/* 데이터 없음 */}
-        {!isLoading && filteredTrends.length === 0 && (
+        {!isLoading && rankings.length === 0 && (
           <div className="text-center py-20">
-            <div className="text-6xl mb-6">📊</div>
+            <div className="text-6xl mb-6">🏆</div>
             <h3 className="text-2xl font-bold text-text-primary mb-4">
-              {selectedSource === 'all' ? '트렌드 데이터가 없습니다' : `${selectedSource.toUpperCase()} 트렌드가 없습니다`}
+              순위 데이터가 없습니다
             </h3>
             <p className="text-text-secondary mb-8 max-w-md mx-auto">
-              잠시 후 다시 시도하거나 새로고침을 눌러보세요
+              새로고침을 시도해보세요
             </p>
             <button 
               onClick={handleRefresh}
@@ -185,67 +204,105 @@ export default function TrendPage() {
         )}
 
         {/* 푸터 정보 */}
-        <div className="mt-20 pt-12 border-t border-border relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="glass rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-                <span className="text-primary">🌐</span> 데이터 소스
-              </h3>
-              <div className="space-y-3 text-sm text-text-secondary">
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-accent-orange"></span>
-                  <span><strong>Hacker News</strong> - 기술 뉴스 및 토론</span>
+        <div className="content-section section-spacing-large">
+          <div className="visual-separator-thick mb-16"></div>
+          
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-text-primary mb-4">화제성 순위 시스템</h2>
+            <p className="text-xl text-text-secondary max-w-3xl mx-auto">
+              언급 빈도, 상호작용, 성장률을 종합한 화제성 점수로 순위 결정
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <div className="glass-strong rounded-2xl p-8 hover-lift">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-primary flex items-center justify-center">
+                  <span className="text-2xl">🌐</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-accent-red"></span>
-                  <span><strong>Reddit</strong> - 소셜 뉴스 플랫폼</span>
+                <h3 className="text-2xl font-bold text-text-primary mb-2">데이터 소스</h3>
+                <p className="text-text-secondary">수집 플랫폼</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 p-3 rounded-lg bg-glass hover:bg-surface-hover transition-colors">
+                  <span className="w-3 h-3 rounded-full bg-accent-orange"></span>
+                  <div>
+                    <div className="font-semibold text-text-primary">Hacker News</div>
+                    <div className="text-sm text-text-muted">기술 뉴스 및 토론</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-text-muted"></span>
-                  <span><strong>GitHub</strong> - 오픈소스 프로젝트</span>
+                <div className="flex items-center gap-4 p-3 rounded-lg bg-glass hover:bg-surface-hover transition-colors">
+                  <span className="w-3 h-3 rounded-full bg-accent-red"></span>
+                  <div>
+                    <div className="font-semibold text-text-primary">Reddit</div>
+                    <div className="text-sm text-text-muted">소셜 뉴스 플랫폼</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-accent-green"></span>
-                  <span><strong>Dev.to</strong> - 개발자 커뮤니티</span>
+                <div className="flex items-center gap-4 p-3 rounded-lg bg-glass hover:bg-surface-hover transition-colors">
+                  <span className="w-3 h-3 rounded-full bg-text-muted"></span>
+                  <div>
+                    <div className="font-semibold text-text-primary">GitHub</div>
+                    <div className="text-sm text-text-muted">오픈소스 프로젝트</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
-                  <span><strong>RSS 피드</strong> - 다양한 뉴스 소스</span>
+                <div className="flex items-center gap-4 p-3 rounded-lg bg-glass hover:bg-surface-hover transition-colors">
+                  <span className="w-3 h-3 rounded-full bg-accent-green"></span>
+                  <div>
+                    <div className="font-semibold text-text-primary">Dev.to</div>
+                    <div className="text-sm text-text-muted">개발자 커뮤니티</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 p-3 rounded-lg bg-glass hover:bg-surface-hover transition-colors">
+                  <span className="w-3 h-3 rounded-full bg-accent-yellow"></span>
+                  <div>
+                    <div className="font-semibold text-text-primary">RSS Feeds</div>
+                    <div className="text-sm text-text-muted">다양한 뉴스 소스</div>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="glass rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-                <span className="text-secondary">⚡</span> 업데이트 주기
-              </h3>
-              <div className="space-y-3 text-sm text-text-secondary">
-                <div className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-primary mt-1.5"></span>
-                  <span><strong>실시간 WebSocket</strong><br />5분마다 자동 업데이트</span>
+            <div className="glass-strong rounded-2xl p-8 hover-lift">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-secondary flex items-center justify-center">
+                  <span className="text-2xl">⚡</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-secondary mt-1.5"></span>
-                  <span><strong>REST API</strong><br />5분 캐시 후 새 데이터 제공</span>
+                <h3 className="text-2xl font-bold text-text-primary mb-2">업데이트 시스템</h3>
+                <p className="text-text-secondary">데이터 동기화</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-glass border-l-4 border-primary">
+                  <div className="font-semibold text-text-primary mb-2">실시간 WebSocket</div>
+                  <div className="text-sm text-text-secondary">5분마다 자동 업데이트</div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-accent-green mt-1.5"></span>
-                  <span><strong>공식 API</strong><br />안전한 데이터 수집 방법</span>
+                <div className="p-4 rounded-lg bg-glass border-l-4 border-secondary">
+                  <div className="font-semibold text-text-primary mb-2">REST API 캐시</div>
+                  <div className="text-sm text-text-secondary">캐싱으로 빠른 응답</div>
+                </div>
+                <div className="p-4 rounded-lg bg-glass border-l-4 border-accent-green">
+                  <div className="font-semibold text-text-primary mb-2">데이터 안정성</div>
+                  <div className="text-sm text-text-secondary">PostgreSQL 백업</div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-border text-center">
-            <div className="flex items-center justify-center gap-2 text-text-muted mb-2">
-              <span className="text-2xl">✨</span>
-              <span className="text-sm">
-                Powered by <span className="font-bold gradient-text">PlayGround Trend</span>
-              </span>
+          <div className="text-center py-12 border-t border-border">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-4xl">✨</span>
+              <span className="text-2xl font-bold gradient-text">PlayGround Trend</span>
             </div>
-            <p className="text-xs text-text-muted">
-              실시간 트렌드 서비스 • 데이터 출처: 공개 API 및 RSS 피드
+            <p className="text-text-secondary text-lg">
+              실시간 트렌드 분석 서비스
             </p>
+            <div className="flex justify-center gap-6 mt-8 text-sm text-text-muted">
+              <span>실시간 분석</span>
+              <span>데이터 보안</span>
+              <span>고성능</span>
+              <span>글로벌</span>
+            </div>
           </div>
         </div>
       </div>

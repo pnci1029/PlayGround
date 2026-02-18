@@ -99,14 +99,50 @@ export default function SaveModal({ isOpen, onClose, onSave, isLoading, isEdit =
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+              className="flex-1 px-4 py-2 rounded transition-all duration-200"
+              style={{
+                backgroundColor: '#e5e7eb',
+                border: '2px solid #9ca3af',
+                color: '#000000',
+                fontWeight: 'bold'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#d1d5db'
+                e.currentTarget.style.transform = 'scale(1.05)'
+                e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#e5e7eb'
+                e.currentTarget.style.transform = 'scale(1)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
               disabled={isLoading}
             >
               취소
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 rounded transition-all duration-200"
+              style={{
+                backgroundColor: '#e5e7eb',
+                border: '2px solid #9ca3af',
+                color: '#000000',
+                fontWeight: 'bold',
+                opacity: isLoading || !title.trim() || !authorName.trim() ? 0.5 : 1,
+                cursor: isLoading || !title.trim() || !authorName.trim() ? 'not-allowed' : 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading && title.trim() && authorName.trim()) {
+                  e.currentTarget.style.backgroundColor = '#d1d5db'
+                  e.currentTarget.style.transform = 'scale(1.05)'
+                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#e5e7eb'
+                e.currentTarget.style.transform = 'scale(1)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
               disabled={isLoading || !title.trim() || !authorName.trim()}
             >
               {isLoading ? (isEdit ? '업데이트 중...' : '저장 중...') : (isEdit ? '업데이트' : '저장')}
