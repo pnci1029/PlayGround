@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-playground}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-please_change_this_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
@@ -24,17 +24,19 @@ services:
     image: playground-backend:latest
     container_name: playground_backend
     ports:
-      - "8000:8000"
+      - "8000:8000"   # HTTP API
+      - "8010:8010"   # WebSocket
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
       - JWT_SECRET=${JWT_SECRET:-please_change_this_jwt_secret_in_production}
       - JWT_EXPIRES_IN=24h
       - PORT=8000
+      - WS_PORT=8010
     depends_on:
       - postgres
     restart: unless-stopped
@@ -53,6 +55,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8010
     depends_on:
       - backend
     restart: unless-stopped
@@ -73,7 +76,7 @@ services:
       - DB_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-playground}
       - DB_DRIVER=org.postgresql.Driver
       - DB_USERNAME=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
       - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - DB_SCHEMA=moodbite
     depends_on:
@@ -118,7 +121,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-please_change_this_password}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
     depends_on:
       - postgres
     restart: unless-stopped
