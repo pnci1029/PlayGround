@@ -49,81 +49,16 @@ export default function TrendRankingPage() {
       <div className="container-centered py-12">
         
         {/* Header */}
-        <div className="content-section animate-fade-in">
-          <div className="text-center mb-12">
-            <h1 className="text-6xl font-bold mb-4">
-              <span className="gradient-text">트렌드 순위</span>
-            </h1>
-            <p className="text-xl text-text-secondary max-w-2xl mx-auto mb-8">
-              화제성 기반 키워드 순위
-            </p>
-            
-            {/* 새로고침 버튼 */}
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading}
-              className="btn-primary flex items-center gap-3 mx-auto hover-lift px-8 py-4 text-lg"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  업데이트 중...
-                </>
-              ) : (
-                <>
-                  <span className="text-2xl">🏆</span>
-                  새로고침
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* 상태 표시 */}
-          <div className="flex justify-center mb-8">
-            <LiveIndicator 
-              isConnected={true} 
-              lastUpdate={lastUpdate}
-            />
-          </div>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-6 gradient-text">트렌드 순위</h1>
+          
+          <TimeframeSelector 
+            value={timeframe}
+            onChange={setTimeframe}
+            isLoading={isLoading}
+          />
         </div>
 
-        <div className="visual-separator"></div>
-
-        {/* 컨트롤 섹션 */}
-        <div className="content-section">
-          {/* 시간대 선택기 */}
-          <div className="flex justify-center mb-8">
-            <TimeframeSelector 
-              value={timeframe}
-              onChange={setTimeframe}
-              isLoading={isLoading}
-            />
-          </div>
-
-          {/* 통계 */}
-          <div className="stats-grid">
-            <div className="stats-card stats-card-primary hover-lift animate-pulse-glow">
-              <div className="text-3xl font-bold text-primary mb-2">{rankings.length}</div>
-              <div className="text-sm text-text-secondary font-semibold">순위 키워드</div>
-            </div>
-            {stats && (
-              <>
-                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '100ms' }}>
-                  <div className="text-2xl font-bold text-text-primary mb-2">{stats.maxScore}</div>
-                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">최고 점수</div>
-                </div>
-                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '200ms' }}>
-                  <div className="text-2xl font-bold text-text-primary mb-2">{stats.avgScore}</div>
-                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">평균 점수</div>
-                </div>
-                <div className="stats-card hover-lift animate-fade-in" style={{ animationDelay: '300ms' }}>
-                  <div className="text-2xl font-bold text-text-primary mb-2">{getTimeframeName(timeframe)}</div>
-                  <div className="text-xs text-text-muted uppercase tracking-wider font-medium">기준 시간</div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
 
         {/* 오류 표시 */}
         {error && (
@@ -158,31 +93,18 @@ export default function TrendRankingPage() {
           </div>
         )}
 
-        {/* 순위 그리드 */}
-        {!isLoading || rankings.length > 0 ? (
-          <div className="content-section">
-            <div className="visual-separator-thick mb-12"></div>
-            
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-text-primary mb-4">
-                {getTimeframeName(timeframe)} 화제성 순위
-              </h2>
-              <p className="text-text-secondary">
-                {rankings.length}개 키워드 순위
-              </p>
-            </div>
-            
-            <div className="grid-trends">
-              {rankings.map((ranking, index) => (
-                <RankingCard 
-                  key={`${ranking.keyword}-${ranking.rank}`}
-                  ranking={ranking}
-                  index={index}
-                />
-              ))}
-            </div>
+        {/* 순위 리스트 */}
+        {!isLoading && rankings.length > 0 && (
+          <div className="max-w-2xl mx-auto space-y-3">
+            {rankings.map((ranking, index) => (
+              <RankingCard 
+                key={`${ranking.keyword}-${ranking.rank}`}
+                ranking={ranking}
+                index={index}
+              />
+            ))}
           </div>
-        ) : null}
+        )}
 
         {/* 데이터 없음 */}
         {!isLoading && rankings.length === 0 && (

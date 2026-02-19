@@ -1,7 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { TrendingRanking } from '../hooks/useTrendingRankings'
-import TrendIndicator from './TrendIndicator'
+import { useTranslation } from '../hooks/useTranslation'
 
 interface RankingCardProps {
   ranking: TrendingRanking
@@ -9,128 +10,72 @@ interface RankingCardProps {
 }
 
 export default function RankingCard({ ranking, index }: RankingCardProps) {
-  const getSourceColor = (source: string) => {
-    const colors = {
-      hackernews: 'bg-accent-orange text-white',
-      reddit: 'bg-accent-red text-white',
-      github: 'bg-text-muted text-white',
-      devto: 'bg-accent-green text-white',
-      rss: 'bg-accent-yellow text-black'
-    }
-    return colors[source as keyof typeof colors] || 'bg-surface text-text-primary'
-  }
+  const { translateText } = useTranslation()
+  const [translatedKeyword, setTranslatedKeyword] = useState(ranking.keyword)
 
-  const getCardVariant = () => {
-    if (ranking.rank <= 3) {
-      return "ranking-card ranking-card-featured hover-lift animate-fade-in"
-    } else if (ranking.rank <= 10) {
-      return "ranking-card ranking-card-elevated hover-lift animate-fade-in"
+  useEffect(() => {
+    const translate = async () => {
+      const translated = await translateText(ranking.keyword)
+      setTranslatedKeyword(translated)
     }
-    return "ranking-card hover-lift animate-fade-in"
-  }
-
-  const formatScore = (score: number) => {
-    if (score >= 1000) {
-      return `${(score / 1000).toFixed(1)}K`
-    }
-    return Math.round(score).toString()
-  }
+    translate()
+  }, [ranking.keyword, translateText])
 
   const handleCardClick = () => {
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(ranking.keyword)}`
     window.open(searchUrl, '_blank', 'noopener,noreferrer')
   }
 
+  const getTrendIcon = () => {
+    switch (ranking.trend) {
+      case 'up': return '↗'
+      case 'down': return '↘'
+      case 'new': return '⭐'
+      default: return '→'
+    }
+  }
+
+  const getTrendColor = () => {
+    switch (ranking.trend) {
+      case 'up': return 'text-accent-green'
+      case 'down': return 'text-accent-red'
+      case 'new': return 'text-accent-yellow'
+      default: return 'text-text-muted'
+    }
+  }
+
   return (
     <div
-      className={getCardVariant()}
+      className="ranking-card group cursor-pointer"
       onClick={handleCardClick}
-      style={{
-        animationDelay: `${index * 50}ms`
-      }}
+      style={{ animationDelay: `${index * 30}ms` }}
     >
-      {/* 헤더 섹션 */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          {/* 순위 배지 */}
+      <div className="flex items-center justify-between">
+        {/* 순위 + 키워드 */}
+        <div className="flex items-center gap-4 flex-1 min-w-0">
           <div className={`
-            flex items-center justify-center w-12 h-12 rounded-full font-bold text-lg
-            ${ranking.rank <= 3 
-              ? 'bg-gradient-primary text-white shadow-lg' 
-              : 'bg-surface text-text-primary border-2 border-border'
-            }
+            flex items-center justify-center w-10 h-10 rounded-lg font-bold
+            ${ranking.rank <= 3 ? 'bg-primary text-background' : 'bg-surface text-text-primary'}
           `}>
             {ranking.rank}
           </div>
           
-          {/* 순위 변동 표시 */}
-          <TrendIndicator 
-            direction={ranking.trend} 
-            prevRank={ranking.prevRank}
-            currentRank={ranking.rank}
-          />
-        </div>
-
-        {/* 화제성 점수 */}
-        <div className="text-right">
-          <div className="text-2xl font-bold text-primary mb-1">
-            {formatScore(ranking.score)}
-          </div>
-          <div className="text-xs text-text-muted uppercase tracking-wide">
-            점수
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-medium text-text-primary truncate group-hover:text-primary transition-colors">
+              {translatedKeyword}
+            </h3>
           </div>
         </div>
-      </div>
 
-      {/* 메인 콘텐츠 */}
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-text-primary mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 leading-relaxed">
-          {ranking.keyword}
-        </h3>
-
-        {/* 통계 정보 */}
-        <div className="flex flex-wrap gap-3 mb-3">
-          <div className="flex items-center gap-1 text-sm text-text-secondary">
-            <span className="font-semibold">{ranking.mentions}</span>
-            <span>언급</span>
+        {/* 점수 + 트렌드 */}
+        <div className="flex items-center gap-3 ml-4">
+          <div className={`text-lg font-bold ${getTrendColor()}`}>
+            {getTrendIcon()}
           </div>
-          <div className="flex items-center gap-1 text-sm text-text-secondary">
-            <span className="font-semibold">{ranking.engagement}</span>
-            <span>상호작용</span>
-          </div>
-          {ranking.growthRate > 0 && (
-            <div className="flex items-center gap-1 text-sm text-accent-green">
-              <span className="font-semibold">+{ranking.growthRate.toFixed(1)}%</span>
-              <span>증가</span>
+          <div className="text-right">
+            <div className="text-sm font-bold text-primary">
+              {Math.round(ranking.score)}
             </div>
-          )}
-        </div>
-
-        {/* 소스 배지들 */}
-        <div className="flex flex-wrap gap-2">
-          {ranking.sources.map((source) => (
-            <span
-              key={source}
-              className={`
-                px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
-                ${getSourceColor(source)}
-              `}
-            >
-              {source}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* 푸터 섹션 */}
-      <div className="pt-3 border-t border-glass-border">
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-text-muted">
-            #{ranking.rank} 순위
-          </div>
-          <div className="text-sm text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-2 font-medium">
-            <span>검색하기</span>
-            <span className="group-hover:translate-x-1 transition-transform text-lg">→</span>
           </div>
         </div>
       </div>
