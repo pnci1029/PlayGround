@@ -1,5 +1,4 @@
 import { Pool } from 'pg'
-import { MultipartFile } from '@fastify/multipart'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -8,8 +7,8 @@ declare module 'fastify' {
   }
   
   interface FastifyRequest {
-    file(): Promise<MultipartFile | undefined>
-    parts(): AsyncIterableIterator<MultipartFile>
+    file(): Promise<any>
+    parts(): AsyncIterableIterator<any>
     session?: any
   }
 }
