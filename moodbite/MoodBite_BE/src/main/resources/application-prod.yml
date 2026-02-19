@@ -9,7 +9,7 @@ spring:
     url: ${DB_URL:jdbc:postgresql://postgres:5432/playground}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:please_change_this_password}
+    password: ${DB_PASSWORD:password}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
