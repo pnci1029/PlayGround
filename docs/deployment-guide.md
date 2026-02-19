@@ -181,7 +181,7 @@ grep -r "http://localhost" src/
 **개발환경 (.env.local)**:
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:8085
-NEXT_PUBLIC_WS_URL=ws://localhost:8084
+NEXT_PUBLIC_WS_URL=ws://localhost:8010
 ```
 
 **스테이징 환경**:

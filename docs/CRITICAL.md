@@ -25,7 +25,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8085
 NEXT_PUBLIC_API_PREFIX=/api
 
 # WebSocket 설정
-NEXT_PUBLIC_WS_URL=ws://localhost:8084
+NEXT_PUBLIC_WS_URL=ws://localhost:8010
 
 # 개발/운영 환경 구분
 NODE_ENV=development
@@ -55,7 +55,7 @@ export const apiUrls = {
   artwork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}`,
   artworkLike: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/like`,
   artworkFork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/fork`,
-  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8084',
+  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8010',
 } as const
 
 // 이미지 URL 생성 헬퍼 함수
