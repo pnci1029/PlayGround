@@ -214,36 +214,21 @@ body {
       0 0 0 1px rgba(255, 255, 255, 0.08);
   }
   
-  /* Ranking Card Styles */
+  /* Ranking Card Styles - 단순화 */
   .ranking-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.2s ease;
     opacity: 1;
     transform: translateY(0);
   }
   
-  .ranking-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .ranking-card:hover::before {
-    opacity: 1;
+  .ranking-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
   }
   
   .ranking-card-elevated {
