@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { apiUrls } from '@/lib/config'
+import { apiUrls, logger } from '@/lib/config'
 
 interface ChatMessage {
   type: 'message' | 'user_join' | 'user_leave' | 'user_list'
@@ -47,7 +47,7 @@ export default function ChatPage() {
 
       ws.onopen = () => {
         setConnectionStatus('connected')
-        console.log('채팅 서버에 연결되었습니다')
+        logger.log('✅ 채팅 서버에 연결되었습니다')
       }
 
       ws.onmessage = (event) => {
@@ -55,22 +55,21 @@ export default function ChatPage() {
           const data: ChatMessage = JSON.parse(event.data)
           handleWebSocketMessage(data)
         } catch (error) {
-          console.error('Chat message parse error:', error)
+          logger.error('Chat message parse error:', error)
         }
       }
 
       ws.onclose = () => {
         setConnectionStatus('disconnected')
-        console.log('채팅 서버 연결이 끊어졌습니다')
+        logger.log('🔌 채팅 서버 연결이 끊어졌습니다')
       }
 
-      ws.onerror = (error) => {
-        console.error('Chat WebSocket error:', error)
+      ws.onerror = () => {
         setConnectionStatus('disconnected')
-        console.log('채팅 서버에 연결할 수 없습니다 (오프라인 모드)')
+        logger.log('📡 채팅 서버 오프라인 - 로컬 모드로 전환')
       }
     } catch (error) {
-      console.error('Failed to connect to chat:', error)
+      logger.error('Failed to connect to chat:', error)
       setConnectionStatus('disconnected')
     }
   }
@@ -213,24 +212,24 @@ export default function ChatPage() {
                       {msg.type === 'message' ? (
                         <div className={`max-w-xs lg:max-w-md ${
                           msg.userId === 'me' 
-                            ? 'bg-blue-600 text-gray-900' 
-                            : 'bg-gray-50 text-gray-900'
-                        } rounded-lg p-3`}>
+                            ? 'bg-gray-100 border border-gray-300' 
+                            : 'bg-white border border-gray-200'
+                        } rounded-lg p-3 shadow-sm`}>
                           <div className="flex justify-between items-start gap-2 mb-1">
-                            <span className="text-sm font-medium">
+                            <span className="text-sm font-medium text-gray-800">
                               {msg.nickname}
                             </span>
-                            <span className="text-xs opacity-75">
+                            <span className="text-xs text-gray-500">
                               {formatTime(msg.timestamp)}
                             </span>
                           </div>
-                          <p className="text-sm whitespace-pre-wrap break-words">
+                          <p className="text-sm text-gray-900 whitespace-pre-wrap break-words">
                             {msg.message}
                           </p>
                         </div>
                       ) : (
                         <div className="w-full text-center">
-                          <span className="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
                             {msg.message}
                           </span>
                         </div>
@@ -256,9 +255,9 @@ export default function ChatPage() {
                   <button
                     onClick={sendMessage}
                     disabled={!inputMessage.trim()}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-gray-900 px-6 py-2 rounded-lg transition-colors"
+                    className="bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 border border-gray-300 px-6 py-2 rounded-lg transition-colors"
                   >
-                    전송
+                    <span style={{ color: '#000000', fontWeight: 'normal' }}>전송</span>
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
