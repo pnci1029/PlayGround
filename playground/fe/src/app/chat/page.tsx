@@ -80,11 +80,20 @@ export default function ChatPage() {
         if (data.users) {
           setActiveUsers(data.users)
           setUserCount(data.userCount || 0)
+          // 내 닉네임 찾기 (마지막에 추가된 사용자가 나)
+          if (data.users.length > 0 && !myNickname) {
+            setMyNickname(data.users[data.users.length - 1])
+          }
         }
         break
         
       case 'message':
-        setMessages(prev => [...prev, data])
+        // 내가 보낸 메시지인지 확인
+        const messageWithOwnership = {
+          ...data,
+          userId: data.nickname === myNickname ? 'me' : data.userId
+        }
+        setMessages(prev => [...prev, messageWithOwnership])
         break
         
       case 'user_join':
@@ -116,22 +125,22 @@ export default function ChatPage() {
   const sendMessage = () => {
     if (!inputMessage.trim()) return
 
-    const myMessage: ChatMessage = {
-      type: 'message',
-      message: inputMessage.trim(),
-      nickname: myNickname || '나',
-      timestamp: Date.now(),
-      userId: 'me'
-    }
-
     // WebSocket이 연결되어 있으면 서버로 전송
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
+    if (wsRef.current?.readyState === WebSocket.OPEN && myNickname) {
       wsRef.current.send(JSON.stringify({
         type: 'message',
-        message: inputMessage.trim()
+        message: inputMessage.trim(),
+        nickname: myNickname
       }))
     } else {
       // 오프라인 모드: 로컬에서만 표시
+      const myMessage: ChatMessage = {
+        type: 'message',
+        message: inputMessage.trim(),
+        nickname: myNickname || '나',
+        timestamp: Date.now(),
+        userId: 'me'
+      }
       setMessages(prev => [...prev, myMessage])
     }
 

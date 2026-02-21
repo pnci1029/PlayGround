@@ -4,7 +4,7 @@ import path from 'path'
 import { config } from './config'
 import toolsRoutes from './routes/tools'
 import { authRoutes } from './routes/auth'
-import { artworkRoutes } from './routes/artworks'
+// import { artworkRoutes } from './routes/artworks'
 import { testConnection, db } from './config/database'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
 // import canvasRoutes from './routes/canvas'
@@ -33,7 +33,7 @@ fastify.addHook('preHandler', subdomainRoutingMiddleware)
 // 라우트 등록
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
 fastify.register(authRoutes, { prefix: `${config.api.prefix}/auth` })
-fastify.register(artworkRoutes)
+// fastify.register(artworkRoutes)
 // fastify.register(canvasRoutes, { prefix: `${config.api.prefix}/canvas` })
 
 // 헬스체크 라우트
@@ -62,6 +62,9 @@ const start = async () => {
     console.log(`🚀 Backend server running on http://localhost:${config.server.port}`)
     console.log(`🔐 Auth API: http://localhost:${config.server.port}${config.api.prefix}/auth`)
     console.log(`🐘 PostgreSQL connected on port 5432`)
+    
+    // Start chat WebSocket server
+    import('./chat-server').catch(console.error)
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
