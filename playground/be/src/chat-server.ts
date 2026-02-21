@@ -22,7 +22,7 @@ class ChatWebSocketServer {
   private users = new Map<string, User>()
   private messageHistory: ChatMessage[] = []
 
-  constructor(port: number = 8084) {
+  constructor(port: number = 8010) {
     this.wss = new WebSocketServer({ port })
     
     this.wss.on('connection', (ws) => {
@@ -128,6 +128,12 @@ class ChatWebSocketServer {
     if (!user) return
 
     if (data.type === 'message' && data.message) {
+      // 닉네임이 전송되면 업데이트
+      if (data.nickname) {
+        user.nickname = data.nickname
+        this.users.set(userId, user)
+      }
+
       const chatMessage: ChatMessage = {
         type: 'message',
         message: data.message.trim(),
@@ -167,4 +173,4 @@ class ChatWebSocketServer {
 }
 
 // Chat WebSocket 서버 시작
-new ChatWebSocketServer(8084)
+new ChatWebSocketServer(8010)

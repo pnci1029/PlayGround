@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { ArtworkService } from '../services/artwork.service'
-import '../types/fastify'
+import '../types/fastify.d'
 
 export async function artworkRoutes(fastify: FastifyInstance) {
   // Register multipart support
