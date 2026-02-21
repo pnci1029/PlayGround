@@ -19,13 +19,20 @@ export const apiUrls = {
   artwork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}`,
   artworkLike: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/like`,
   artworkFork: (id: string) => `${config.api.baseUrl}${config.api.prefix}/artworks/${id}/fork`,
-  
-  // Auth 관련 API  
+
+  // Auth 관련 API
   auth: `${config.api.baseUrl}${config.api.prefix}/auth`,
-  
+
+  // Stats 관련 API
+  stats: {
+    badges: `${config.api.baseUrl}${config.api.prefix}/stats/badges`,
+    visit: `${config.api.baseUrl}${config.api.prefix}/stats/visit`,
+    popular: `${config.api.baseUrl}${config.api.prefix}/stats/popular`,
+  },
+
   // Health check
   health: `${config.api.baseUrl}/health`,
-  
+
   // WebSocket
   chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8010',
 } as const
