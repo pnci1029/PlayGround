@@ -32,10 +32,10 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
   };
 
   const getMatchScoreColor = (score: number): string => {
-    if (score >= 0.8) return '#28a745'; // 초록
-    if (score >= 0.6) return '#ffc107'; // 노랑
-    if (score >= 0.4) return '#fd7e14'; // 주황
-    return '#dc3545'; // 빨강
+    if (score >= 0.8) return '#4ECDC4'; // 청록색 (기존 선택 버튼 색상)
+    if (score >= 0.6) return '#2bb5ac'; // 진한 청록색
+    if (score >= 0.4) return '#dc3545'; // 빨간색
+    return '#dc3545'; // 빨간색
   };
 
   const formatDistance = (distance: number): string => {
@@ -53,7 +53,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
       marginRight: 'auto'
     },
     title: {
-      color: '#2c5aa0',
+      color: '#1a1a2e',
       marginBottom: '20px',
       fontWeight: '600',
       textAlign: 'center' as const
@@ -77,7 +77,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
     },
     restaurantName: {
       margin: '0',
-      color: '#2c5aa0',
+      color: '#1a1a2e',
       fontSize: '1.2em',
       fontWeight: '600'
     },
@@ -88,12 +88,12 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
       fontWeight: '500'
     },
     statusOpen: {
-      background: '#d4edda',
-      color: '#155724'
+      background: '#e8f5f4',
+      color: '#2bb5ac'
     },
     statusClosed: {
-      background: '#f8d7da',
-      color: '#721c24'
+      background: '#fee2e2',
+      color: '#dc3545'
     },
     restaurantInfo: {
       marginBottom: '15px'
@@ -114,7 +114,7 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
       flex: 1
     },
     link: {
-      color: '#2c5aa0',
+      color: '#4ECDC4',
       textDecoration: 'none'
     },
     matchScore: {
@@ -135,11 +135,11 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
       flex: 1
     },
     btnDirections: {
-      background: '#28a745',
+      background: '#4ECDC4',
       color: 'white'
     },
     btnCall: {
-      background: '#17a2b8',
+      background: '#2bb5ac',
       color: 'white'
     }
   };

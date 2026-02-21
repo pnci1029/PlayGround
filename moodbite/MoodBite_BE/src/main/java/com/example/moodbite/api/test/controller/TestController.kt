@@ -16,6 +16,10 @@ class TestController(
     @PostMapping("/test")
     fun test(@RequestBody dto: TestRequestDTO): String {
         return testService.getResult(dto)
+    }
 
+    @PostMapping("/test/location-based")
+    fun locationBasedTest(@RequestBody dto: TestRequestDTO): String {
+        return testService.getLocationBasedResult(dto)
     }
 }

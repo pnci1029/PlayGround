@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { apiUrls, logger } from '@/lib/config'
 
 interface PremiumToolCardProps {
   title: string
@@ -10,6 +11,8 @@ interface PremiumToolCardProps {
   status?: 'active' | 'beta' | 'coming-soon'
   isExternal?: boolean
   description?: string
+  badges?: ('NEW' | 'HOT' | 'TRENDING')[]
+  visitCount?: number
 }
 
 export default function PremiumToolCard({ 
@@ -19,11 +22,26 @@ export default function PremiumToolCard({
   icon, 
   status = 'active', 
   isExternal = false,
-  description
+  description,
+  badges = [],
+  visitCount
 }: PremiumToolCardProps) {
   
-  const handleClick = () => {
+  const handleClick = async () => {
     if (status === 'active' || status === 'beta') {
+      // 방문 통계 기록
+      try {
+        await fetch(apiUrls.stats.visit, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tool_name: title })
+        })
+        logger.log(`📊 방문 기록: ${title}`)
+      } catch (error) {
+        logger.error('방문 기록 실패:', error)
+      }
+
+      // 페이지 이동
       if (isExternal) {
         window.open(href, '_blank', 'noopener,noreferrer')
       } else {
@@ -54,7 +72,25 @@ export default function PremiumToolCard({
     >
       
       {/* 상태 배지 */}
-      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+      <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 flex gap-1 flex-wrap justify-end">
+        {/* 통계 기반 뱃지 */}
+        {badges.includes('NEW') && (
+          <div className="bg-green-50 text-green-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-100 animate-pulse">
+            NEW
+          </div>
+        )}
+        {badges.includes('HOT') && (
+          <div className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-red-100">
+            🔥 HOT
+          </div>
+        )}
+        {badges.includes('TRENDING') && (
+          <div className="bg-purple-50 text-purple-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-100">
+            TRENDING
+          </div>
+        )}
+        
+        {/* 기존 상태 배지 */}
         {status === 'beta' && (
           <div className="bg-orange-50 text-orange-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-orange-100">
             Beta
@@ -65,7 +101,7 @@ export default function PremiumToolCard({
             곧 출시
           </div>
         )}
-        {isExternal && status === 'active' && (
+        {isExternal && status === 'active' && !badges.length && (
           <div className="bg-blue-50 text-blue-600 p-1.5 rounded-full">
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -118,17 +154,26 @@ export default function PremiumToolCard({
             </p>
           )}
 
-          {/* 카테고리 */}
+          {/* 카테고리와 방문 수 */}
           <div className="flex items-center justify-between">
-            <span className={`
-              text-xs font-medium px-3 py-1 rounded-full
-              ${isDisabled 
-                ? 'bg-gray-50 text-gray-400 border border-gray-100' 
-                : 'bg-gray-50 text-gray-600 border border-gray-100'
-              }
-            `}>
-              {category}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`
+                text-xs font-medium px-3 py-1 rounded-full
+                ${isDisabled 
+                  ? 'bg-gray-50 text-gray-400 border border-gray-100' 
+                  : 'bg-gray-50 text-gray-600 border border-gray-100'
+                }
+              `}>
+                {category}
+              </span>
+              
+              {/* 방문 수 표시 */}
+              {visitCount !== undefined && visitCount > 0 && (
+                <span className="text-xs text-gray-500">
+                  👁️ {visitCount.toLocaleString()}
+                </span>
+              )}
+            </div>
             
             {/* 화살표 아이콘 */}
             {isClickable && (
