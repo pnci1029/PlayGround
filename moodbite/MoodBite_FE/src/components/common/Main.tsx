@@ -28,6 +28,13 @@ export function Main() {
         setAiRecommendation('');
     };
 
+    const handleRetryTest = () => {
+        setShowResult(false);
+        setTestResult(null);
+        setAiRecommendation('');
+        setShowTest(true);
+    };
+
     // 네비게이션 핸들러들
     const handleNearbyRestaurants = () => {
     };
@@ -44,6 +51,7 @@ export function Main() {
             onBack={handleBackFromResult}
             testResult={testResult}
             aiRecommendation={aiRecommendation}
+            onRetryTest={handleRetryTest}
         />;
     }
 

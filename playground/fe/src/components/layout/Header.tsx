@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import AppLauncher from '@/components/ui/AppLauncher'
 
 export default function Header() {
   return (
@@ -13,6 +14,8 @@ export default function Header() {
           >
             PlayGround
           </Link>
+          
+          <AppLauncher />
         </div>
       </div>
     </header>
