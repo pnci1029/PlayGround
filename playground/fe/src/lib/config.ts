@@ -1,18 +1,28 @@
 // API 설정 중앙 관리
+const isClientSide = process.env.NEXT_RUNTIME === 'nodejs' ? false : true
+const isServerSide = !isClientSide
+
 export const config = {
   api: {
-    // 서버사이드에서는 컨테이너 이름 사용, 클라이언트에서는 상대경로로 프록시 사용
-    baseUrl: typeof window === 'undefined' 
-      ? 'http://playground_backend:8000'
-      : '/api',
-    prefix: typeof window === 'undefined' ? '/api' : '',
+    // 서버사이드: Docker 컨테이너 간 통신 (컨테이너 이름 사용)
+    // 클라이언트사이드: 브라우저에서 프록시를 통한 API 접근
+    baseUrl: isServerSide
+      ? process.env.BACKEND_CONTAINER_URL || 'http://playground_backend:8000'
+      : process.env.NEXT_PUBLIC_API_URL || '/api',
+    prefix: isServerSide 
+      ? process.env.BACKEND_API_PREFIX || '/api'
+      : '',
   },
   app: {
     name: process.env.NEXT_PUBLIC_APP_NAME || 'PlayGround',
     version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
   },
-  isDev: process.env.NODE_ENV === 'development',
-  isProd: process.env.NODE_ENV === 'production',
+  environment: {
+    isDev: process.env.NODE_ENV === 'development',
+    isProd: process.env.NODE_ENV === 'production',
+    isClientSide,
+    isServerSide,
+  },
 } as const
 
 // API URL 생성 헬퍼 함수들
@@ -48,7 +58,7 @@ export const imageUrls = {
 
 // 로그 헬퍼 (개발 환경에서만 출력)
 export const logger = {
-  log: (...args: any[]) => config.isDev && console.log(...args),
-  error: (...args: any[]) => config.isDev && console.error(...args),
-  warn: (...args: any[]) => config.isDev && console.warn(...args),
+  log: (...args: any[]) => config.environment.isDev && console.log(...args),
+  error: (...args: any[]) => config.environment.isDev && console.error(...args),
+  warn: (...args: any[]) => config.environment.isDev && console.warn(...args),
 }

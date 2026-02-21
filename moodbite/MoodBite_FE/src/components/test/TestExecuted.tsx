@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, RefreshCw, MapPin, Clock, DollarSign, Users } from 'lucide-react';
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
+import NoRecommendations from '../ui/NoRecommendations';
 
 interface TestExecutedProps {
     onBack: () => void;
     testResult: TestResultPostDTO;
     aiRecommendation?: string;
+    onRetryTest?: () => void;
 }
 
-export function TestExecuted({ onBack, testResult, aiRecommendation }: TestExecutedProps) {
-    const [isLoading, setIsLoading] = useState(!aiRecommendation);
+export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest }: TestExecutedProps) {
+    const [isLoading, setIsLoading] = useState(false);
     const [recommendation, setRecommendation] = useState(aiRecommendation || '');
 
     useEffect(() => {
-        if (aiRecommendation) {
-            setIsLoading(false);
-            setRecommendation(aiRecommendation);
-        }
+        setIsLoading(false);
+        setRecommendation(aiRecommendation || '');
     }, [aiRecommendation]);
 
     const getDiningText = (dining: string) => {
@@ -153,9 +153,9 @@ export function TestExecuted({ onBack, testResult, aiRecommendation }: TestExecu
                     </div>
                 </section>
 
-                {/* AI 추천 결과 */}
+                {/* 추천 결과 */}
                 <section className={style.recommendationSection}>
-                    <h2 className={style.sectionTitle}>AI 추천 결과</h2>
+                    <h2 className={style.sectionTitle}>추천 결과</h2>
                     
                     {isLoading ? (
                         <div className={style.loadingContainer}>
@@ -164,53 +164,59 @@ export function TestExecuted({ onBack, testResult, aiRecommendation }: TestExecu
                         </div>
                     ) : (
                         <>
-                            {summary && (
-                                <div className={style.summaryCard}>
-                                    <p>{summary}</p>
-                                </div>
-                            )}
-                            
-                            {restaurants.length > 0 ? (
-                                <div className={style.restaurantList}>
-                                    {restaurants.map((restaurant, index) => (
-                                        <div key={index} className={style.restaurantCard}>
-                                            <div className={style.restaurantHeader}>
-                                                <h3 className={style.restaurantName}>{restaurant.name}</h3>
-                                            </div>
-                                            
-                                            {restaurant.description && (
-                                                <p className={style.restaurantDescription}>
-                                                    {restaurant.description}
-                                                </p>
-                                            )}
-                                            
-                                            <div className={style.restaurantDetails}>
-                                                {restaurant.price && (
-                                                    <div className={style.detailItem}>
-                                                        <DollarSign size={16} />
-                                                        <span>{restaurant.price}</span>
-                                                    </div>
-                                                )}
-                                                {restaurant.location && (
-                                                    <div className={style.detailItem}>
-                                                        <MapPin size={16} />
-                                                        <span>{restaurant.location}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            
-                                            {restaurant.reason && (
-                                                <div className={style.recommendReason}>
-                                                    {restaurant.reason}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
+                            {!recommendation || recommendation.includes('추천을 찾지 못했습니다') ? (
+                                <NoRecommendations onRetry={onRetryTest || onBack} />
                             ) : (
-                                <div className={style.fullTextRecommendation}>
-                                    <pre className={style.recommendationText}>{recommendation}</pre>
-                                </div>
+                                <>
+                                    {summary && (
+                                        <div className={style.summaryCard}>
+                                            <p>{summary}</p>
+                                        </div>
+                                    )}
+                                    
+                                    {restaurants.length > 0 ? (
+                                        <div className={style.restaurantList}>
+                                            {restaurants.map((restaurant, index) => (
+                                                <div key={index} className={style.restaurantCard}>
+                                                    <div className={style.restaurantHeader}>
+                                                        <h3 className={style.restaurantName}>{restaurant.name}</h3>
+                                                    </div>
+                                                    
+                                                    {restaurant.description && (
+                                                        <p className={style.restaurantDescription}>
+                                                            {restaurant.description}
+                                                        </p>
+                                                    )}
+                                                    
+                                                    <div className={style.restaurantDetails}>
+                                                        {restaurant.price && (
+                                                            <div className={style.detailItem}>
+                                                                <DollarSign size={16} />
+                                                                <span>{restaurant.price}</span>
+                                                            </div>
+                                                        )}
+                                                        {restaurant.location && (
+                                                            <div className={style.detailItem}>
+                                                                <MapPin size={16} />
+                                                                <span>{restaurant.location}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {restaurant.reason && (
+                                                        <div className={style.recommendReason}>
+                                                            {restaurant.reason}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className={style.fullTextRecommendation}>
+                                            <pre className={style.recommendationText}>{recommendation}</pre>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </>
                     )}

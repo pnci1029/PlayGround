@@ -1,53 +1,43 @@
 package com.example.moodbite.api.test.service
 
-import com.example.moodbite.api.executed.dto.ChatRequest
-import com.example.moodbite.api.executed.dto.ChatResponse
 import com.example.moodbite.api.executed.LocationBasedRecommendationService
 import com.example.moodbite.api.executed.dto.LocationBasedTestResultRequestDTO
 import com.example.moodbite.api.executed.dto.LocationDTO as ExecutedLocationDTO
 import com.example.moodbite.api.executed.dto.ScoresDTO
 import com.example.moodbite.api.test.dto.request.TestRequestDTO
-import com.example.moodbite.config.OpenRouterConfig
+import com.example.moodbite.api.food.service.DatabaseFoodService
+import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
 
 @Service
 class TestService(
-    private val openRouterConfig: OpenRouterConfig,
     private val locationBasedRecommendationService: LocationBasedRecommendationService,
+    private val databaseFoodService: DatabaseFoodService
     ) {
-    @Value("\${openRouter.model}")
-    private lateinit var openRouterModel: String
-
-    @Value("\${openRouter.api.url}")
-    private lateinit var url: String
-
-    @Value("\${prompt.script}")
-    private lateinit var script: String
-
+    
     private val logger = KotlinLogging.logger {}
+    private val objectMapper = ObjectMapper()
 
     fun getResult(dto: TestRequestDTO): String {
-        val headers = openRouterConfig.httpHeaders()
-        val prompt = generateScript(script, dto)
-
-        logger.warn { "dto: $dto" }
-        val chatRequest = ChatRequest(openRouterModel, prompt)
-
-//         통신을 위한 RestTemplate 구성하기
-        val requestEntity = HttpEntity(chatRequest, headers)
-
-        val restTemplate = RestTemplate()
-        val response = restTemplate.postForObject(url, requestEntity, ChatResponse::class.java)
-
-        return response?.choices?.firstOrNull()?.message?.content
-            ?: throw RuntimeException("Failed to get response from OpenAI")
+        logger.info { "Getting database-based recommendation for: $dto" }
+        
+        val recommendations = databaseFoodService.getRecommendations(dto)
+        
+        val result = mapOf(
+            "primaryFood" to recommendations.firstOrNull()?.name,
+            "alternativefoods" to recommendations.drop(1).map { it.name },
+            "reason" to (recommendations.firstOrNull()?.reason ?: "현재 상황에 적합한 추천을 찾지 못했습니다")
+        )
+        
+        return objectMapper.writeValueAsString(result)
     }
 
     fun getLocationBasedResult(dto: TestRequestDTO): String {
+        logger.info { "Getting location-based recommendation for: $dto" }
+        
+        val foodRecommendations = databaseFoodService.getRecommendations(dto)
+        
         val locationDto = LocationBasedTestResultRequestDTO(
             scores = ScoresDTO(
                 dto.scores.tired,
@@ -61,46 +51,40 @@ class TestService(
             location = dto.location?.let { ExecutedLocationDTO(it.latitude, it.longitude) }
         )
         
-        val result = locationBasedRecommendationService.getLocationBasedRecommendation(locationDto)
-        
-        return """
-        {
-            "id": ${result.id},
-            "message": "${result.message}",
-            "foodRecommendation": {
-                "primaryFood": "${result.foodRecommendation.primaryFood}",
-                "alternativefoods": [${result.foodRecommendation.alternativefoods.joinToString { "\"$it\"" }}],
-                "reason": "${result.foodRecommendation.reason.replace("\"", "\\\"")}"
-            },
-            "nearbyRestaurants": [
-                ${result.nearbyRestaurants.joinToString { restaurant ->
-                    """{
-                        "name": "${restaurant.name}",
-                        "category": "${restaurant.category}",
-                        "address": "${restaurant.address}",
-                        "latitude": ${restaurant.latitude},
-                        "longitude": ${restaurant.longitude},
-                        "rating": ${restaurant.rating},
-                        "distance": ${restaurant.distance},
-                        "priceLevel": ${restaurant.priceLevel},
-                        "phone": "${restaurant.phone ?: ""}",
-                        "isOpen": ${restaurant.isOpen},
-                        "matchScore": ${restaurant.matchScore},
-                        "estimatedWalkTime": "${restaurant.estimatedWalkTime}"
-                    }"""
-                }}
-            ]
+        val nearbyRestaurants = try {
+            locationBasedRecommendationService.getLocationBasedRecommendation(locationDto)
+        } catch (e: Exception) {
+            logger.warn { "Failed to get nearby restaurants: ${e.message}" }
+            null
         }
-        """.trimIndent()
+        
+        val result = mapOf(
+            "id" to 1,
+            "message" to "데이터베이스 기반 맞춤 추천입니다",
+            "foodRecommendation" to mapOf(
+                "primaryFood" to (foodRecommendations.firstOrNull()?.name ?: "추천 음식 없음"),
+                "alternativefoods" to foodRecommendations.drop(1).map { it.name },
+                "reason" to (foodRecommendations.firstOrNull()?.reason ?: "현재 조건에 맞는 음식을 찾지 못했습니다")
+            ),
+            "nearbyRestaurants" to (nearbyRestaurants?.nearbyRestaurants?.map { restaurant ->
+                mapOf(
+                    "name" to restaurant.name,
+                    "category" to restaurant.category,
+                    "address" to restaurant.address,
+                    "latitude" to restaurant.latitude,
+                    "longitude" to restaurant.longitude,
+                    "rating" to restaurant.rating,
+                    "distance" to restaurant.distance,
+                    "priceLevel" to restaurant.priceLevel,
+                    "phone" to (restaurant.phone ?: ""),
+                    "isOpen" to restaurant.isOpen,
+                    "matchScore" to restaurant.matchScore,
+                    "estimatedWalkTime" to restaurant.estimatedWalkTime
+                )
+            } ?: emptyList())
+        )
+        
+        return objectMapper.writeValueAsString(result)
     }
 
-    private fun generateScript(
-        script: String, dto: TestRequestDTO) = script
-        .replace("$\\{dto.tiredScore}", dto.scores.tired.toString())
-        .replace("$\\{dto.angerScore}", dto.scores.anger.toString())
-        .replace("$\\{dto.stressScore}", dto.scores.stress.toString())
-        .replace("$\\{dto.appetiteScore}", dto.scores.appetite.toString())
-        .replace("$\\{dto.dining.description}", dto.dining.description)
-        .replace("$\\{dto.budget}", dto.scores.budget.toString())
-        .replace("$\\{dto.mealTime}", dto.mealTime.toString())
 }
