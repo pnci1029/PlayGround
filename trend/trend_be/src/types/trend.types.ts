@@ -2,7 +2,7 @@ export interface TrendData {
   keyword: string
   interest: number
   category: string
-  source: 'hackernews' | 'reddit' | 'github' | 'devto' | 'rss'
+  source: 'hackernews' | 'reddit' | 'github' | 'devto' | 'rss' | 'korean_search' | 'shopping' | 'youtube' | 'tech'
   timestamp: Date
   region: string
   url?: string

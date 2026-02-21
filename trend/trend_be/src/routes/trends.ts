@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify'
 import { TrendResponse } from '../types/trend.types'
 import { freeTrendService } from '../services/freeTrendService'
+import { koreanTrendService } from '../services/koreanTrendService'
 import { trendWebSocketService } from '../services/trendWebSocket'
 
 interface SourceParams {
@@ -17,22 +18,43 @@ interface SearchQuery {
 
 export async function trendRoutes(fastify: FastifyInstance) {
   
-  // 전체 트렌드 조회 (캐시됨)
+  // 전체 트렌드 조회 (한국 + 해외 통합)
   fastify.get('/api/trends', async (request, reply) => {
     try {
       console.log('📡 전체 트렌드 요청 받음')
       
-      const trends = await freeTrendService.getCachedTrends()
+      // 한국 트렌드와 해외 트렌드 병합
+      const [koreanTrends, globalTrends] = await Promise.allSettled([
+        koreanTrendService.getAllKoreanTrends(),
+        freeTrendService.getCachedTrends()
+      ])
+      
+      let allTrends: any[] = []
+      
+      // 한국 트렌드 우선 (70%)
+      if (koreanTrends.status === 'fulfilled') {
+        allTrends.push(...koreanTrends.value.slice(0, 70))
+      }
+      
+      // 해외 트렌드 보조 (30%)
+      if (globalTrends.status === 'fulfilled') {
+        allTrends.push(...globalTrends.value.slice(0, 30))
+      }
+      
+      // 관심도 기준으로 재정렬
+      allTrends.sort((a, b) => b.interest - a.interest)
+      allTrends = allTrends.slice(0, 100)
+      
       const cacheStatus = freeTrendService.getCacheStatus()
       
       const response: TrendResponse = {
         success: true,
-        data: trends,
+        data: allTrends,
         lastUpdated: cacheStatus.lastUpdate || new Date(),
-        totalCount: trends.length
+        totalCount: allTrends.length
       }
 
-      console.log(`✅ 전체 트렌드 응답: ${trends.length}개`)
+      console.log(`✅ 전체 트렌드 응답: ${allTrends.length}개`)
       return reply.send(response)
     } catch (error) {
       console.error('❌ 전체 트렌드 조회 오류:', error)
