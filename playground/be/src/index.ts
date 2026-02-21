@@ -4,6 +4,7 @@ import path from 'path'
 import { config } from './config'
 import toolsRoutes from './routes/tools'
 import { authRoutes } from './routes/auth'
+import { statsRoutes } from './routes/stats'
 // import { artworkRoutes } from './routes/artworks'
 import { testConnection, db } from './config/database'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
@@ -33,6 +34,7 @@ fastify.addHook('preHandler', subdomainRoutingMiddleware)
 // 라우트 등록
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
 fastify.register(authRoutes, { prefix: `${config.api.prefix}/auth` })
+fastify.register(statsRoutes, { prefix: `${config.api.prefix}/stats` })
 // fastify.register(artworkRoutes)
 // fastify.register(canvasRoutes, { prefix: `${config.api.prefix}/canvas` })
 

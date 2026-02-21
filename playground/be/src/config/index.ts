@@ -5,6 +5,7 @@ export const config = {
   },
   cors: {
     origin: [
+      'http://localhost:3000',
       'http://localhost:3002',
       'http://admin.localhost:3002',
       'http://blog.localhost:3002',

@@ -7,7 +7,7 @@ export const dbConfig = {
   database: process.env.DB_NAME || 'playground',
   password: process.env.DB_PASSWORD || 'please_change_this_password',
   port: parseInt(process.env.DB_PORT || '5432'),
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
 }
 
 // 데이터베이스 연결 풀
