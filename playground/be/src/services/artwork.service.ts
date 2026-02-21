@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { Pool } from 'pg'
 import { imageService } from './image.service'
-import '../types/fastify'
+import '../types/fastify.d'
 import { 
   Artwork, 
   CreateArtworkRequest, 

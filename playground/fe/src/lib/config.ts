@@ -27,7 +27,7 @@ export const apiUrls = {
   health: `${config.api.baseUrl}/health`,
   
   // WebSocket
-  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8084',
+  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8010',
 } as const
 
 // 이미지 URL 생성 헬퍼 함수
