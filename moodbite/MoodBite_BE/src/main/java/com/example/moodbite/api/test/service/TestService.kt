@@ -2,6 +2,10 @@ package com.example.moodbite.api.test.service
 
 import com.example.moodbite.api.executed.dto.ChatRequest
 import com.example.moodbite.api.executed.dto.ChatResponse
+import com.example.moodbite.api.executed.LocationBasedRecommendationService
+import com.example.moodbite.api.executed.dto.LocationBasedTestResultRequestDTO
+import com.example.moodbite.api.executed.dto.LocationDTO as ExecutedLocationDTO
+import com.example.moodbite.api.executed.dto.ScoresDTO
 import com.example.moodbite.api.test.dto.request.TestRequestDTO
 import com.example.moodbite.config.OpenRouterConfig
 import mu.KotlinLogging
@@ -12,8 +16,8 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class TestService(
-//    private val openAiConfig: OpenAiConfig,
     private val openRouterConfig: OpenRouterConfig,
+    private val locationBasedRecommendationService: LocationBasedRecommendationService,
     ) {
     @Value("\${openRouter.model}")
     private lateinit var openRouterModel: String
@@ -41,6 +45,53 @@ class TestService(
 
         return response?.choices?.firstOrNull()?.message?.content
             ?: throw RuntimeException("Failed to get response from OpenAI")
+    }
+
+    fun getLocationBasedResult(dto: TestRequestDTO): String {
+        val locationDto = LocationBasedTestResultRequestDTO(
+            scores = ScoresDTO(
+                dto.scores.tired,
+                dto.scores.anger, 
+                dto.scores.stress,
+                dto.scores.appetite,
+                dto.scores.budget
+            ),
+            dining = dto.dining.name,
+            mealTime = dto.mealTime.name,
+            location = dto.location?.let { ExecutedLocationDTO(it.latitude, it.longitude) }
+        )
+        
+        val result = locationBasedRecommendationService.getLocationBasedRecommendation(locationDto)
+        
+        return """
+        {
+            "id": ${result.id},
+            "message": "${result.message}",
+            "foodRecommendation": {
+                "primaryFood": "${result.foodRecommendation.primaryFood}",
+                "alternativefoods": [${result.foodRecommendation.alternativefoods.joinToString { "\"$it\"" }}],
+                "reason": "${result.foodRecommendation.reason.replace("\"", "\\\"")}"
+            },
+            "nearbyRestaurants": [
+                ${result.nearbyRestaurants.joinToString { restaurant ->
+                    """{
+                        "name": "${restaurant.name}",
+                        "category": "${restaurant.category}",
+                        "address": "${restaurant.address}",
+                        "latitude": ${restaurant.latitude},
+                        "longitude": ${restaurant.longitude},
+                        "rating": ${restaurant.rating},
+                        "distance": ${restaurant.distance},
+                        "priceLevel": ${restaurant.priceLevel},
+                        "phone": "${restaurant.phone ?: ""}",
+                        "isOpen": ${restaurant.isOpen},
+                        "matchScore": ${restaurant.matchScore},
+                        "estimatedWalkTime": "${restaurant.estimatedWalkTime}"
+                    }"""
+                }}
+            ]
+        }
+        """.trimIndent()
     }
 
     private fun generateScript(
