@@ -1,8 +1,11 @@
 // API 설정 중앙 관리
 export const config = {
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
-    prefix: process.env.NEXT_PUBLIC_API_PREFIX || '/api',
+    // 서버사이드에서는 컨테이너 이름 사용, 클라이언트에서는 상대경로로 프록시 사용
+    baseUrl: typeof window === 'undefined' 
+      ? 'http://playground_backend:8000'
+      : '/api',
+    prefix: typeof window === 'undefined' ? '/api' : '',
   },
   app: {
     name: process.env.NEXT_PUBLIC_APP_NAME || 'PlayGround',
@@ -33,8 +36,8 @@ export const apiUrls = {
   // Health check
   health: `${config.api.baseUrl}/health`,
 
-  // WebSocket
-  chat: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8010',
+  // WebSocket - 브라우저에서만 사용
+  chat: 'ws://localhost:8010',
 } as const
 
 // 이미지 URL 생성 헬퍼 함수

@@ -26,6 +26,7 @@ import PremiumToolCard from '@/components/ui/PremiumToolCard'
 import { toolCategories } from '@/lib/tools-data'
 import { LoadingSkeleton, CardSkeleton } from '@/components/ui/LoadingSpinner'
 import { ErrorState, LoadError } from '@/components/ui/ErrorState'
+import { apiUrls, logger } from '@/lib/config'
 
 // 드래그 가능한 카테고리 컴포넌트
 function SortableCategory({ 
@@ -34,7 +35,8 @@ function SortableCategory({
   isOpen, 
   onToggle,
   isDraggedOver,
-  draggedId 
+  draggedId,
+  toolStats 
 }: {
   categoryName: string
   tools: any[]
@@ -42,6 +44,7 @@ function SortableCategory({
   onToggle: () => void
   isDraggedOver: boolean
   draggedId: string | null
+  toolStats: Record<string, any>
 }) {
   const {
     attributes,
@@ -174,18 +177,23 @@ function SortableCategory({
           
           {/* 도구 카드 그리드 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {tools.map((tool, index) => (
-              <PremiumToolCard
-                key={`${categoryName}-${index}`}
-                title={tool.title}
-                href={tool.href}
-                category={tool.category}
-                icon={tool.icon}
-                status={tool.status}
-                isExternal={tool.isExternal || false}
-                description={tool.description}
-              />
-            ))}
+            {tools.map((tool, index) => {
+              const stats = toolStats[tool.title] || {}
+              return (
+                <PremiumToolCard
+                  key={`${categoryName}-${index}`}
+                  title={tool.title}
+                  href={tool.href}
+                  category={tool.category}
+                  icon={tool.icon}
+                  status={tool.status}
+                  isExternal={tool.isExternal || false}
+                  description={tool.description}
+                  badges={stats.badges || []}
+                  visitCount={stats.visit_count}
+                />
+              )
+            })}
           </div>
         </div>
       </div>
@@ -203,6 +211,9 @@ export default function ToolCategoryGrid() {
   
   // 에러 상태 관리
   const [error, setError] = useState<string | null>(null)
+  
+  // 통계 데이터 상태 관리
+  const [toolStats, setToolStats] = useState<Record<string, any>>({})
   
   // 아코디언 상태 관리
   const [openCategories, setOpenCategories] = useState<string[]>(['개발 도구'])
@@ -224,6 +235,31 @@ export default function ToolCategoryGrid() {
     })
   )
   
+  // 통계 데이터 가져오기
+  const fetchStats = async () => {
+    try {
+      logger.log('📊 통계 데이터 요청:', apiUrls.stats.badges)
+      const response = await fetch(apiUrls.stats.badges, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setToolStats(data.badges || {})
+        logger.log('📊 통계 데이터 로드 성공:', data.global_stats)
+      } else {
+        logger.error('통계 API 응답 오류:', response.status, response.statusText)
+      }
+    } catch (error) {
+      logger.error('통계 데이터 로드 실패:', error)
+      // 통계 로드 실패해도 페이지는 정상 동작하도록 빈 객체 유지
+      setToolStats({})
+    }
+  }
+
   // 하이드레이션 및 localStorage에서 상태 복원
   useEffect(() => {
     // 로딩 시뮬레이션 (실제로는 데이터 페칭)
@@ -232,10 +268,8 @@ export default function ToolCategoryGrid() {
         // 로딩 시간 시뮬레이션
         await new Promise(resolve => setTimeout(resolve, 800))
         
-        // 에러 시뮬레이션 (10% 확률)
-        if (Math.random() < 0.1) {
-          throw new Error('데이터 로딩 실패')
-        }
+        // 통계 데이터 가져오기
+        await fetchStats()
         
         // localStorage에서 상태 복원
         const savedOpen = localStorage.getItem('openCategories')
@@ -446,18 +480,23 @@ export default function ToolCategoryGrid() {
                   <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {tools.map((tool, index) => (
-                      <PremiumToolCard
-                        key={`${categoryName}-${index}`}
-                        title={tool.title}
-                        href={tool.href}
-                        category={tool.category}
-                        icon={tool.icon}
-                        status={tool.status}
-                        isExternal={tool.isExternal || false}
-                        description={tool.description}
-                      />
-                    ))}
+                    {tools.map((tool, index) => {
+                      const stats = toolStats[tool.title] || {}
+                      return (
+                        <PremiumToolCard
+                          key={`${categoryName}-${index}`}
+                          title={tool.title}
+                          href={tool.href}
+                          category={tool.category}
+                          icon={tool.icon}
+                          status={tool.status}
+                          isExternal={tool.isExternal || false}
+                          description={tool.description}
+                          badges={stats.badges || []}
+                          visitCount={stats.visit_count}
+                        />
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -487,15 +526,23 @@ export default function ToolCategoryGrid() {
             
             if (!tools) return null // 카테고리가 없는 경우 스킵
             
+            // 도구에 통계 데이터 추가
+            const toolsWithStats = tools.map(tool => ({
+              ...tool,
+              badges: toolStats[tool.title]?.badges || [],
+              visitCount: toolStats[tool.title]?.visit_count
+            }))
+
             return (
               <SortableCategory
                 key={categoryName}
                 categoryName={categoryName}
-                tools={tools}
+                tools={toolsWithStats}
                 isOpen={isOpen}
                 onToggle={() => toggleCategory(categoryName)}
                 isDraggedOver={overId === categoryName}
                 draggedId={activeId}
+                toolStats={toolStats}
               />
             )
           })}
