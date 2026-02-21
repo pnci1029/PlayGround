@@ -30,20 +30,47 @@ export async function trendRoutes(fastify: FastifyInstance) {
       ])
       
       let allTrends: any[] = []
+      const seenKeywords = new Set<string>()
       
-      // 한국 트렌드 우선 (70%)
+      // 한국 트렌드 우선 (70%) - 중복 제거
       if (koreanTrends.status === 'fulfilled') {
-        allTrends.push(...koreanTrends.value.slice(0, 70))
+        const uniqueKoreanTrends = koreanTrends.value.filter(trend => {
+          const normalizedKeyword = trend.keyword.toLowerCase().trim()
+          if (seenKeywords.has(normalizedKeyword)) {
+            return false
+          }
+          seenKeywords.add(normalizedKeyword)
+          return true
+        })
+        allTrends.push(...uniqueKoreanTrends.slice(0, 70))
       }
       
-      // 해외 트렌드 보조 (30%)
+      // 해외 트렌드 보조 (30%) - 중복 제거
       if (globalTrends.status === 'fulfilled') {
-        allTrends.push(...globalTrends.value.slice(0, 30))
+        const uniqueGlobalTrends = globalTrends.value.filter(trend => {
+          const normalizedKeyword = trend.keyword.toLowerCase().trim()
+          if (seenKeywords.has(normalizedKeyword)) {
+            return false
+          }
+          seenKeywords.add(normalizedKeyword)
+          return true
+        })
+        allTrends.push(...uniqueGlobalTrends.slice(0, 30))
       }
       
       // 관심도 기준으로 재정렬
       allTrends.sort((a, b) => b.interest - a.interest)
       allTrends = allTrends.slice(0, 100)
+      
+      // 통합된 트렌드를 DB에 저장
+      if (allTrends.length > 0) {
+        try {
+          await freeTrendService.saveTrendsToDb(allTrends)
+          console.log(`💾 ${allTrends.length}개 트렌드 DB 저장 완료`)
+        } catch (dbError) {
+          console.warn('⚠️ DB 저장 실패:', dbError)
+        }
+      }
       
       const cacheStatus = freeTrendService.getCacheStatus()
       

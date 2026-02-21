@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTrendingRankings } from '../hooks/useTrendingRankings'
 import RankingCard from '../components/RankingCard'
 import TimeframeSelector from '../components/TimeframeSelector'
 import LiveIndicator from '../components/LiveIndicator'
+import CategoryTabs from '../components/CategoryTabs'
 
 export default function TrendRankingPage() {
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  
   const { 
     rankings, 
     isLoading, 
@@ -17,6 +20,21 @@ export default function TrendRankingPage() {
     refreshRankings,
     stats 
   } = useTrendingRankings('1h')
+
+  // 카테고리별 필터링된 랭킹
+  const filteredRankings = useMemo(() => {
+    if (selectedCategory === 'all') return rankings
+    return rankings.filter(ranking => ranking.category === selectedCategory)
+  }, [rankings, selectedCategory])
+
+  // 카테고리별 개수 계산
+  const categoryCounts = useMemo(() => {
+    const counts: { [key: string]: number } = { all: rankings.length }
+    rankings.forEach(ranking => {
+      counts[ranking.category] = (counts[ranking.category] || 0) + 1
+    })
+    return counts
+  }, [rankings])
 
   // 페이지 렌더링 상태 로깅
   console.log('🖥️ TrendRankingPage 렌더링:', {
@@ -49,15 +67,33 @@ export default function TrendRankingPage() {
       <div className="container-centered py-12">
         
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-6 gradient-text">트렌드 순위</h1>
+        <div className="text-center mb-12">
+          <div className="relative mb-8">
+            <h1 className="text-6xl font-bold mb-4 gradient-text tracking-tight">트렌드 순위</h1>
+            <div className="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-2">
+              <div className="w-32 h-1 bg-gradient-primary rounded-full opacity-60"></div>
+            </div>
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
+              실시간 한국 트렌드와 글로벌 인사이트를 한눈에
+            </p>
+          </div>
           
-          <TimeframeSelector 
-            value={timeframe}
-            onChange={setTimeframe}
-            isLoading={isLoading}
-          />
+          <div className="flex flex-col items-center gap-6">
+            <TimeframeSelector 
+              value={timeframe}
+              onChange={setTimeframe}
+              isLoading={isLoading}
+            />
+            <LiveIndicator />
+          </div>
         </div>
+
+        {/* 카테고리 탭 */}
+        <CategoryTabs 
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          categoryCounts={categoryCounts}
+        />
 
 
         {/* 오류 표시 */}
@@ -94,15 +130,33 @@ export default function TrendRankingPage() {
         )}
 
         {/* 순위 리스트 */}
-        {!isLoading && rankings.length > 0 && (
-          <div className="max-w-2xl mx-auto space-y-3">
-            {rankings.map((ranking, index) => (
-              <RankingCard 
-                key={`${ranking.keyword}-${ranking.rank}`}
-                ranking={ranking}
-                index={index}
-              />
-            ))}
+        {!isLoading && filteredRankings.length > 0 && (
+          <div className="relative">
+            {/* 카테고리 정보 헤더 */}
+            <div className="max-w-4xl mx-auto mb-8 text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-surface/30 backdrop-blur-sm border border-border/50">
+                <span className="text-sm font-medium text-text-secondary">
+                  {selectedCategory === 'all' ? '전체 트렌드' : selectedCategory}
+                </span>
+                <div className="w-2 h-2 rounded-full bg-accent-green animate-pulse"></div>
+                <span className="text-sm font-bold text-primary">
+                  {filteredRankings.length}개
+                </span>
+              </div>
+            </div>
+
+            {/* 순위 그리드 */}
+            <div className="max-w-5xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {filteredRankings.map((ranking, index) => (
+                  <RankingCard 
+                    key={`${ranking.keyword}-${ranking.rank}-${ranking.category}`}
+                    ranking={ranking}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
