@@ -8,6 +8,8 @@ export interface Tool {
   status: 'active' | 'beta' | 'coming-soon'
   description: string
   isExternal?: boolean
+  badges?: ('NEW' | 'HOT' | 'TRENDING')[]
+  visitCount?: number
 }
 
 export interface ToolCategories {
