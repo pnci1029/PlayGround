@@ -419,6 +419,16 @@ export class FreeTrendService {
       itemCount: cached?.data.length || 0
     }
   }
+
+  // DB 저장 전용 메서드
+  async saveTrendsToDb(trends: TrendData[]): Promise<void> {
+    try {
+      await databaseService.saveTrends(trends)
+    } catch (error) {
+      console.error('❌ DB 저장 실패:', error)
+      throw error
+    }
+  }
 }
 
 export const freeTrendService = new FreeTrendService()
