@@ -44,15 +44,58 @@ class DatabaseFoodService(
         val angerWeight = dto.scores.anger / 100.0
         val appetiteWeight = dto.scores.appetite / 100.0
         
-        score += food.energyBoostScore * fatigueWeight * 0.3
-        score += food.stressReliefScore * stressWeight * 0.25
-        score += food.comfortScore * angerWeight * 0.25
-        score += food.appetiteStimulationScore * appetiteWeight * 0.2
+        val primaryWeight = when {
+            fatigueWeight >= 0.7 -> 0.4
+            stressWeight >= 0.7 -> 0.35
+            angerWeight >= 0.7 -> 0.35
+            appetiteWeight <= 0.3 -> 0.4
+            else -> 0.3
+        }
+        
+        val energyScore = food.energyBoostScore * fatigueWeight
+        val stressScore = food.stressReliefScore * stressWeight
+        val comfortScore = food.comfortScore * angerWeight
+        val appetiteScore = food.appetiteStimulationScore * appetiteWeight
+        
+        val maxIndividualScore = maxOf(energyScore, stressScore, comfortScore, appetiteScore)
+        score += maxIndividualScore * primaryWeight
+        
+        val secondaryScores = listOf(energyScore, stressScore, comfortScore, appetiteScore)
+            .filter { it != maxIndividualScore }
+        score += secondaryScores.sum() * (1 - primaryWeight) / secondaryScores.size
+        
+        val synergisticBonus = when {
+            fatigueWeight > 0.6 && stressWeight > 0.6 -> 0.15
+            stressWeight > 0.6 && angerWeight > 0.6 -> 0.12
+            fatigueWeight > 0.6 && appetiteWeight < 0.4 -> 0.1
+            else -> 0.0
+        }
+        score *= (1.0 + synergisticBonus)
+        
+        val mealTimeBonus = when (dto.mealTime.name) {
+            "MORNING" -> if (food.energyBoostScore > 70) 1.2 else 1.0
+            "LUNCH" -> if (food.stressReliefScore > 60 || food.energyBoostScore > 60) 1.15 else 1.0
+            "DINNER" -> if (food.comfortScore > 70 || food.stressReliefScore > 70) 1.2 else 1.0
+            "MIDNIGHT_SNACK" -> if (food.comfortScore > 80) 1.25 else 0.8
+            else -> 1.0
+        }
+        score *= mealTimeBonus
+        
+        val diningBonus = when (dto.dining.name) {
+            "ALONE" -> if (food.comfortScore > 70) 1.1 else 1.0
+            "FRIENDS", "FAMILY" -> if (food.category in listOf("한식", "중식", "양식")) 1.15 else 1.0
+            "DATE" -> if (food.category in listOf("양식", "이탈리안", "일식")) 1.2 else 1.0
+            "COWORKERS" -> if (food.category in listOf("한식", "일식", "아시안")) 1.1 else 1.0
+            else -> 1.0
+        }
+        score *= diningBonus
         
         val budgetFit = when {
-            food.maxPrice <= dto.scores.budget * 0.7 -> 1.0
-            food.maxPrice <= dto.scores.budget -> 0.8
-            else -> 0.5
+            food.maxPrice <= dto.scores.budget * 0.6 -> 1.2
+            food.maxPrice <= dto.scores.budget * 0.8 -> 1.1
+            food.maxPrice <= dto.scores.budget -> 1.0
+            food.maxPrice <= dto.scores.budget * 1.2 -> 0.7
+            else -> 0.3
         }
         score *= budgetFit
         
