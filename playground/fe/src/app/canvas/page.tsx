@@ -345,7 +345,7 @@ export default function CanvasPage() {
         </div>
 
         {/* Tools Panel */}
-        <div className="mb-6 p-4 bg-white border border-gray-300 rounded-lg">
+        <div className="mb-6 p-4 bg-whiteㅇ border border-gray-300 rounded-lg">
           <div className="flex flex-wrap items-center gap-6">
 
             {/* Tool Selection */}
