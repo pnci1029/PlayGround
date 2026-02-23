@@ -1,497 +1,310 @@
 @import "tailwindcss";
 
-/* Dark Theme Design System for Trend App */
-:root {
-  /* Dark Theme Colors - Pure Dark Tones */
-  --background: #0a0a0a;
-  --background-secondary: #111111;
-  --background-tertiary: #1a1a1a;
-  
-  /* Surface Colors */
-  --surface: #1f1f1f;
-  --surface-elevated: #2a2a2a;
-  --surface-hover: rgba(255, 255, 255, 0.05);
-  
-  /* Text Colors */
-  --foreground: #e4e4e4;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --text-muted: #888888;
-  
-  /* Accent Colors - Muted tones */
-  --primary: #d4d4d8;
-  --primary-hover: #a1a1aa;
-  --secondary: #71717a;
-  --tertiary: #52525b;
-  --accent-orange: #f97316;
-  --accent-green: #22c55e;
-  --accent-red: #ef4444;
-  --accent-yellow: #eab308;
-  
-  /* Border Colors */
-  --border: rgba(255, 255, 255, 0.1);
-  --border-bright: rgba(255, 255, 255, 0.2);
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%);
-  --gradient-secondary: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-  --gradient-bg: linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #1a1a1a 100%);
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.7);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.1);
-  
-  /* Glass Effect */
-  --glass-bg: rgba(31, 31, 31, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
-
-body {
-  color: var(--text-primary);
-  background: var(--gradient-bg);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.6;
+/* 트렌드 앱 전용 스타일 - 플레이그라운드와 격리 */
+.trend-container {
   min-height: 100vh;
-  overflow-x: hidden;
-  font-feature-settings: "kern" 1, "liga" 1;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--surface);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--surface-elevated);
-}
-
-/* Selection Styling */
-::selection {
-  background: rgba(96, 165, 250, 0.3);
-  color: var(--text-primary);
-}
-
-/* Focus Styling */
-*:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-  
-  .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-  }
-  
-  /* Glass Morphism Effects */
-  .glass {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  
-  .glass-strong {
-    background: rgba(45, 45, 95, 0.9);
-    border: 1px solid rgba(203, 213, 225, 0.2);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-  }
-  
-  /* Gradient Text */
-  .gradient-text {
-    background: linear-gradient(135deg, #ffffff 0%, #d4d4d8 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .gradient-text-secondary {
-    background: linear-gradient(135deg, #b3b3b3 0%, #888888 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  /* Glow Effects */
-  .glow-white {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-  }
-  
-  .glow-muted {
-    box-shadow: 0 0 20px rgba(212, 212, 216, 0.1);
-  }
-  
-  /* Hover Animations */
-  .hover-lift {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-  
-  .hover-glow:hover {
-    box-shadow: var(--shadow-glow);
-  }
-  
-  /* Card Styles - Enhanced */
-  .trend-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .trend-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
-    opacity: 0.6;
-  }
-  
-  .trend-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--border-bright);
-    box-shadow: 
-      0 20px 40px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    background: rgba(42, 42, 42, 0.9);
-  }
-  
-  /* Card Variants */
-  .trend-card-elevated {
-    background: rgba(42, 42, 42, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-  
-  .trend-card-featured {
-    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(31, 31, 31, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 12px 48px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
-  
-  /* Ranking Card Styles - 단순화 */
-  .ranking-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  .ranking-card:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-  }
-  
-  .ranking-card-elevated {
-    background: rgba(42, 42, 42, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-  
-  .ranking-card-featured {
-    background: linear-gradient(145deg, rgba(42, 42, 42, 0.95), rgba(31, 31, 31, 0.95));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 12px 48px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.08);
-    position: relative;
-  }
-  
-  .ranking-card-featured::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: var(--gradient-primary);
-    border-radius: 18px;
-    z-index: -1;
-    opacity: 0.3;
-  }
-  
-  /* Timeframe Selector */
-  .timeframe-selector {
-    margin: 0 auto;
-    max-width: fit-content;
-  }
-  
-  .timeframe-selector button:hover {
-    transform: translateY(-1px);
-  }
-  
-  .timeframe-selector button.active {
-    transform: translateY(-2px) scale(1.05);
-  }
-  
-  /* Button Styles */
-  .btn-primary {
-    background: var(--gradient-primary);
-    color: white;
-    border: 1px solid transparent;
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-glow);
-  }
-  
-  .btn-secondary {
-    background: var(--glass-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  
-  .btn-secondary:hover {
-    border-color: var(--primary);
-    background: rgba(45, 45, 95, 0.9);
-    transform: translateY(-1px);
-  }
-  
-  /* Source Badge Styles */
-  .source-badge {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-  }
-  
-  .source-hackernews { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
-  .source-reddit { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
-  .source-github { color: #e5e7eb; border-color: rgba(229, 231, 235, 0.3); }
-  .source-devto { color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
-  .source-rss { color: #eab308; border-color: rgba(234, 179, 8, 0.3); }
-}
-
-/* Animation Keyframes */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(96, 165, 250, 0.5);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%) skewX(-12deg);
-  }
-  100% {
-    transform: translateX(200%) skewX(-12deg);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s ease-in-out infinite;
-}
-
-/* Enhanced Layout System */
-.container-centered {
-  max-width: 1400px;
+/* 컨테이너 */
+.trend-centered {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
 }
 
-.content-section {
-  margin-bottom: 4rem;
-}
-
-.content-section:last-child {
+/* 헤더 스타일 */
+.trend-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
   margin-bottom: 2rem;
+  letter-spacing: -0.02em;
 }
 
-/* Enhanced Grid System */
-.grid-trends {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
-  align-items: start;
+.trend-subtitle {
+  font-size: 1.25rem;
+  color: #cbd5e1;
+  text-align: center;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+/* 카테고리 탭 */
+.trend-tabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.trend-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.trend-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+}
+
+.trend-tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+.trend-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.trend-tab-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
 }
 
-@media (min-width: 768px) {
-  .grid-trends {
-    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-    gap: 2.5rem;
-  }
+.trend-tab.active .trend-tab-icon {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-@media (min-width: 1024px) {
-  .grid-trends {
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 3rem;
-  }
+.trend-tab-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-@media (min-width: 1280px) {
-  .grid-trends {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3rem;
-  }
+.trend-tab.active .trend-tab-count {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
 }
 
-/* Stats Grid Enhancement */
-.stats-grid {
+/* 트렌드 카드 */
+.trend-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 1.5rem;
   margin-bottom: 3rem;
 }
 
-.stats-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-  backdrop-filter: blur(20px);
-  transition: all 0.3s ease;
+.trend-card {
   position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
   overflow: hidden;
 }
 
-.stats-card::before {
+.trend-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(99, 102, 241, 0.1);
+}
+
+.trend-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+  background: linear-gradient(90deg, transparent, #6366f1, transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-.stats-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-bright);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-}
-
-.stats-card:hover::before {
+.trend-card:hover::before {
   opacity: 1;
 }
 
-.stats-card-primary::before {
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+/* 순위 배지 */
+.trend-rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
 }
 
-/* Enhanced Spacing */
-.section-spacing {
-  padding: 4rem 0;
+.trend-rank-gold {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #451a03;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
 }
 
-.section-spacing-large {
-  padding: 6rem 0;
+.trend-rank-silver {
+  background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+  color: #374151;
+  box-shadow: 0 4px 15px rgba(156, 163, 175, 0.3);
 }
 
-/* Visual Hierarchy */
-.visual-separator {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
-  margin: 3rem 0;
+.trend-rank-bronze {
+  background: linear-gradient(135deg, #d97706, #92400e);
+  color: #fbbf24;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
 }
 
-.visual-separator-thick {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
-  margin: 4rem 0;
+.trend-rank-default {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* New Advanced Animations */
+/* 키워드 텍스트 */
+.trend-keyword {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trend-card:hover .trend-keyword {
+  color: #a855f7;
+}
+
+/* 통계 정보 */
+.trend-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.trend-interest {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trend-interest-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #6366f1;
+  animation: pulse 2s infinite;
+}
+
+.trend-interest-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.trend-category-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 카테고리별 색상 */
+.trend-category-search {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 197, 253, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.trend-category-shopping {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(134, 239, 172, 0.1));
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.trend-category-video {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(252, 165, 165, 0.1));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.trend-category-tech {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(253, 230, 138, 0.1));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.trend-category-news {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(196, 181, 253, 0.1));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+/* 버튼 스타일 */
+.trend-btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.trend-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+}
+
+/* 로딩 스피너 */
+.trend-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+/* 애니메이션 */
 @keyframes fadeInUp {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(20px) scale(0.95);
   }
   100% {
     opacity: 1;
@@ -499,64 +312,62 @@ body {
   }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out both;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
-/* Enhanced Scale Utilities */
-.hover\:scale-102:hover {
-  transform: scale(1.02);
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.hover\:scale-\[1\.02\]:hover {
-  transform: scale(1.02);
+.trend-fade-in {
+  animation: fadeInUp 0.6s ease-out both;
 }
 
-/* Line Clamp Utility */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* 반응형 */
+@media (max-width: 768px) {
+  .trend-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .trend-tabs {
+    gap: 0.5rem;
+  }
+  
+  .trend-tab {
+    padding: 0.75rem 1rem;
+  }
+  
+  .trend-title {
+    font-size: 2.5rem;
+  }
 }
 
-/* Gradient Radial */
-.bg-gradient-radial {
-  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Scrollbar Hide */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.5);
+  border-radius: 3px;
 }
 
-/* Enhanced Tracking */
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
-
-/* Enhanced Category Colors */
-.bg-accent-blue {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 197, 253, 0.6));
-}
-
-.bg-accent-green {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.8), rgba(134, 239, 172, 0.6));
-}
-
-.bg-accent-red {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(252, 165, 165, 0.6));
-}
-
-.bg-accent-yellow {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(253, 230, 138, 0.6));
-}
-
-.bg-accent-orange {
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.8), rgba(254, 215, 170, 0.6));
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
 }
