@@ -1,301 +1,93 @@
 package com.example.moodbite.config
 
-import com.example.moodbite.domain.food.Food
-import com.example.moodbite.domain.food.FoodRepository
+import com.example.moodbite.api.food.entity.FoodRecommendation
+import com.example.moodbite.api.food.repository.FoodRecommendationRepository
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import jakarta.annotation.PostConstruct
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
 
 @Component
 class DataInitializer {
     
     @Autowired
-    private lateinit var foodRepository: FoodRepository
+    private lateinit var foodRecommendationRepository: FoodRecommendationRepository
+    
+    private val logger = KotlinLogging.logger {}
+    private val objectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build())
     
     @PostConstruct
     fun initData() {
-        if (foodRepository.count() == 0L) {
-            initFoodData()
+        if (foodRecommendationRepository.count() == 0L) {
+            initFoodDataFromJson()
         }
     }
     
-    private fun initFoodData() {
-        val foods = listOf(
-            // 한식
-            Food(
-                name = "김치찌개",
-                category = "한식",
-                description = "얼큰하고 시원한 김치찌개",
-                comfortLevel = 9,
-                energyBoost = 6,
-                stressRelief = 8,
-                appetiteMatch = 7,
-                priceLevel = 1,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = true
-            ),
-            Food(
-                name = "삼겹살",
-                category = "한식",
-                description = "고소한 삼겹살 구이",
-                comfortLevel = 6,
-                energyBoost = 8,
-                stressRelief = 9,
-                appetiteMatch = 9,
-                priceLevel = 2,
-                soloFriendly = false,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            Food(
-                name = "비빔밥",
-                category = "한식",
-                description = "영양 만점 비빔밥",
-                comfortLevel = 7,
-                energyBoost = 7,
-                stressRelief = 5,
-                appetiteMatch = 6,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            Food(
-                name = "갈비탕",
-                category = "한식",
-                description = "진한 국물의 갈비탕",
-                comfortLevel = 10,
-                energyBoost = 8,
-                stressRelief = 7,
-                appetiteMatch = 8,
-                priceLevel = 3,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
+    private fun initFoodDataFromJson() {
+        try {
+            val resource = ClassPathResource("data/foods.json")
+            val foodDataList: List<FoodData> = objectMapper.readValue(resource.inputStream)
             
-            // 분식
-            Food(
-                name = "떡볶이",
-                category = "분식",
-                description = "매콤달콤한 떡볶이",
-                comfortLevel = 8,
-                energyBoost = 5,
-                stressRelief = 9,
-                appetiteMatch = 6,
-                priceLevel = 1,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = false,
-                midnightFriendly = true
-            ),
-            Food(
-                name = "김밥",
-                category = "분식",
-                description = "든든한 김밥",
-                comfortLevel = 6,
-                energyBoost = 6,
-                stressRelief = 4,
-                appetiteMatch = 5,
-                priceLevel = 1,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = true,
-                lunchFriendly = true,
-                dinnerFriendly = false,
-                midnightFriendly = false
-            ),
+            val foods = foodDataList.map { data ->
+                FoodRecommendation(
+                    name = data.name,
+                    category = data.category,
+                    description = data.description,
+                    calories = data.calories,
+                    protein = data.protein,
+                    carbs = data.carbs,
+                    fat = data.fat,
+                    minPrice = data.minPrice,
+                    maxPrice = data.maxPrice,
+                    prepTimeMinutes = data.prepTimeMinutes,
+                    energyBoostScore = data.energyBoostScore,
+                    stressReliefScore = data.stressReliefScore,
+                    appetiteStimulationScore = data.appetiteStimulationScore,
+                    comfortScore = data.comfortScore,
+                    suitableForMorning = data.mealTimes.contains("MORNING"),
+                    suitableForLunch = data.mealTimes.contains("LUNCH"),
+                    suitableForDinner = data.mealTimes.contains("DINNER"),
+                    suitableForMidnight = data.mealTimes.contains("MIDNIGHT_SNACK"),
+                    suitableForAlone = data.diningTypes.contains("ALONE"),
+                    suitableForFriends = data.diningTypes.contains("WITH_FRIENDS"),
+                    suitableForFamily = data.diningTypes.contains("WITH_FAMILY"),
+                    suitableForDate = data.diningTypes.contains("DATE"),
+                    suitableForBusiness = data.diningTypes.contains("BUSINESS"),
+                    ingredients = data.ingredients,
+                    healthBenefits = data.healthBenefits
+                )
+            }
             
-            // 양식
-            Food(
-                name = "파스타",
-                category = "양식",
-                description = "크림 파스타",
-                comfortLevel = 7,
-                energyBoost = 6,
-                stressRelief = 6,
-                appetiteMatch = 7,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            Food(
-                name = "스테이크",
-                category = "양식",
-                description = "육즙 가득한 스테이크",
-                comfortLevel = 6,
-                energyBoost = 9,
-                stressRelief = 8,
-                appetiteMatch = 9,
-                priceLevel = 3,
-                soloFriendly = false,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            
-            // 일식
-            Food(
-                name = "우동",
-                category = "일식",
-                description = "따뜻한 우동",
-                comfortLevel = 8,
-                energyBoost = 5,
-                stressRelief = 6,
-                appetiteMatch = 7,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            Food(
-                name = "초밥",
-                category = "일식",
-                description = "신선한 초밥",
-                comfortLevel = 5,
-                energyBoost = 6,
-                stressRelief = 4,
-                appetiteMatch = 6,
-                priceLevel = 3,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            
-            // 치킨
-            Food(
-                name = "치킨",
-                category = "치킨",
-                description = "바삭한 후라이드 치킨",
-                comfortLevel = 7,
-                energyBoost = 7,
-                stressRelief = 10,
-                appetiteMatch = 9,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = false,
-                dinnerFriendly = true,
-                midnightFriendly = true
-            ),
-            
-            // 죽/스프 (피곤할 때)
-            Food(
-                name = "전복죽",
-                category = "한식",
-                description = "부드러운 전복죽",
-                comfortLevel = 10,
-                energyBoost = 6,
-                stressRelief = 8,
-                appetiteMatch = 9,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = false,
-                dateFriendly = false,
-                morningFriendly = true,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            
-            // 국물 요리
-            Food(
-                name = "설렁탕",
-                category = "한식",
-                description = "진한 사골 국물",
-                comfortLevel = 9,
-                energyBoost = 7,
-                stressRelief = 6,
-                appetiteMatch = 8,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = true,
-                midnightFriendly = false
-            ),
-            
-            // 간식류
-            Food(
-                name = "샐러드",
-                category = "양식",
-                description = "신선한 샐러드",
-                comfortLevel = 4,
-                energyBoost = 4,
-                stressRelief = 3,
-                appetiteMatch = 3,
-                priceLevel = 2,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = true,
-                morningFriendly = true,
-                lunchFriendly = true,
-                dinnerFriendly = false,
-                midnightFriendly = false
-            ),
-            
-            // 야식
-            Food(
-                name = "라면",
-                category = "분식",
-                description = "얼큰한 라면",
-                comfortLevel = 8,
-                energyBoost = 5,
-                stressRelief = 7,
-                appetiteMatch = 6,
-                priceLevel = 1,
-                soloFriendly = true,
-                groupFriendly = true,
-                dateFriendly = false,
-                morningFriendly = false,
-                lunchFriendly = true,
-                dinnerFriendly = false,
-                midnightFriendly = true
-            )
-        )
-        
-        foodRepository.saveAll(foods)
-        println("초기 음식 데이터 ${foods.size}개가 추가되었습니다.")
+            foodRecommendationRepository.saveAll(foods)
+            logger.info { "초기 음식 데이터 ${foods.size}개가 JSON에서 로드되었습니다" }
+        } catch (e: Exception) {
+            logger.error(e) { "JSON에서 음식 데이터 로드 실패" }
+        }
     }
 }
+
+// JSON 데이터 매핑을 위한 데이터 클래스
+data class FoodData(
+    val name: String,
+    val category: String,
+    val description: String,
+    val calories: Int,
+    val protein: Float,
+    val carbs: Float,
+    val fat: Float,
+    val minPrice: Int,
+    val maxPrice: Int,
+    val prepTimeMinutes: Int,
+    val energyBoostScore: Int,
+    val stressReliefScore: Int,
+    val appetiteStimulationScore: Int,
+    val comfortScore: Int,
+    val ingredients: String,
+    val healthBenefits: String,
+    val mealTimes: List<String>,
+    val diningTypes: List<String>
+)
