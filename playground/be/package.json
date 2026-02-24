@@ -8,9 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
-    "db:init": "ts-node src/database/init.ts",
-    "db:migrate": "ts-node src/database/migrate.ts",
-    "db:reset": "ts-node src/database/init.ts reset"
+    "db:migrate": "cd ../../packages/database-migrations && npm run dev playground.sql",
+    "db:migrate:prod": "cd ../../packages/database-migrations && npm run migrate playground.sql"
   },
   "keywords": [],
   "author": "",
