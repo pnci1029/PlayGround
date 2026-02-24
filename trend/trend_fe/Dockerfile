@@ -9,8 +9,8 @@ RUN npm install
 # 소스 코드 복사
 COPY . .
 
-# 포트 노출
-EXPOSE 3000
+# 포트 노출 (실제 개발 서버 포트와 맞춤)
+EXPOSE 3002
 
 # 개발 서버 실행
 CMD ["npm", "run", "dev"]
