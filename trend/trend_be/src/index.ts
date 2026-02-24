@@ -13,7 +13,7 @@ import { randomUUID } from 'crypto'
 config()
 
 const PORT = parseInt(process.env.PORT || '8002')
-const WS_PORT = parseInt(process.env.WS_PORT || '8012')
+const WS_PORT = parseInt(process.env.WS_PORT || '8013')
 
 // HTTP 서버 (API)
 const httpServer: FastifyInstance = Fastify({
@@ -86,8 +86,8 @@ async function startWebSocketServer() {
     await wsServer.listen({ port: WS_PORT, host: '0.0.0.0' })
     console.log(`🔌 Trend WebSocket Server running on port ${WS_PORT}`)
   } catch (error) {
-    console.error('❌ WebSocket Server 시작 실패:', error)
-    process.exit(1)
+    console.warn('⚠️ WebSocket Server 시작 실패:', error)
+    console.log('📡 WebSocket 없이 HTTP API만 실행됩니다')
   }
 }
 
@@ -104,10 +104,8 @@ async function startServers() {
     console.warn('⚠️ DB 연결 실패, 메모리 캐시로만 운영됩니다')
   }
   
-  await Promise.all([
-    startHttpServer(),
-    startWebSocketServer()
-  ])
+  await startHttpServer()
+  await startWebSocketServer()
 
   // 트렌드 순위 스케줄러 시작
   if (dbConnected) {

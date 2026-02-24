@@ -9,11 +9,12 @@ interface Category {
 
 const categories: Category[] = [
   { id: 'all', name: '전체', icon: '🌟', description: '모든 카테고리' },
-  { id: '검색어', name: '검색', icon: '🔍', description: '인기 검색어' },
-  { id: '쇼핑', name: '쇼핑', icon: '🛍️', description: '인기 상품' },
-  { id: '영상', name: '영상', icon: '📺', description: 'YouTube 트렌드' },
-  { id: 'IT', name: 'IT', icon: '💻', description: '기술 트렌드' },
-  { id: 'Tech News', name: '테크뉴스', icon: '📰', description: '글로벌 기술 뉴스' }
+  { id: '검색어', name: '검색', icon: '🔍', description: '한국 검색어' },
+  { id: '쇼핑', name: '쇼핑', icon: '🛍️', description: '쇼핑 트렌드' },
+  { id: '영상', name: '영상', icon: '📺', description: '영상 콘텐츠' },
+  { id: 'IT', name: 'IT', icon: '💻', description: 'IT 기술' },
+  { id: 'Tech News', name: '기술뉴스', icon: '🔥', description: 'HackerNews' },
+  { id: 'Dev Article', name: '개발', icon: '📝', description: '개발 아티클' }
 ]
 
 interface CategoryTabsProps {

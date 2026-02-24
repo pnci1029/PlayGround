@@ -60,7 +60,24 @@ export async function trendRoutes(fastify: FastifyInstance) {
       
       // 관심도 기준으로 재정렬
       allTrends.sort((a, b) => b.interest - a.interest)
-      allTrends = allTrends.slice(0, 100)
+      
+      // 카테고리별 균등 분배
+      const categoryGroups = allTrends.reduce((groups: any, trend: any) => {
+        const category = trend.category || '기타'
+        if (!groups[category]) groups[category] = []
+        groups[category].push(trend)
+        return groups
+      }, {})
+      
+      // 각 카테고리에서 상위 트렌드들을 골고루 선택
+      const balancedTrends: any[] = []
+      const maxPerCategory = 20
+      
+      Object.values(categoryGroups).forEach((trends: any) => {
+        balancedTrends.push(...trends.slice(0, maxPerCategory))
+      })
+      
+      allTrends = balancedTrends.slice(0, 100)
       
       // 통합된 트렌드를 DB에 저장
       if (allTrends.length > 0) {
