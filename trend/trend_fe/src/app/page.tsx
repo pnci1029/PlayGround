@@ -82,7 +82,6 @@ export default function TrendRankingPage() {
             />
             <LiveIndicator />
           </div>
-        </div>
 
         {/* 카테고리 탭 */}
         <CategoryTabs 

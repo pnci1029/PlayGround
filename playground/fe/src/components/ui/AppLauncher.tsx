@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { config } from '@/lib/config'
 
 interface AppItem {
   name: string
@@ -13,14 +14,14 @@ interface AppItem {
 const apps: AppItem[] = [
   {
     name: 'MoodBite',
-    url: 'http://localhost:3001',
+    url: config.services.moodbite,
     description: '감정 기반 음식 추천',
     icon: '🍽️',
     category: 'services'
   },
   {
     name: 'Trend',
-    url: 'http://localhost:3003', 
+    url: config.services.trend,
     description: '실시간 트렌드 분석',
     icon: '📈',
     category: 'services'

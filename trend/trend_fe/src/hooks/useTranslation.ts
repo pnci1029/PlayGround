@@ -47,8 +47,8 @@ export function useTranslation() {
     })
 
     return processed
-      .replace(/\s*-\s*/, ' | ')  // " - " → " | "
-      .replace(/:\s*/, ': ')     // 콜론 뒤 공백 정리
+      .replace(/\s*-\s*/g, ' | ')  // " - " → " | "
+      .replace(/:\s*/g, ': ')     // 콜론 뒤 공백 정리
       .replace(/\s+/g, ' ')      // 연속 공백 제거
       .trim()
   }
