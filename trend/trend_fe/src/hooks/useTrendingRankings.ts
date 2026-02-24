@@ -4,14 +4,11 @@ import { useState, useEffect, useCallback } from 'react'
 
 export interface TrendingRanking {
   rank: number
-  prevRank?: number
   keyword: string
+  category: string
+  source: string
   score: number
-  mentions: number
-  engagement: number
-  growthRate: number
-  sources: string[]
-  trend: 'up' | 'down' | 'new' | 'stable'
+  url?: string
 }
 
 export interface TrendingRankingsResponse {
@@ -53,13 +50,11 @@ export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendin
     maxScore: number
   } | null>(null)
 
-  const fetchRankings = useCallback(async (tf: string = timeframe, limit: number = 50) => {
+  const fetchRankings = useCallback(async (tf: string = timeframe, limit: number = 100) => {
     try {
-      console.log('🔍 fetchRankings 시작:', { tf, limit, timeframe })
       setIsLoading(true)
       setError(null)
 
-      // 임시로 기존 trends API 사용하여 랭킹 시뮬레이션
       const response = await fetch(`${API_BASE_URL}/api/trends`, {
         method: 'GET',
         headers: {
@@ -67,65 +62,51 @@ export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendin
         },
       })
 
-      console.log('📡 API 응답:', response.status, response.statusText)
-
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
 
       const trendsData = await response.json()
-      console.log('📊 받은 데이터:', { success: trendsData.success, dataLength: trendsData.data?.length })
 
       if (trendsData.success && trendsData.data) {
-        // 트렌드 데이터를 랭킹 형태로 변환
-        const sortedTrends = trendsData.data
+        // 관심도 기준으로 정렬 및 순위 할당
+        const rankings = trendsData.data
           .sort((a: any, b: any) => b.interest - a.interest)
           .slice(0, limit)
+          .map((trend: any, index: number) => ({
+            rank: index + 1,
+            keyword: trend.keyword,
+            category: trend.category || '기타',
+            source: trend.source,
+            score: trend.interest,
+            url: trend.url
+          }))
 
-        const rankings = sortedTrends.map((trend: any, index: number) => ({
-          rank: index + 1,
-          prevRank: Math.random() > 0.5 ? index + Math.floor(Math.random() * 3) + 1 : null,
-          keyword: trend.keyword,
-          score: trend.interest * (Math.random() * 0.5 + 0.8),
-          mentions: Math.floor(trend.interest * 0.6),
-          engagement: Math.floor(trend.interest * 0.3),
-          growthRate: (Math.random() - 0.5) * 20,
-          sources: [trend.source],
-          trend: Math.random() > 0.7 ? 'new' : Math.random() > 0.5 ? 'up' : Math.random() > 0.3 ? 'down' : 'stable'
-        }))
-
-        console.log('✅ 변환된 랭킹 데이터:', rankings.slice(0, 3))
         setRankings(rankings)
         setLastUpdate(new Date())
         
         // 통계 계산
-        const avgScore = rankings.reduce((sum: number, r: any) => sum + r.score, 0) / rankings.length
-        const maxScore = Math.max(...rankings.map((r: any) => r.score))
+        const avgScore = rankings.reduce((sum, r) => sum + r.score, 0) / rankings.length
+        const maxScore = Math.max(...rankings.map(r => r.score))
         
-        const statsData = {
+        setStats({
           totalKeywords: rankings.length,
-          avgScore: Math.round(avgScore * 100) / 100,
-          maxScore: Math.round(maxScore * 100) / 100
-        }
-        
-        console.log('📈 통계 데이터:', statsData)
-        setStats(statsData)
+          avgScore: Math.round(avgScore),
+          maxScore: Math.round(maxScore)
+        })
       } else {
         throw new Error('API returned unsuccessful response')
       }
 
     } catch (err) {
-      console.error('❌ 트렌드 순위 조회 실패:', err)
       const errorMsg = err instanceof Error ? err.message : '트렌드 순위를 가져올 수 없습니다'
-      console.log('❌  설정된 에러 메시지:', errorMsg)
       setError(errorMsg)
       setRankings([])
       setStats(null)
     } finally {
-      console.log('🏁 fetchRankings 완료, 로딩 상태 해제')
       setIsLoading(false)
     }
-  }, [API_BASE_URL]) // timeframe 의존성 제거, API URL만 의존
+  }, [API_BASE_URL])
 
   const refreshRankings = useCallback(async () => {
     await fetchRankings(timeframe)
@@ -133,25 +114,21 @@ export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendin
 
   // timeframe 변경시 데이터 다시 로드
   useEffect(() => {
-    console.log('⚡ timeframe 변경 감지:', { timeframe, initialTimeframe })
     if (timeframe !== initialTimeframe) {
-      console.log('📊 timeframe 변경으로 인한 데이터 재로드')
       fetchRankings(timeframe)
     }
-  }, [timeframe]) // fetchRankings 의존성 제거
+  }, [timeframe, fetchRankings, initialTimeframe])
 
   // 초기 로드
   useEffect(() => {
-    console.log('🚀 컴포넌트 마운트 - 초기 데이터 로드 시작')
     fetchRankings(initialTimeframe)
-  }, []) // fetchRankings 의존성 제거로 무한루프 방지
+  }, [fetchRankings, initialTimeframe])
 
   const handleTimeframeChange = useCallback((newTimeframe: string) => {
     setTimeframe(newTimeframe)
   }, [])
 
-  // 반환값 로깅
-  const hookData = {
+  return {
     rankings,
     isLoading,
     error,
@@ -161,14 +138,4 @@ export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendin
     refreshRankings,
     stats
   }
-
-  console.log('🔄 Hook 반환 데이터:', {
-    rankingsLength: rankings.length,
-    isLoading,
-    error,
-    timeframe,
-    statsExists: !!stats
-  })
-
-  return hookData
 }
