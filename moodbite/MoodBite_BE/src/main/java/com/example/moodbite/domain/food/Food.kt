@@ -21,12 +21,20 @@ class Food(
     // 가격대 (1: 저렴, 2: 보통, 3: 비싸다)
     var priceLevel: Int = 2,
     
-    // 상황별 적합도
+    // 추가된 필드들
+    var ingredients: String? = null, // 주재료
+    var healthBenefits: String? = null, // 건강상 이점
+    var mealTimes: String? = null, // 적합한 식사 시간 (쉼표로 구분)
+    var diningTypes: String? = null, // 적합한 식사 동반자 (쉼표로 구분)
+    var minPrice: Int = 0, // 최소 가격
+    var maxPrice: Int = 0, // 최대 가격
+    
+    // 기존 상황별 적합도
     var soloFriendly: Boolean = true, // 혼자 먹기 좋은지
     var groupFriendly: Boolean = true, // 단체로 먹기 좋은지
     var dateFriendly: Boolean = false, // 데이트에 좋은지
     
-    // 시간대별 적합도
+    // 기존 시간대별 적합도
     var morningFriendly: Boolean = false,
     var lunchFriendly: Boolean = true,
     var dinnerFriendly: Boolean = true,
@@ -43,6 +51,12 @@ class Food(
         stressRelief = 5,
         appetiteMatch = 5,
         priceLevel = 2,
+        ingredients = null,
+        healthBenefits = null,
+        mealTimes = null,
+        diningTypes = null,
+        minPrice = 0,
+        maxPrice = 0,
         soloFriendly = true,
         groupFriendly = true,
         dateFriendly = false,
