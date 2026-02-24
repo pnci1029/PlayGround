@@ -15,6 +15,11 @@ export const config = {
     isDev: process.env.NODE_ENV === 'development',
     isProd: process.env.NODE_ENV === 'production',
   },
+  services: {
+    playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL || 'http://localhost:3000',
+    moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'https://moodbite.localhost',
+    trend: process.env.NEXT_PUBLIC_TREND_URL || 'https://trend.localhost',
+  },
 } as const
 
 // 클라이언트사이드 API URL 생성 헬퍼 함수들 (브라우저에서 사용)

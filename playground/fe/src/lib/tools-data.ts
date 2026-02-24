@@ -1,4 +1,5 @@
 import { renderPremiumIcon } from '@/components/ui/PremiumIcons'
+import { config } from '@/lib/config'
 
 export interface Tool {
   title: string
@@ -91,7 +92,7 @@ export const toolCategories: ToolCategories = {
   '생활 도구': [
     {
       title: '오늘의 한끼',
-      href: 'http://moodbite.localhost',
+      href: config.services.moodbite,
       category: '생활 도구',
       icon: renderPremiumIcon('food'),
       status: 'active',
@@ -138,7 +139,7 @@ export const toolCategories: ToolCategories = {
   '정보 도구': [
     {
       title: '실시간 트렌드',
-      href: 'http://trend.localhost',
+      href: config.services.trend,
       category: '정보 도구',
       icon: renderPremiumIcon('trending-up'),
       status: 'active',

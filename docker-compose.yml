@@ -54,8 +54,13 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://playground_backend:8000
+      - NEXT_PUBLIC_API_URL=/api
       - NEXT_PUBLIC_WS_URL=ws://localhost:8010
+      - BACKEND_CONTAINER_URL=http://playground_backend:8000
+      - BACKEND_API_PREFIX=/api
+      - NEXT_PUBLIC_PLAYGROUND_URL=${PLAYGROUND_URL}
+      - NEXT_PUBLIC_MOODBITE_URL=${MOODBITE_URL}
+      - NEXT_PUBLIC_TREND_URL=${TREND_URL}
     depends_on:
       - backend
     restart: unless-stopped
@@ -96,12 +101,12 @@ services:
       dockerfile: Dockerfile
     image: moodbite-frontend:latest
     container_name: moodbite_frontend
-    ports:
-      - "3001:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=http://localhost:8082
-      - REACT_APP_WS_URL=ws://localhost:8084
+      - REACT_APP_API_URL=http://moodbite.localhost/api
+      - REACT_APP_WS_URL=ws://moodbite.localhost:8084
     depends_on:
       - moodbite-backend
     restart: unless-stopped
@@ -140,12 +145,14 @@ services:
       dockerfile: Dockerfile
     image: trend-frontend:latest
     container_name: trend_frontend
-    ports:
-      - "3003:3000"
+    expose:
+      - "3002"
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost:8002
-      - NEXT_PUBLIC_WS_URL=ws://localhost:8012
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=/api
+      - NEXT_PUBLIC_WS_URL=ws://trend.localhost:8012
+      - BACKEND_CONTAINER_URL=http://trend_backend:8002
+      - BACKEND_API_PREFIX=/api
     depends_on:
       - trend-backend
     restart: unless-stopped
