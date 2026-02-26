@@ -19,6 +19,95 @@ export interface ToolCategories {
 
 // 프리미엄 도구 데이터 - FreeTools.org 스타일
 export const toolCategories: ToolCategories = {
+  '창작 도구': [
+    {
+      title: '캔버스',
+      href: '/canvas',
+      category: '창작 도구',
+      icon: renderPremiumIcon('palette'),
+      status: 'beta',
+      description: '자유롭게 그림을 그리고 창작할 수 있는 디지털 캔버스'
+    },
+    {
+      title: '갤러리',
+      href: '/gallery',
+      category: '창작 도구', 
+      icon: renderPremiumIcon('grid'),
+      status: 'active',
+      description: '작품들을 아름답게 정리하고 감상할 수 있는 갤러리'
+    }
+  ],
+
+  '커뮤니케이션': [
+    {
+      title: '실시간 채팅',
+      href: '/chat',
+      category: '커뮤니케이션',
+      icon: renderPremiumIcon('brain'),
+      status: 'active',
+      description: '실시간으로 다른 사용자들과 채팅할 수 있습니다'
+    }
+  ],
+  
+  '재미 도구': [
+    {
+      title: '주사위 굴리기',
+      href: '/tools/dice',
+      category: '재미 도구',
+      icon: renderPremiumIcon('dice'),
+      status: 'active',
+      description: '3D 주사위로 랜덤한 숫자를 뽑아보세요'
+    },
+    {
+      title: '사다리타기',
+      href: '/tools/ladder',
+      category: '재미 도구',
+      icon: renderPremiumIcon('ladder'),
+      status: 'active',
+      description: '공정한 선택을 위한 전통적인 사다리타기 게임'
+    },
+    {
+      title: '룰렛 돌리기',
+      href: '/tools/wheel',
+      category: '재미 도구',
+      icon: renderPremiumIcon('wheel'),
+      status: 'active',
+      description: '커스터마이징 가능한 룰렛으로 선택해보세요'
+    },
+    {
+      title: '동전 던지기',
+      href: '/tools/coin',
+      category: '재미 도구',
+      icon: renderPremiumIcon('coin'),
+      status: 'active',
+      description: '3D 동전으로 간단한 선택을 결정해보세요'
+    }
+  ],
+
+  '생활 도구': [
+    {
+      title: '오늘의 한끼',
+      href: config.services.moodbite,
+      category: '생활 도구',
+      icon: renderPremiumIcon('food'),
+      status: 'active',
+      isExternal: true,
+      description: '기분에 맞는 음식을 추천받아보세요'
+    }
+  ],
+
+  '정보 도구': [
+    {
+      title: '실시간 트렌드',
+      href: config.services.trend,
+      category: '정보 도구',
+      icon: renderPremiumIcon('trending-up'),
+      status: 'active',
+      isExternal: true,
+      description: '전 세계 실시간 트렌드를 무료로 확인하세요'
+    }
+  ],
+
   '개발 도구': [
     {
       title: 'JSON Formatter',

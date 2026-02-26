@@ -25,6 +25,13 @@ const apps: AppItem[] = [
     description: '실시간 트렌드 분석',
     icon: '📈',
     category: 'services'
+  },
+  {
+    name: 'Blog',
+    url: config.services.blog,
+    description: '개인 블로그',
+    icon: '📝',
+    category: 'services'
   }
 ]
 

@@ -216,7 +216,7 @@ export default function ToolCategoryGrid() {
   const [toolStats, setToolStats] = useState<Record<string, any>>({})
   
   // 아코디언 상태 관리
-  const [openCategories, setOpenCategories] = useState<string[]>(['개발 도구'])
+  const [openCategories, setOpenCategories] = useState<string[]>(['창작 도구'])
   
   // 카테고리 순서 상태 관리
   const [categoryOrder, setCategoryOrder] = useState<string[]>(() => 
@@ -425,7 +425,7 @@ export default function ToolCategoryGrid() {
     return (
       <div className="space-y-6 sm:space-y-8 lg:space-y-10">
         {Object.entries(toolCategories).map(([categoryName, tools]) => {
-          const isOpen = categoryName === '개발 도구' // 기본값
+          const isOpen = categoryName === '창작 도구' // 기본값
           
           return (
             <section 
