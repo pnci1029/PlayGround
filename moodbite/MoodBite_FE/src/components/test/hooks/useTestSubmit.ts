@@ -2,8 +2,16 @@ import {useCallback, useState} from "react";
 import {useDispatch} from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {submitTestResultAsync, submitLocationBasedTestResultAsync} from "../../../slice/testSlice";
-import {TestResultPostDTO, LocationBasedTestResultRequestDTO, LocationBasedRecommendationResponseDTO} from "../../../types/test";
+import {TestResultPostDTO, LocationBasedTestResultRequestDTO, LocationBasedRecommendationResponseDTO, TestResultResponseDTO, FoodRecommendationDTO} from "../../../types/test";
 import {LocationService} from "../../api/LocationService";
+
+const isTestResultResponseDTO = (payload: any): payload is TestResultResponseDTO => {
+    return payload && typeof payload === 'object' && 'id' in payload && 'message' in payload;
+};
+
+const isFoodRecommendationDTO = (payload: any): payload is FoodRecommendationDTO => {
+    return payload && typeof payload === 'object' && 'primaryFood' in payload && 'alternativefoods' in payload && 'reason' in payload;
+};
 
 export function useTestSubmit() {
     const dispatch = useDispatch<any>();
@@ -22,15 +30,16 @@ export function useTestSubmit() {
                     if (result.meta.requestStatus === 'fulfilled') {
                         // URL 파라미터로 데이터 전달하여 결과 페이지로 네비게이션
                         const testData = encodeURIComponent(JSON.stringify(dto));
-                        // 백엔드에서 직접 JSON 객체나 문자열로 응답할 수 있으므로 처리
+                        // TypeScript 타입 가드를 사용한 안전한 타입 체크
                         let recommendation = '';
-                        if (result.payload.aiRecommendation) {
-                            recommendation = result.payload.aiRecommendation;
-                        } else if (typeof result.payload === 'object' && (result.payload as any).primaryFood) {
-                            // 백엔드가 직접 JSON 객체를 반환하는 경우
+                        
+                        if (isTestResultResponseDTO(result.payload)) {
+                            recommendation = result.payload.aiRecommendation || result.payload.message || '';
+                        } else if (isFoodRecommendationDTO(result.payload)) {
                             recommendation = JSON.stringify(result.payload);
-                        } else if (typeof result.payload === 'string') {
-                            recommendation = result.payload;
+                        } else {
+                            console.error('Unexpected payload type:', result.payload);
+                            recommendation = '';
                         }
                         
                         const encodedRecommendation = encodeURIComponent(recommendation);
