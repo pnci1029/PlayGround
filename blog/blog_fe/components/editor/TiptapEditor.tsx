@@ -5,17 +5,11 @@ import StarterKit from '@tiptap/starter-kit';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Placeholder from '@tiptap/extension-placeholder';
 import { createLowlight } from 'lowlight';
-import javascript from 'lowlight/lib/languages/javascript';
-import typescript from 'lowlight/lib/languages/typescript';
-import python from 'lowlight/lib/languages/python';
-import css from 'lowlight/lib/languages/css';
+import { common } from 'lowlight';
 import { EditorProps } from '@/types';
 
 const lowlight = createLowlight();
-lowlight.register('javascript', javascript);
-lowlight.register('typescript', typescript);
-lowlight.register('python', python);
-lowlight.register('css', css);
+lowlight.register(common);
 
 export default function TiptapEditor({
   initialContent = '',
