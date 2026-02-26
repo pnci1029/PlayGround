@@ -16,7 +16,7 @@ export class KoreanTrendService {
 
     return currentTrends.map((keyword, index) => ({
       keyword,
-      interest: Math.floor(2000 - (index * 80) + (Math.random() * 100)),
+      interest: 100 - index,
       category: '검색어',
       source: 'korean_search' as const,
       timestamp: new Date(),
@@ -39,7 +39,7 @@ export class KoreanTrendService {
     
     return hotProducts.map((product, index) => ({
       keyword: product,
-      interest: Math.floor(1800 - (index * 70) + (Math.random() * 150)),
+      interest: 90 - index,
       category: '쇼핑',
       source: 'shopping' as const,
       timestamp: new Date(),
@@ -86,7 +86,7 @@ export class KoreanTrendService {
 
     return techTrends.map((keyword, index) => ({
       keyword,
-      interest: Math.floor(1200 - (index * 40) + (Math.random() * 80)),
+      interest: 80 - index,
       category: 'IT',
       source: 'tech' as const,
       timestamp: new Date(),

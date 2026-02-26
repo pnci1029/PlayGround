@@ -23,27 +23,20 @@ export default function RankingCard({ ranking, index }: RankingCardProps) {
     translate()
   }, [ranking.keyword, translateText])
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault()
-      const searchUrl = ranking.url || `https://www.google.com/search?q=${encodeURIComponent(ranking.keyword)}`
-      window.open(searchUrl, '_blank', 'noopener,noreferrer')
-    } else {
-      router.push(`/detail/${encodeURIComponent(ranking.keyword)}`)
-    }
+  const handleCardClick = () => {
+    router.push(`/detail/${encodeURIComponent(ranking.keyword)}`)
   }
 
   const getRankBadge = () => {
     if (ranking.rank <= 3) {
       const badges = {
-        1: { emoji: '🥇', className: 'trend-rank-gold' },
-        2: { emoji: '🥈', className: 'trend-rank-silver' },
-        3: { emoji: '🥉', className: 'trend-rank-bronze' }
+        1: { className: 'trend-rank-gold' },
+        2: { className: 'trend-rank-silver' },
+        3: { className: 'trend-rank-bronze' }
       }
       const badge = badges[ranking.rank as keyof typeof badges]
       return (
         <div className={`trend-rank-badge ${badge.className}`}>
-          <span>{badge.emoji}</span>
           <span>#{ranking.rank}</span>
         </div>
       )
@@ -56,19 +49,19 @@ export default function RankingCard({ ranking, index }: RankingCardProps) {
     )
   }
 
-  const getSourceIcon = () => {
-    const icons = {
-      'korean_search': '🔍',
-      'shopping': '🛍️',
-      'youtube': '📺',
-      'tech': '💻',
-      'hackernews': '🔥',
-      'reddit': '📱',
-      'github': '⭐',
-      'devto': '📝',
-      'rss': '📡'
+  const getSourceName = () => {
+    const sources = {
+      'korean_search': 'Search',
+      'shopping': 'Shopping',
+      'youtube': 'Video',
+      'tech': 'Tech',
+      'hackernews': 'News',
+      'reddit': 'Social',
+      'github': 'Code',
+      'devto': 'Dev',
+      'rss': 'Feed'
     }
-    return icons[ranking.source as keyof typeof icons] || '📊'
+    return sources[ranking.source as keyof typeof sources] || 'Data'
   }
 
   const getCategoryClass = () => {
@@ -93,7 +86,7 @@ export default function RankingCard({ ranking, index }: RankingCardProps) {
         {getRankBadge()}
         
         <div className="trend-category-badge">
-          <span>{getSourceIcon()}</span>
+          <span>{getSourceName()}</span>
           <span>{ranking.category}</span>
         </div>
       </div>
@@ -113,7 +106,7 @@ export default function RankingCard({ ranking, index }: RankingCardProps) {
         
         <div style={{ opacity: 0, transition: 'opacity 0.3s ease' }} className="trend-more-icon">
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>

@@ -31,7 +31,6 @@ export default function TrendDetailPage() {
     try {
       setIsLoading(true)
       
-      // 전체 트렌드에서 키워드 찾기
       const response = await fetch('http://localhost:8002/api/trends')
       const data = await response.json()
       
@@ -40,10 +39,9 @@ export default function TrendDetailPage() {
         if (trend) {
           setTrendDetail(trend)
           
-          // 같은 카테고리 관련 트렌드
           const related = data.data
             .filter((t: any) => t.category === trend.category && t.keyword !== keyword)
-            .slice(0, 6)
+            .slice(0, 8)
           setRelatedTrends(related)
         }
       }
@@ -54,39 +52,19 @@ export default function TrendDetailPage() {
     }
   }
 
-  const getCategoryIcon = (category: string) => {
-    const icons = {
-      '검색어': '🔍',
-      '쇼핑': '🛍️',
-      '영상': '📺',
-      'IT': '💻',
-      'Tech News': '📰',
-      'Dev Article': '📝'
-    }
-    return icons[category as keyof typeof icons] || '📊'
-  }
-
   const getSourceName = (source: string) => {
     const names = {
-      'korean_search': '한국 검색',
-      'shopping': '쇼핑몰',
-      'youtube': 'YouTube',
-      'tech': 'IT 기술',
-      'hackernews': 'Hacker News',
-      'reddit': 'Reddit',
-      'github': 'GitHub',
-      'devto': 'Dev.to',
-      'rss': 'RSS 피드'
+      'korean_search': 'Search',
+      'shopping': 'Shopping',
+      'youtube': 'Video',
+      'tech': 'Tech',
+      'hackernews': 'News',
+      'reddit': 'Social',
+      'github': 'Code',
+      'devto': 'Dev',
+      'rss': 'Feed'
     }
     return names[source as keyof typeof names] || source
-  }
-
-  const handleSearchClick = () => {
-    if (trendDetail?.url) {
-      window.open(trendDetail.url, '_blank', 'noopener,noreferrer')
-    } else {
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(keyword)}`, '_blank', 'noopener,noreferrer')
-    }
   }
 
   const handleRelatedClick = (relatedKeyword: string) => {
@@ -95,10 +73,10 @@ export default function TrendDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-bg flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-20 h-20 border-4 border-surface border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-text-secondary">로딩 중...</p>
+      <div className="trend-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="trend-spinner"></div>
+          <p style={{ color: '#cbd5e1', marginTop: '1rem' }}>로딩 중...</p>
         </div>
       </div>
     )
@@ -106,12 +84,12 @@ export default function TrendDetailPage() {
 
   if (!trendDetail) {
     return (
-      <div className="min-h-screen bg-gradient-bg flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-text-primary mb-4">트렌드를 찾을 수 없습니다</h1>
+      <div className="trend-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f8fafc', marginBottom: '2rem' }}>트렌드를 찾을 수 없습니다</h1>
           <button 
             onClick={() => router.push('/')}
-            className="btn-primary"
+            className="trend-btn-primary"
           >
             메인으로 돌아가기
           </button>
@@ -121,104 +99,197 @@ export default function TrendDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-bg">
-      <div className="container-centered py-12">
+    <div className="trend-container">
+      <div className="trend-centered" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
         {/* 상단 네비게이션 */}
-        <div className="mb-8">
+        <div style={{ marginBottom: '2rem' }}>
           <button 
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              color: '#cbd5e1', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer',
+              fontSize: '0.875rem'
+            }}
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             트렌드 순위로 돌아가기
           </button>
         </div>
 
-        {/* 트렌드 상세 정보 */}
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-strong rounded-3xl p-8 mb-8">
-            {/* 헤더 */}
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <span className="text-4xl">{getCategoryIcon(trendDetail.category)}</span>
-                <div>
-                  <h1 className="text-4xl font-bold gradient-text">{keyword}</h1>
-                  <p className="text-text-secondary mt-2">
-                    {trendDetail.category} · {getSourceName(trendDetail.source)}
-                  </p>
-                </div>
+        {/* 메인 콘텐츠 */}
+        <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
+          {/* 헤더 섹션 */}
+          <div style={{ 
+            background: 'rgba(255, 255, 255, 0.05)', 
+            borderRadius: '1.5rem', 
+            padding: '3rem 2rem', 
+            marginBottom: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <h1 style={{ 
+                fontSize: '3rem', 
+                fontWeight: 'bold', 
+                background: 'linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                marginBottom: '1rem'
+              }}>
+                {keyword}
+              </h1>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '1rem', 
+                color: '#cbd5e1' 
+              }}>
+                <span>{trendDetail.category}</span>
+                <span>•</span>
+                <span>{getSourceName(trendDetail.source)}</span>
               </div>
             </div>
 
-            {/* 통계 정보 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-1">
+            {/* 통계 그리드 */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+              gap: '2rem',
+              marginBottom: '2rem'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  fontSize: '2rem', 
+                  fontWeight: 'bold', 
+                  color: '#6366f1', 
+                  marginBottom: '0.5rem' 
+                }}>
                   #{trendDetail.rank}
                 </div>
-                <div className="text-sm text-text-secondary">순위</div>
+                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>순위</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-green mb-1">
-                  {trendDetail.interest.toLocaleString()}
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  fontSize: '2rem', 
+                  fontWeight: 'bold', 
+                  color: '#10b981', 
+                  marginBottom: '0.5rem' 
+                }}>
+                  {getSourceName(trendDetail.source)}
                 </div>
-                <div className="text-sm text-text-secondary">관심도</div>
+                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>출처</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-yellow mb-1">
-                  {trendDetail.region}
-                </div>
-                <div className="text-sm text-text-secondary">지역</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent-red mb-1">
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ 
+                  fontSize: '2rem', 
+                  fontWeight: 'bold', 
+                  color: '#f59e0b', 
+                  marginBottom: '0.5rem' 
+                }}>
                   실시간
                 </div>
-                <div className="text-sm text-text-secondary">업데이트</div>
+                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>업데이트</div>
               </div>
             </div>
+          </div>
 
-            {/* 액션 버튼 */}
-            <div className="text-center">
-              <button 
-                onClick={handleSearchClick}
-                className="btn-primary text-lg px-8 py-4 hover-lift"
-              >
-                <span className="mr-2">🔍</span>
-                자세히 검색하기
-              </button>
+          {/* 요약 정보 섹션 */}
+          <div style={{ 
+            background: 'rgba(255, 255, 255, 0.03)', 
+            borderRadius: '1rem', 
+            padding: '1.5rem', 
+            marginBottom: '2rem',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <h3 style={{ 
+              fontSize: '1.125rem', 
+              fontWeight: '600', 
+              color: '#f8fafc', 
+              marginBottom: '1rem' 
+            }}>
+              트렌드 요약
+            </h3>
+            <div style={{ color: '#cbd5e1', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '0.5rem' }}>
+                • {trendDetail.category} 카테고리에서 {trendDetail.rank}위를 기록
+              </p>
+              <p style={{ marginBottom: '0.5rem' }}>
+                • {getSourceName(trendDetail.source)} 출처에서 수집된 트렌드 데이터
+              </p>
+              <p>
+                • 현재 한국에서 주목받고 있는 키워드입니다
+              </p>
             </div>
           </div>
 
           {/* 관련 트렌드 */}
           {relatedTrends.length > 0 && (
-            <div className="glass-strong rounded-3xl p-8">
-              <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
-                <span className="mr-2">{getCategoryIcon(trendDetail.category)}</span>
+            <div style={{ 
+              background: 'rgba(255, 255, 255, 0.03)', 
+              borderRadius: '1rem', 
+              padding: '1.5rem',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <h3 style={{ 
+                fontSize: '1.125rem', 
+                fontWeight: '600', 
+                color: '#f8fafc', 
+                marginBottom: '1.5rem' 
+              }}>
                 {trendDetail.category} 관련 트렌드
-              </h2>
+              </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="trend-grid" style={{ gap: '1rem' }}>
                 {relatedTrends.map((related, index) => (
                   <div
                     key={related.keyword}
                     onClick={() => handleRelatedClick(related.keyword)}
-                    className="p-4 rounded-xl bg-surface/50 border border-border/50 cursor-pointer
-                               hover:bg-surface hover:border-primary/30 transition-all duration-300
-                               animate-fade-in-up"
-                    style={{ animationDelay: `${index * 100}ms` }}
+                    className="trend-card trend-fade-in"
+                    style={{ 
+                      animationDelay: `${index * 100}ms`,
+                      padding: '1rem'
+                    }}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-bold text-primary">#{related.rank}</span>
-                      <span className="text-xs text-text-muted">{getSourceName(related.source)}</span>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'flex-start', 
+                      marginBottom: '0.75rem' 
+                    }}>
+                      <div className="trend-rank-badge trend-rank-default">
+                        <span>#{related.rank}</span>
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.75rem', 
+                        color: '#94a3b8',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '0.5rem'
+                      }}>
+                        {getSourceName(related.source)}
+                      </div>
                     </div>
-                    <h3 className="font-medium text-text-primary leading-tight line-clamp-2">
+                    
+                    <div className="trend-keyword" style={{ 
+                      fontSize: '1rem',
+                      marginBottom: '0.5rem'
+                    }}>
                       {related.keyword}
-                    </h3>
-                    <div className="text-sm text-text-secondary mt-2">
-                      관심도: {related.interest.toLocaleString()}
+                    </div>
+                    
+                    <div style={{ 
+                      fontSize: '0.875rem', 
+                      color: '#94a3b8' 
+                    }}>
+                      {related.category} 카테고리
                     </div>
                   </div>
                 ))}
