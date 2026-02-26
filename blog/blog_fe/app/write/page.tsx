@@ -1,5 +1,10 @@
 import EditorLayout from '@/components/editor/EditorLayout';
+import AuthCheck from '@/components/auth/AuthCheck';
 
 export default function WritePage() {
-  return <EditorLayout />;
+  return (
+    <AuthCheck>
+      <EditorLayout />
+    </AuthCheck>
+  );
 }
