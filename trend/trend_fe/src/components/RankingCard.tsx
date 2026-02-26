@@ -76,40 +76,52 @@ export default function RankingCard({ ranking, index }: RankingCardProps) {
     return classes[ranking.category as keyof typeof classes] || ''
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleCardClick()
+    }
+  }
+
   return (
-    <div
+    <article
       className={`trend-card ${getCategoryClass()} trend-fade-in`}
       onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
       style={{ animationDelay: `${index * 100}ms` }}
+      tabIndex={0}
+      role="button"
+      aria-label={`${translatedKeyword} 트렌드 상세 정보 보기`}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+      <div className="trend-card-header">
         {getRankBadge()}
         
         <div className="trend-category-badge">
-          <span>{getSourceName()}</span>
-          <span>{ranking.category}</span>
+          <span className="trend-source-name">{getSourceName()}</span>
+          <span className="trend-category-divider">•</span>
+          <span className="trend-category-name">{ranking.category}</span>
         </div>
       </div>
 
-      <div className="trend-keyword">
+      <h3 className="trend-keyword">
         {translatedKeyword}
-      </div>
+      </h3>
 
       <div className="trend-stats">
         <div className="trend-interest">
-          <div className="trend-interest-dot"></div>
-          <span style={{ fontSize: '0.875rem', color: '#cbd5e1' }}>관심도</span>
-          <span className="trend-interest-value">
+          <div className="trend-interest-dot" aria-hidden="true"></div>
+          <span className="trend-interest-label">관심도</span>
+          <span className="trend-interest-value" aria-label={`관심도 ${Math.round(ranking.score).toLocaleString()}점`}>
             {Math.round(ranking.score).toLocaleString()}
           </span>
         </div>
         
-        <div style={{ opacity: 0, transition: 'opacity 0.3s ease' }} className="trend-more-icon">
+        <div className="trend-more-icon" aria-hidden="true">
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>
-    </div>
+    </article>
   )
 }

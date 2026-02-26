@@ -67,12 +67,12 @@ export default function TrendRankingPage() {
       <div className="trend-centered">
         
         {/* Header */}
-        <div style={{ textAlign: 'center', paddingTop: '3rem', marginBottom: '3rem' }}>
+        <header className="trend-header">
           <h1 className="trend-title">트렌드 순위</h1>
           <p className="trend-subtitle">
             실시간 한국 트렌드와 글로벌 인사이트를 한눈에
           </p>
-        </div>
+        </header>
           
           <div className="flex flex-col items-center gap-6">
             <TimeframeSelector 
@@ -93,30 +93,35 @@ export default function TrendRankingPage() {
 
         {/* 오류 표시 */}
         {error && (
-          <div style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#ef4444', marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-              <span style={{ fontWeight: '600' }}>오류 발생</span>
+          <div className="trend-error-container" role="alert">
+            <div className="trend-error-header">
+              <svg className="trend-error-icon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span className="trend-error-title">오류 발생</span>
             </div>
-            <p style={{ color: '#cbd5e1', marginBottom: '1rem' }}>{error}</p>
+            <p className="trend-error-message">{error}</p>
             <button 
               onClick={() => window.location.reload()}
-              className="trend-btn-primary"
-              style={{ fontSize: '0.875rem' }}
+              className="trend-btn-primary trend-error-button"
+              aria-label="페이지 새로고침"
             >
-              🔄 페이지 새로고침
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+              페이지 새로고침
             </button>
           </div>
         )}
 
         {/* 로딩 상태 */}
         {isLoading && rankings.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+          <div className="trend-loading-state" aria-live="polite">
             <div className="trend-spinner"></div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f8fafc', margin: '1.5rem 0 0.75rem 0' }}>
+            <h3 className="trend-loading-title">
               데이터 로딩 중
             </h3>
-            <p style={{ color: '#cbd5e1', maxWidth: '24rem', margin: '0 auto' }}>
+            <p className="trend-loading-description">
               순위 데이터를 계산하고 있습니다
             </p>
           </div>
@@ -137,19 +142,27 @@ export default function TrendRankingPage() {
 
         {/* 데이터 없음 */}
         {!isLoading && rankings.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '5rem 0' }}>
-            <div style={{ fontSize: '3.75rem', marginBottom: '1.5rem' }}>🏆</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f8fafc', marginBottom: '1rem' }}>
+          <div className="trend-empty-state">
+            <div className="trend-empty-icon">
+              <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <h3 className="trend-empty-title">
               순위 데이터가 없습니다
             </h3>
-            <p style={{ color: '#cbd5e1', marginBottom: '2rem', maxWidth: '24rem', margin: '0 auto 2rem auto' }}>
+            <p className="trend-empty-description">
               새로고침을 시도해보세요
             </p>
             <button 
               onClick={handleRefresh}
               className="trend-btn-primary"
+              aria-label="데이터 다시 불러오기"
             >
-              🔄 다시 시도
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+              다시 시도
             </button>
           </div>
         )}
