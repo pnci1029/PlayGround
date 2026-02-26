@@ -8,6 +8,7 @@ http://localhost:3000              → Playground 메인 (직접 접근)
 https://localhost                  → Playground 메인 (Caddy 프록시)
 https://moodbite.localhost         → MoodBite (음식 추천)
 https://trend.localhost            → Trend (트렌드 분석)
+https://blog.localhost             → Blog (개인 블로그)
 ```
 
 ### 프로덕션 환경
@@ -15,6 +16,7 @@ https://trend.localhost            → Trend (트렌드 분석)
 https://yourdomain.com             → Playground 메인
 https://moodbite.yourdomain.com    → MoodBite 
 https://trend.yourdomain.com       → Trend
+https://blog.yourdomain.com        → Blog
 ```
 
 ### 🔧 hosts 파일 설정 (로컬 개발)
@@ -22,6 +24,7 @@ https://trend.yourdomain.com       → Trend
 ```bash
 127.0.0.1 moodbite.localhost
 127.0.0.1 trend.localhost
+127.0.0.1 blog.localhost
 ```
 
 ## 📋 포트 할당 컨벤션
@@ -32,6 +35,7 @@ https://trend.yourdomain.com       → Trend
 | **Playground** | 3000 | 8000 | 8010 | 3000 | 메인 서비스 |
 | **MoodBite** | expose only | 8082 | 8084 | 3000 (내부) | 음식 추천 |
 | **Trend** | expose only | 8002 | 8012 | 3002 (내부) | 트렌드 분석 |
+| **Blog** | expose only | 8003 | 8013 | 3003 (내부) | 개인 블로그 |
 
 ### 기타 포트
 - **PostgreSQL**: 5432
@@ -53,11 +57,13 @@ BASE_DOMAIN=localhost
 PLAYGROUND_URL=http://localhost:3000
 MOODBITE_URL=https://moodbite.localhost
 TREND_URL=https://trend.localhost
+BLOG_URL=https://blog.localhost
 
 # Service URLs (프로덕션 - 주석 해제하고 도메인 변경)
 # PLAYGROUND_URL=https://yourdomain.com
 # MOODBITE_URL=https://moodbite.yourdomain.com  
 # TREND_URL=https://trend.yourdomain.com
+# BLOG_URL=https://blog.yourdomain.com
 
 # Database configuration
 POSTGRES_DB=playground
@@ -75,6 +81,7 @@ JWT_SECRET=please_change_this_jwt_secret_in_production
 NEXT_PUBLIC_PLAYGROUND_URL=${PLAYGROUND_URL}
 NEXT_PUBLIC_MOODBITE_URL=${MOODBITE_URL}
 NEXT_PUBLIC_TREND_URL=${TREND_URL}
+NEXT_PUBLIC_BLOG_URL=${BLOG_URL}
 
 # Backend Container URLs (서버사이드 통신)
 BACKEND_CONTAINER_URL=http://playground_backend:8000
@@ -89,6 +96,7 @@ export const config = {
     playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL || 'http://localhost:3000',
     moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'https://moodbite.localhost',
     trend: process.env.NEXT_PUBLIC_TREND_URL || 'https://trend.localhost',
+    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.localhost',
   },
 }
 
@@ -222,7 +230,9 @@ Images: Supabase Storage
    ```
    main.domain.com → Cloudflare Pages
    api.domain.com → Koyeb
-   tools.domain.com → Cloudflare Pages (별도 프로젝트)
+   moodbite.domain.com → Cloudflare Pages (별도 프로젝트)
+   trend.domain.com → Cloudflare Pages (별도 프로젝트)
+   blog.domain.com → Cloudflare Pages (별도 프로젝트)
    ```
 3. SSL 자동 설정
 4. 무료 CDN 적용

@@ -125,3 +125,6 @@ public/uploads/
 
 # Generated files
 *.generated.*
+
+# Database migrations (sensitive schema information)
+migrations/*.sql
