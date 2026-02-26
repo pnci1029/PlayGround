@@ -7,6 +7,7 @@ import {Provider} from 'react-redux';
 import {store} from "./slice";
 import {Main} from "./components/common/Main";
 import App from "./App";
+import { TestResultPage } from "./components/test/TestResultPage";
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
@@ -18,6 +19,7 @@ root.render(
                 <Routes>
                     <Route path="/" element={<App/>}>
                         <Route path="" element={<Main/>} />
+                        <Route path="test/result" element={<TestResultPage/>} />
                     </Route>
                 </Routes>
             </BrowserRouter>

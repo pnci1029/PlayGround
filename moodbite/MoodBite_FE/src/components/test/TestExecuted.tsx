@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, MapPin, Clock, DollarSign, Users } from 'lucide-react';
+import { ArrowLeft, RefreshCw, MapPin, Clock, DollarSign, Users, Utensils } from 'lucide-react';
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
 import NoRecommendations from '../ui/NoRecommendations';
+
+interface FoodRecommendation {
+    primaryFood: string | null;
+    alternativefoods: string[];
+    reason: string;
+}
 
 interface TestExecutedProps {
     onBack: () => void;
@@ -54,43 +60,28 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
         }
     };
 
-    const parseRecommendation = (text: string) => {
-        if (!text) return { restaurants: [], summary: '' };
+    const parseRecommendation = (text: string): FoodRecommendation | null => {
+        if (!text) return null;
         
-        const lines = text.split('\n').filter(line => line.trim());
-        const restaurants = [];
-        let summary = '';
-        let currentRestaurant: any = {};
-        
-        for (let line of lines) {
-            line = line.trim();
-            if (line.includes('**') || line.includes('##')) {
-                if (currentRestaurant.name) {
-                    restaurants.push(currentRestaurant);
-                    currentRestaurant = {};
-                }
-                currentRestaurant.name = line.replace(/[*#]/g, '').trim();
-            } else if (line.includes('가격') || line.includes('예상 가격') || line.includes('₩')) {
-                currentRestaurant.price = line;
-            } else if (line.includes('주소') || line.includes('위치')) {
-                currentRestaurant.location = line;
-            } else if (line.includes('추천 이유') || line.includes('특징')) {
-                currentRestaurant.reason = line;
-            } else if (line.length > 20 && !currentRestaurant.description) {
-                currentRestaurant.description = line;
-            } else if (line.length > 50 && !summary) {
-                summary = line;
-            }
+        try {
+            // JSON 형태로 파싱 시도
+            const parsed = JSON.parse(text);
+            return {
+                primaryFood: parsed.primaryFood,
+                alternativefoods: parsed.alternativefoods || [],
+                reason: parsed.reason || '추천 이유가 없습니다.'
+            };
+        } catch (error) {
+            // JSON이 아닌 경우 기존 텍스트 방식으로 처리 (호환성을 위해)
+            return {
+                primaryFood: null,
+                alternativefoods: [],
+                reason: text
+            };
         }
-        
-        if (currentRestaurant.name) {
-            restaurants.push(currentRestaurant);
-        }
-        
-        return { restaurants, summary };
     };
 
-    const { restaurants, summary } = parseRecommendation(recommendation);
+    const foodRecommendation = parseRecommendation(recommendation);
 
     return (
         <div className={style.container}>
@@ -164,59 +155,60 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                         </div>
                     ) : (
                         <>
-                            {!recommendation || recommendation.includes('추천을 찾지 못했습니다') ? (
+                            {!recommendation || !foodRecommendation || 
+                             (!foodRecommendation.primaryFood && 
+                              foodRecommendation.alternativefoods.length === 0 && 
+                              (foodRecommendation.reason.includes('추천을 찾지 못했습니다') || 
+                               foodRecommendation.reason.includes('적합한 추천을 찾지 못했습니다'))) ? (
                                 <NoRecommendations onRetry={onRetryTest || onBack} />
                             ) : (
-                                <>
-                                    {summary && (
-                                        <div className={style.summaryCard}>
-                                            <p>{summary}</p>
+                                <div className={style.foodRecommendations}>
+                                    {/* 추천 이유 */}
+                                    {foodRecommendation && foodRecommendation.reason && (
+                                        <div className={style.reasonCard}>
+                                            <h3 className={style.reasonTitle}>🤔 왜 이 음식을 추천하나요?</h3>
+                                            <p className={style.reasonText}>{foodRecommendation?.reason}</p>
                                         </div>
                                     )}
-                                    
-                                    {restaurants.length > 0 ? (
-                                        <div className={style.restaurantList}>
-                                            {restaurants.map((restaurant, index) => (
-                                                <div key={index} className={style.restaurantCard}>
-                                                    <div className={style.restaurantHeader}>
-                                                        <h3 className={style.restaurantName}>{restaurant.name}</h3>
-                                                    </div>
-                                                    
-                                                    {restaurant.description && (
-                                                        <p className={style.restaurantDescription}>
-                                                            {restaurant.description}
-                                                        </p>
-                                                    )}
-                                                    
-                                                    <div className={style.restaurantDetails}>
-                                                        {restaurant.price && (
-                                                            <div className={style.detailItem}>
-                                                                <DollarSign size={16} />
-                                                                <span>{restaurant.price}</span>
-                                                            </div>
-                                                        )}
-                                                        {restaurant.location && (
-                                                            <div className={style.detailItem}>
-                                                                <MapPin size={16} />
-                                                                <span>{restaurant.location}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    
-                                                    {restaurant.reason && (
-                                                        <div className={style.recommendReason}>
-                                                            {restaurant.reason}
-                                                        </div>
-                                                    )}
+
+                                    {/* 메인 추천 음식 */}
+                                    {foodRecommendation && foodRecommendation.primaryFood && (
+                                        <div className={style.primaryFoodCard}>
+                                            <div className={style.primaryHeader}>
+                                                <Utensils size={24} className={style.primaryIcon} />
+                                                <div>
+                                                    <h3 className={style.primaryTitle}>오늘의 추천</h3>
+                                                    <p className={style.primarySubtitle}>당신의 상태에 가장 적합한 음식</p>
                                                 </div>
-                                            ))}
+                                            </div>
+                                            <div className={style.primaryFoodName}>
+                                                {foodRecommendation?.primaryFood}
+                                            </div>
                                         </div>
-                                    ) : (
+                                    )}
+
+                                    {/* 대안 음식들 */}
+                                    {foodRecommendation && foodRecommendation.alternativefoods && foodRecommendation.alternativefoods.length > 0 && (
+                                        <div className={style.alternativesSection}>
+                                            <h3 className={style.alternativesTitle}>🍽️ 다른 추천 음식</h3>
+                                            <div className={style.alternativesList}>
+                                                {foodRecommendation.alternativefoods.map((food, index) => (
+                                                    <div key={index} className={style.alternativeCard}>
+                                                        <div className={style.alternativeNumber}>{index + 1}</div>
+                                                        <div className={style.alternativeName}>{food}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* 호환성을 위한 텍스트 표시 (JSON이 아닌 경우) */}
+                                    {foodRecommendation && !foodRecommendation.primaryFood && foodRecommendation.alternativefoods.length === 0 && foodRecommendation.reason === recommendation && (
                                         <div className={style.fullTextRecommendation}>
                                             <pre className={style.recommendationText}>{recommendation}</pre>
                                         </div>
                                     )}
-                                </>
+                                </div>
                             )}
                         </>
                     )}
