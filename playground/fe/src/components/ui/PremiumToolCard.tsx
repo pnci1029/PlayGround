@@ -12,7 +12,6 @@ interface PremiumToolCardProps {
   isExternal?: boolean
   description?: string
   badges?: ('NEW' | 'HOT' | 'TRENDING')[]
-  visitCount?: number
 }
 
 export default function PremiumToolCard({ 
@@ -23,8 +22,7 @@ export default function PremiumToolCard({
   status = 'active', 
   isExternal = false,
   description,
-  badges = [],
-  visitCount
+  badges = []
 }: PremiumToolCardProps) {
   
   const handleClick = async () => {
@@ -75,30 +73,30 @@ export default function PremiumToolCard({
       <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 flex gap-1 flex-wrap justify-end">
         {/* 통계 기반 뱃지 */}
         {badges.includes('NEW') && (
-          <div className="bg-green-50 text-green-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-100 animate-pulse">
+          <div className="bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full border border-emerald-200/60 shadow-sm animate-pulse backdrop-blur-sm">
             NEW
           </div>
         )}
         {badges.includes('HOT') && (
-          <div className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-red-100">
+          <div className="bg-gradient-to-r from-rose-50 to-red-50 text-rose-700 text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full border border-rose-200/60 shadow-sm backdrop-blur-sm">
             🔥 HOT
           </div>
         )}
         {badges.includes('TRENDING') && (
-          <div className="bg-purple-50 text-purple-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-purple-100">
+          <div className="bg-gradient-to-r from-violet-50 to-purple-50 text-violet-700 text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full border border-violet-200/60 shadow-sm backdrop-blur-sm">
             TRENDING
           </div>
         )}
         
         {/* 기존 상태 배지 */}
         {status === 'beta' && (
-          <div className="bg-orange-50 text-orange-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-orange-100">
-            Beta
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full border border-amber-200/60 shadow-sm backdrop-blur-sm">
+            BETA
           </div>
         )}
         {status === 'coming-soon' && (
-          <div className="bg-gray-50 text-gray-500 text-xs font-semibold px-2.5 py-1 rounded-full border border-gray-100">
-            곧 출시
+          <div className="bg-gradient-to-r from-slate-50 to-gray-50 text-slate-600 text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full border border-slate-200/60 shadow-sm backdrop-blur-sm">
+            SOON
           </div>
         )}
         {isExternal && status === 'active' && !badges.length && (
@@ -154,7 +152,7 @@ export default function PremiumToolCard({
             </p>
           )}
 
-          {/* 카테고리와 방문 수 */}
+          {/* 카테고리 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className={`
@@ -166,13 +164,6 @@ export default function PremiumToolCard({
               `}>
                 {category}
               </span>
-              
-              {/* 방문 수 표시 */}
-              {visitCount !== undefined && visitCount > 0 && (
-                <span className="text-xs text-gray-500">
-                  👁️ {visitCount.toLocaleString()}
-                </span>
-              )}
             </div>
             
             {/* 화살표 아이콘 */}

@@ -190,7 +190,6 @@ function SortableCategory({
                   isExternal={tool.isExternal || false}
                   description={tool.description}
                   badges={stats.badges || []}
-                  visitCount={stats.visit_count}
                 />
               )
             })}
@@ -493,8 +492,7 @@ export default function ToolCategoryGrid() {
                           isExternal={tool.isExternal || false}
                           description={tool.description}
                           badges={stats.badges || []}
-                          visitCount={stats.visit_count}
-                        />
+                                />
                       )
                     })}
                   </div>
@@ -529,8 +527,7 @@ export default function ToolCategoryGrid() {
             // 도구에 통계 데이터 추가
             const toolsWithStats = tools.map(tool => ({
               ...tool,
-              badges: toolStats[tool.title]?.badges || [],
-              visitCount: toolStats[tool.title]?.visit_count
+              badges: toolStats[tool.title]?.badges || []
             }))
 
             return (

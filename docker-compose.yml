@@ -200,6 +200,8 @@ services:
       - NEXT_PUBLIC_WS_URL=ws://blog.localhost:8013
       - BACKEND_CONTAINER_URL=http://blog_backend:8003
       - BACKEND_API_PREFIX=/api
+      - BLOG_ADMIN_PASSWORD=myblog2025
+      - NEXT_PUBLIC_BLOG_TITLE=개발자 블로그
     depends_on:
       - blog-backend
     restart: unless-stopped

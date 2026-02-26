@@ -19,6 +19,7 @@ export const config = {
     playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL || 'http://localhost:3000',
     moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'https://moodbite.localhost',
     trend: process.env.NEXT_PUBLIC_TREND_URL || 'https://trend.localhost',
+    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.localhost',
   },
 } as const
 
