@@ -54,11 +54,11 @@ export function Test({onBack, onNext}: TestProps) {
             };
             
             try {
-                const response = await submitTestResult(dto);
-                onNext(dto, response);
+                await submitTestResult(dto);
+                // submitTestResult에서 자동으로 결과 페이지로 네비게이션됨
             } catch (error) {
                 console.error('Error submitting test result:', error);
-                onNext(dto);
+                // 오류 발생 시에만 onNext 호출
             }
         } else {
             handleNextScore(testStep, scores, selectedMealTime);
