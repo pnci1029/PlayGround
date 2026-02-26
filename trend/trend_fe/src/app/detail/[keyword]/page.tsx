@@ -73,10 +73,10 @@ export default function TrendDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="trend-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
+      <div className="trend-container trend-detail-loading">
+        <div className="trend-detail-loading-content">
           <div className="trend-spinner"></div>
-          <p style={{ color: '#cbd5e1', marginTop: '1rem' }}>로딩 중...</p>
+          <p className="trend-detail-loading-text">로딩 중...</p>
         </div>
       </div>
     )
@@ -84,12 +84,18 @@ export default function TrendDetailPage() {
 
   if (!trendDetail) {
     return (
-      <div className="trend-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#f8fafc', marginBottom: '2rem' }}>트렌드를 찾을 수 없습니다</h1>
+      <div className="trend-container trend-detail-not-found">
+        <div className="trend-detail-not-found-content">
+          <div className="trend-detail-error-icon">
+            <svg width="64" height="64" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <h1 className="trend-detail-error-title">트렌드를 찾을 수 없습니다</h1>
           <button 
             onClick={() => router.push('/')}
             className="trend-btn-primary"
+            aria-label="메인 페이지로 돌아가기"
           >
             메인으로 돌아가기
           </button>
@@ -102,199 +108,122 @@ export default function TrendDetailPage() {
     <div className="trend-container">
       <div className="trend-centered" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
         {/* 상단 네비게이션 */}
-        <div style={{ marginBottom: '2rem' }}>
+        <nav className="trend-detail-nav" aria-label="내비게이션">
           <button 
             onClick={() => router.push('/')}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.5rem', 
-              color: '#cbd5e1', 
-              background: 'none', 
-              border: 'none', 
-              cursor: 'pointer',
-              fontSize: '0.875rem'
-            }}
+            className="trend-detail-back-button"
+            aria-label="트렌드 순위 페이지로 돌아가기"
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            트렌드 순위로 돌아가기
+            <span>트렌드 순위로 돌아가기</span>
           </button>
-        </div>
+        </nav>
 
         {/* 메인 콘텐츠 */}
         <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
           {/* 헤더 섹션 */}
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.05)', 
-            borderRadius: '1.5rem', 
-            padding: '3rem 2rem', 
-            marginBottom: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <h1 style={{ 
-                fontSize: '3rem', 
-                fontWeight: 'bold', 
-                background: 'linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem'
-              }}>
+          <header className="trend-detail-header">
+            <div className="trend-detail-title-section">
+              <h1 className="trend-detail-title">
                 {keyword}
               </h1>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                gap: '1rem', 
-                color: '#cbd5e1' 
-              }}>
-                <span>{trendDetail.category}</span>
-                <span>•</span>
-                <span>{getSourceName(trendDetail.source)}</span>
+              <div className="trend-detail-meta">
+                <span className="trend-detail-category">{trendDetail.category}</span>
+                <span className="trend-detail-divider">•</span>
+                <span className="trend-detail-source">{getSourceName(trendDetail.source)}</span>
               </div>
             </div>
 
             {/* 통계 그리드 */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
-              gap: '2rem',
-              marginBottom: '2rem'
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '2rem', 
-                  fontWeight: 'bold', 
-                  color: '#6366f1', 
-                  marginBottom: '0.5rem' 
-                }}>
+            <div className="trend-detail-stats">
+              <div className="trend-detail-stat">
+                <div className="trend-detail-stat-value trend-detail-stat-rank">
                   #{trendDetail.rank}
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>순위</div>
+                <div className="trend-detail-stat-label">순위</div>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '2rem', 
-                  fontWeight: 'bold', 
-                  color: '#10b981', 
-                  marginBottom: '0.5rem' 
-                }}>
+              <div className="trend-detail-stat">
+                <div className="trend-detail-stat-value trend-detail-stat-source">
                   {getSourceName(trendDetail.source)}
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>출처</div>
+                <div className="trend-detail-stat-label">출처</div>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '2rem', 
-                  fontWeight: 'bold', 
-                  color: '#f59e0b', 
-                  marginBottom: '0.5rem' 
-                }}>
+              <div className="trend-detail-stat">
+                <div className="trend-detail-stat-value trend-detail-stat-update">
                   실시간
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>업데이트</div>
+                <div className="trend-detail-stat-label">업데이트</div>
               </div>
             </div>
-          </div>
+          </header>
 
           {/* 요약 정보 섹션 */}
-          <div style={{ 
-            background: 'rgba(255, 255, 255, 0.03)', 
-            borderRadius: '1rem', 
-            padding: '1.5rem', 
-            marginBottom: '2rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <h3 style={{ 
-              fontSize: '1.125rem', 
-              fontWeight: '600', 
-              color: '#f8fafc', 
-              marginBottom: '1rem' 
-            }}>
+          <section className="trend-detail-summary">
+            <h2 className="trend-detail-summary-title">
               트렌드 요약
-            </h3>
-            <div style={{ color: '#cbd5e1', lineHeight: '1.6' }}>
-              <p style={{ marginBottom: '0.5rem' }}>
+            </h2>
+            <div className="trend-detail-summary-content">
+              <p className="trend-detail-summary-item">
                 • {trendDetail.category} 카테고리에서 {trendDetail.rank}위를 기록
               </p>
-              <p style={{ marginBottom: '0.5rem' }}>
+              <p className="trend-detail-summary-item">
                 • {getSourceName(trendDetail.source)} 출처에서 수집된 트렌드 데이터
               </p>
-              <p>
+              <p className="trend-detail-summary-item">
                 • 현재 한국에서 주목받고 있는 키워드입니다
               </p>
             </div>
-          </div>
+          </section>
 
           {/* 관련 트렌드 */}
           {relatedTrends.length > 0 && (
-            <div style={{ 
-              background: 'rgba(255, 255, 255, 0.03)', 
-              borderRadius: '1rem', 
-              padding: '1.5rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <h3 style={{ 
-                fontSize: '1.125rem', 
-                fontWeight: '600', 
-                color: '#f8fafc', 
-                marginBottom: '1.5rem' 
-              }}>
+            <section className="trend-detail-related">
+              <h2 className="trend-detail-related-title">
                 {trendDetail.category} 관련 트렌드
-              </h3>
+              </h2>
               
               <div className="trend-grid" style={{ gap: '1rem' }}>
                 {relatedTrends.map((related, index) => (
-                  <div
+                  <article
                     key={related.keyword}
                     onClick={() => handleRelatedClick(related.keyword)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleRelatedClick(related.keyword)
+                      }
+                    }}
                     className="trend-card trend-fade-in"
                     style={{ 
                       animationDelay: `${index * 100}ms`,
                       padding: '1rem'
                     }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${related.keyword} 트렌드 상세 정보 보기`}
                   >
-                    <div style={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'flex-start', 
-                      marginBottom: '0.75rem' 
-                    }}>
+                    <div className="trend-card-header">
                       <div className="trend-rank-badge trend-rank-default">
                         <span>#{related.rank}</span>
                       </div>
-                      <div style={{ 
-                        fontSize: '0.75rem', 
-                        color: '#94a3b8',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '0.5rem'
-                      }}>
+                      <div className="trend-detail-related-source">
                         {getSourceName(related.source)}
                       </div>
                     </div>
                     
-                    <div className="trend-keyword" style={{ 
-                      fontSize: '1rem',
-                      marginBottom: '0.5rem'
-                    }}>
+                    <h3 className="trend-keyword">
                       {related.keyword}
-                    </div>
+                    </h3>
                     
-                    <div style={{ 
-                      fontSize: '0.875rem', 
-                      color: '#94a3b8' 
-                    }}>
+                    <p className="trend-detail-related-category">
                       {related.category} 카테고리
-                    </div>
-                  </div>
+                    </p>
+                  </article>
                 ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
       </div>

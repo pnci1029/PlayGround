@@ -747,6 +747,206 @@
   }
 }
 
+/* 상세 페이지 스타일 */
+.trend-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.trend-detail-loading-content {
+  text-align: center;
+}
+
+.trend-detail-loading-text {
+  color: var(--trend-neutral-300);
+  margin-top: var(--trend-spacing-lg);
+  font-size: 1rem;
+}
+
+.trend-detail-not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.trend-detail-not-found-content {
+  text-align: center;
+}
+
+.trend-detail-error-icon {
+  margin-bottom: var(--trend-spacing-xl);
+  color: var(--trend-primary-500);
+  opacity: 0.7;
+}
+
+.trend-detail-error-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--trend-neutral-50);
+  margin-bottom: var(--trend-spacing-2xl);
+}
+
+.trend-detail-nav {
+  margin-bottom: var(--trend-spacing-2xl);
+}
+
+.trend-detail-back-button {
+  display: flex;
+  align-items: center;
+  gap: var(--trend-spacing-sm);
+  color: var(--trend-neutral-300);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: var(--trend-spacing-sm);
+  border-radius: var(--trend-radius-sm);
+  transition: all var(--trend-transition-normal);
+}
+
+.trend-detail-back-button:hover {
+  color: var(--trend-primary-500);
+  background: var(--trend-bg-secondary);
+}
+
+.trend-detail-back-button:focus-visible {
+  outline: 2px solid var(--trend-primary-500);
+  outline-offset: 2px;
+}
+
+.trend-detail-header {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-xl);
+  padding: var(--trend-spacing-3xl) var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-2xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-title-section {
+  text-align: center;
+  margin-bottom: var(--trend-spacing-2xl);
+}
+
+.trend-detail-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: bold;
+  background: linear-gradient(135deg, var(--trend-secondary-500), var(--trend-primary-500), var(--trend-accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--trend-spacing-lg);
+  line-height: 1.2;
+}
+
+.trend-detail-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--trend-spacing-lg);
+  color: var(--trend-neutral-300);
+  font-size: 1rem;
+}
+
+.trend-detail-divider {
+  color: var(--trend-neutral-400);
+}
+
+.trend-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-2xl);
+}
+
+.trend-detail-stat {
+  text-align: center;
+}
+
+.trend-detail-stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: var(--trend-spacing-sm);
+  font-family: var(--trend-font-mono);
+}
+
+.trend-detail-stat-rank {
+  color: var(--trend-primary-500);
+}
+
+.trend-detail-stat-source {
+  color: var(--trend-accent-emerald);
+}
+
+.trend-detail-stat-update {
+  color: var(--trend-accent-amber);
+}
+
+.trend-detail-stat-label {
+  font-size: 0.875rem;
+  color: var(--trend-neutral-400);
+  font-weight: 500;
+}
+
+.trend-detail-summary {
+  background: var(--trend-bg-secondary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-xl);
+  margin-bottom: var(--trend-spacing-2xl);
+  border: 1px solid var(--trend-border-primary);
+}
+
+.trend-detail-summary-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--trend-neutral-50);
+  margin-bottom: var(--trend-spacing-lg);
+}
+
+.trend-detail-summary-content {
+  color: var(--trend-neutral-300);
+  line-height: 1.6;
+}
+
+.trend-detail-summary-item {
+  margin-bottom: var(--trend-spacing-sm);
+}
+
+.trend-detail-summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.trend-detail-related {
+  background: var(--trend-bg-secondary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+}
+
+.trend-detail-related-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--trend-neutral-50);
+  margin-bottom: var(--trend-spacing-xl);
+}
+
+.trend-detail-related-source {
+  font-size: 0.75rem;
+  color: var(--trend-neutral-400);
+  background: var(--trend-bg-hover);
+  padding: var(--trend-spacing-xs) var(--trend-spacing-sm);
+  border-radius: var(--trend-radius-sm);
+}
+
+.trend-detail-related-category {
+  font-size: 0.875rem;
+  color: var(--trend-neutral-400);
+  margin: 0;
+}
+
 /* 스크롤바 스타일 */
 ::-webkit-scrollbar {
   width: 6px;
