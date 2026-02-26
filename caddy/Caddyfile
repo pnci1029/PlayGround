@@ -50,6 +50,24 @@ trend.localhost {
 	reverse_proxy trend_frontend:3002
 }
 
+# Blog 서브도메인
+blog.localhost {
+	tls internal
+	
+	# API 요청은 백엔드로
+	handle_path /api/* {
+		reverse_proxy blog_backend:8003
+	}
+	
+	# WebSocket 요청은 백엔드로
+	handle_path /ws/* {
+		reverse_proxy blog_backend:8013
+	}
+	
+	# 나머지는 프론트엔드로
+	reverse_proxy blog_frontend:3003
+}
+
 # 프로덕션 환경 (실제 도메인으로 배포 시 사용)
 # {$BASE_DOMAIN} {
 # 	reverse_proxy playground_frontend:3000
@@ -61,4 +79,8 @@ trend.localhost {
 #
 # trend.{$BASE_DOMAIN} {
 # 	reverse_proxy trend_frontend:3000
+# }
+#
+# blog.{$BASE_DOMAIN} {
+# 	reverse_proxy blog_frontend:3003
 # }
