@@ -36,18 +36,8 @@ export default function TrendRankingPage() {
     return counts
   }, [rankings])
 
-  // 페이지 렌더링 상태 로깅
-  console.log('🖥️ TrendRankingPage 렌더링:', {
-    rankingsCount: rankings.length,
-    isLoading,
-    error,
-    timeframe,
-    lastUpdate: lastUpdate?.toLocaleTimeString(),
-    hasStats: !!stats
-  })
 
   const handleRefresh = () => {
-    console.log('🔄 새로고침 버튼 클릭')
     refreshRankings()
   }
 

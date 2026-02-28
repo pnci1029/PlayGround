@@ -231,19 +231,29 @@ export class DataEnrichmentService {
     console.log(`🚀 배치 데이터 강화 시작: ${trendDataList.length}개 항목`)
     const startTime = Date.now()
 
-    // 상위 20개만 강화 (API 호출 최적화)
-    const topTrends = trendDataList.slice(0, 20)
-    const remainingTrends = trendDataList.slice(20)
-
-    // 병렬 처리로 성능 개선
-    const enrichedPromises = topTrends.map(trend => this.enrichTrendData(trend))
-    const enrichedTop = await Promise.allSettled(enrichedPromises)
-
-    const enrichedResults = enrichedTop.map((result, index) => 
-      result.status === 'fulfilled' ? result.value : topTrends[index]
+    // RSS 및 해외 소스는 우선 강화, 상위 40개까지 강화 (범위 확대)
+    const rssAndGlobalTrends = trendDataList.filter(trend => 
+      ['rss', 'hackernews', 'reddit', 'github', 'devto'].includes(trend.source)
+    ).slice(0, 15)
+    
+    const koreanTrends = trendDataList.filter(trend => 
+      !['rss', 'hackernews', 'reddit', 'github', 'devto'].includes(trend.source)
+    ).slice(0, 25)
+    
+    const trendsToEnrich = [...rssAndGlobalTrends, ...koreanTrends]
+    const remainingTrends = trendDataList.filter(trend => 
+      !trendsToEnrich.some(t => t.keyword === trend.keyword)
     )
 
-    const allResults = [...enrichedResults, ...remainingTrends]
+    // 병렬 처리로 성능 개선
+    const enrichedPromises = trendsToEnrich.map(trend => this.enrichTrendData(trend))
+    const enrichedResults = await Promise.allSettled(enrichedPromises)
+
+    const enrichedTrends = enrichedResults.map((result, index) => 
+      result.status === 'fulfilled' ? result.value : trendsToEnrich[index]
+    )
+
+    const allResults = [...enrichedTrends, ...remainingTrends]
     
     const endTime = Date.now()
     console.log(`🎉 배치 데이터 강화 완료: ${allResults.length}개 항목 (${endTime - startTime}ms)`)
