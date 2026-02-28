@@ -129,15 +129,21 @@ export default function TrendRankingPage() {
 
         {/* 순위 리스트 */}
         {!isLoading && filteredRankings.length > 0 && (
-          <div className="trend-grid">
-            {filteredRankings.map((ranking, index) => (
-              <RankingCard 
-                key={`${ranking.keyword}-${ranking.rank}-${ranking.category}`}
-                ranking={ranking}
-                index={index}
-              />
-            ))}
-          </div>
+          <main 
+            role="main" 
+            aria-label={`${selectedCategory === 'all' ? '전체' : selectedCategory} 카테고리 트렌드 순위`}
+            id={`tabpanel-${selectedCategory}`}
+          >
+            <div className="trend-grid">
+              {filteredRankings.map((ranking, index) => (
+                <RankingCard 
+                  key={`${ranking.keyword}-${ranking.rank}-${ranking.category}`}
+                  ranking={ranking}
+                  index={index}
+                />
+              ))}
+            </div>
+          </main>
         )}
 
         {/* 데이터 없음 */}
