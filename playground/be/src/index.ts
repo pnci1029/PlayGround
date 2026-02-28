@@ -5,8 +5,9 @@ import { config } from './config'
 import toolsRoutes from './routes/tools'
 import { authRoutes } from './routes/auth'
 import { statsRoutes } from './routes/stats'
+import chatRoutes from './routes/chat'
 // import { artworkRoutes } from './routes/artworks'
-import { testConnection, db } from './config/database'
+import { testConnection, initializeTables, db } from './config/database'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
 // import canvasRoutes from './routes/canvas'
 // import websocketPlugin from './plugins/websocket'
@@ -35,6 +36,7 @@ fastify.addHook('preHandler', subdomainRoutingMiddleware)
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
 fastify.register(authRoutes, { prefix: `${config.api.prefix}/auth` })
 fastify.register(statsRoutes, { prefix: `${config.api.prefix}/stats` })
+fastify.register(chatRoutes, { prefix: `${config.api.prefix}/chat` })
 // fastify.register(artworkRoutes)
 // fastify.register(canvasRoutes, { prefix: `${config.api.prefix}/canvas` })
 
@@ -56,6 +58,9 @@ const start = async () => {
   try {
     // PostgreSQL 연결 테스트
     await testConnection()
+    
+    // 데이터베이스 테이블 초기화
+    await initializeTables()
     
     await fastify.listen({ 
       port: config.server.port, 

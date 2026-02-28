@@ -20,6 +20,8 @@ export default function ChatPage() {
   const [activeUsers, setActiveUsers] = useState<string[]>([])
   const [userCount, setUserCount] = useState(0)
   const [myNickname, setMyNickname] = useState('')
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMoreMessages, setHasMoreMessages] = useState(true)
   
   const wsRef = useRef<WebSocket | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -42,7 +44,7 @@ export default function ChatPage() {
   const connectWebSocket = () => {
     try {
       setConnectionStatus('connecting')
-      const ws = new WebSocket(apiUrls.chat)
+      const ws = new WebSocket(apiUrls.chat.websocket)
       wsRef.current = ws
 
       ws.onopen = () => {
@@ -165,6 +167,41 @@ export default function ChatPage() {
     }
   }
 
+  // 이전 메시지 더 불러오기
+  const loadMoreMessages = async () => {
+    if (isLoadingMore || !hasMoreMessages || messages.length === 0) return
+
+    setIsLoadingMore(true)
+    try {
+      // 현재 메시지 목록에서 가장 오래된 메시지의 타임스탬프를 가져옴
+      const oldestMessage = messages.find(msg => msg.type === 'message')
+      if (!oldestMessage) return
+
+      const response = await fetch(
+        `${apiUrls.chat.history}?before=${oldestMessage.timestamp}&limit=50`
+      )
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.messages.length > 0) {
+          // 기존 메시지 앞에 새로운 메시지들 추가
+          setMessages(prev => [...data.messages, ...prev])
+          setHasMoreMessages(data.hasMore)
+          
+          logger.log(`📥 이전 메시지 ${data.messages.length}개 로드됨`)
+        } else {
+          setHasMoreMessages(false)
+        }
+      } else {
+        logger.error('이전 메시지 로드 실패:', response.status)
+      }
+    } catch (error) {
+      logger.error('이전 메시지 로드 오류:', error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
   return (
     <div className="min-h-screen" style={{background: 'var(--background)'}}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -203,6 +240,19 @@ export default function ChatPage() {
                 className="h-[600px] overflow-y-auto p-4 space-y-3"
                 style={{ minHeight: '400px', maxHeight: '70vh' }}
               >
+{/* 이전 메시지 더보기 버튼 */}
+                {messages.length > 0 && hasMoreMessages && (
+                  <div className="text-center mb-4">
+                    <button
+                      onClick={loadMoreMessages}
+                      disabled={isLoadingMore}
+                      className="bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors border border-gray-200"
+                    >
+                      {isLoadingMore ? '불러오는 중...' : '이전 메시지 더보기'}
+                    </button>
+                  </div>
+                )}
+
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-600 mt-8">
                     <p>아직 메시지가 없습니다.</p>
@@ -216,33 +266,27 @@ export default function ChatPage() {
                     )}
                   </div>
                 ) : (
-                  messages.map((msg, index) => (
+                  messages
+                    .filter(msg => msg.type === 'message') // 실제 채팅 메시지만 표시
+                    .map((msg, index) => (
                     <div key={index} className={`flex ${msg.userId === 'me' ? 'justify-end' : 'justify-start'}`}>
-                      {msg.type === 'message' ? (
-                        <div className={`max-w-xs lg:max-w-md ${
-                          msg.userId === 'me' 
-                            ? 'bg-gray-100 border border-gray-300' 
-                            : 'bg-white border border-gray-200'
-                        } rounded-lg p-3 shadow-sm`}>
-                          <div className="flex justify-between items-start gap-2 mb-1">
-                            <span className="text-sm font-medium text-gray-800">
-                              {msg.nickname}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {formatTime(msg.timestamp)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-900 whitespace-pre-wrap break-words">
-                            {msg.message}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="w-full text-center">
-                          <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
-                            {msg.message}
+                      <div className={`max-w-xs lg:max-w-md ${
+                        msg.userId === 'me' 
+                          ? 'bg-gray-100 border border-gray-300' 
+                          : 'bg-white border border-gray-200'
+                      } rounded-lg p-3 shadow-sm`}>
+                        <div className="flex justify-between items-start gap-2 mb-1">
+                          <span className="text-sm font-medium text-gray-800">
+                            {msg.nickname}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatTime(msg.timestamp)}
                           </span>
                         </div>
-                      )}
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap break-words">
+                          {msg.message}
+                        </p>
+                      </div>
                     </div>
                   ))
                 )}
