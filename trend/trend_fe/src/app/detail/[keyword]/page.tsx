@@ -134,37 +134,40 @@ export default function TrendDetailPage() {
           {/* 헤더 섹션 */}
           <header className="trend-detail-header">
             <div className="trend-detail-title-section">
-              <h1 className="trend-detail-title">
+              <h1 className="trend-detail-title" style={{ 
+                wordBreak: 'break-word', 
+                lineHeight: '1.4',
+                fontSize: keyword.length > 60 ? '1.5rem' : '2rem',
+                marginBottom: '0.5rem'
+              }}>
                 {keyword}
               </h1>
               <div className="trend-detail-meta">
                 <span className="trend-detail-category">{trendDetail.category}</span>
                 <span className="trend-detail-divider">•</span>
                 <span className="trend-detail-source">{getSourceName(trendDetail.source)}</span>
+                <span className="trend-detail-divider">•</span>
+                <span className="trend-detail-rank">#{trendDetail.rank}위</span>
               </div>
             </div>
 
-            {/* 통계 그리드 */}
-            <div className="trend-detail-stats">
-              <div className="trend-detail-stat">
-                <div className="trend-detail-stat-value trend-detail-stat-rank">
-                  #{trendDetail.rank}
-                </div>
-                <div className="trend-detail-stat-label">순위</div>
+            {/* 링크 버튼 */}
+            {trendDetail.url && (
+              <div style={{ marginTop: '1rem' }}>
+                <a 
+                  href={trendDetail.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="trend-btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                  원본 보기
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
               </div>
-              <div className="trend-detail-stat">
-                <div className="trend-detail-stat-value trend-detail-stat-source">
-                  {getSourceName(trendDetail.source)}
-                </div>
-                <div className="trend-detail-stat-label">출처</div>
-              </div>
-              <div className="trend-detail-stat">
-                <div className="trend-detail-stat-value trend-detail-stat-update">
-                  실시간
-                </div>
-                <div className="trend-detail-stat-label">업데이트</div>
-              </div>
-            </div>
+            )}
           </header>
 
           {/* 설명 섹션 */}
@@ -250,23 +253,22 @@ export default function TrendDetailPage() {
             </section>
           )}
 
-          {/* 기본 요약 정보 섹션 */}
-          <section className="trend-detail-summary">
-            <h2 className="trend-detail-section-title">
-              트렌드 정보
-            </h2>
-            <div className="trend-detail-summary-content">
-              <p className="trend-detail-summary-item">
-                • {trendDetail.category} 카테고리에서 {trendDetail.rank}위를 기록
-              </p>
-              <p className="trend-detail-summary-item">
-                • {getSourceName(trendDetail.source)} 출처에서 수집된 트렌드 데이터
-              </p>
-              <p className="trend-detail-summary-item">
-                • 현재 한국에서 주목받고 있는 키워드입니다
-              </p>
-            </div>
-          </section>
+          {/* 기본 요약 정보 섹션 - 더 간결하게 */}
+          {!trendDetail.description && !trendDetail.trendReason && !trendDetail.newsContext && (
+            <section className="trend-detail-summary">
+              <h2 className="trend-detail-section-title">정보</h2>
+              <div className="trend-detail-summary-content">
+                <p className="trend-detail-summary-item">
+                  {trendDetail.category} 카테고리 • {trendDetail.rank}위 • {getSourceName(trendDetail.source)} 출처
+                </p>
+                {trendDetail.region && (
+                  <p className="trend-detail-summary-item">
+                    지역: {trendDetail.region === 'Global' ? '글로벌' : trendDetail.region}
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* 관련 트렌드 */}
           {relatedTrends.length > 0 && (
