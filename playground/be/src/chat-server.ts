@@ -1,4 +1,5 @@
 import { WebSocketServer } from 'ws'
+import { db } from './config/database'
 
 interface ChatMessage {
   type: 'message' | 'user_join' | 'user_leave' | 'user_list'
@@ -20,7 +21,40 @@ class ChatWebSocketServer {
   private wss: WebSocketServer
   private connections = new Map<string, any>()
   private users = new Map<string, User>()
-  private messageHistory: ChatMessage[] = []
+
+  // DB에서 최근 메시지 불러오기
+  private async loadRecentMessages(limit: number = 50): Promise<ChatMessage[]> {
+    try {
+      const result = await db.query(
+        'SELECT nickname, message, timestamp, user_id FROM chat_messages ORDER BY timestamp DESC LIMIT $1',
+        [limit]
+      )
+      
+      // 시간 순으로 정렬해서 반환
+      return result.rows.reverse().map(row => ({
+        type: 'message',
+        nickname: row.nickname,
+        message: row.message,
+        timestamp: parseInt(row.timestamp),
+        userId: row.user_id
+      }))
+    } catch (error) {
+      console.error('DB에서 메시지 불러오기 실패:', error)
+      return []
+    }
+  }
+
+  // DB에 메시지 저장
+  private async saveMessage(chatMessage: ChatMessage): Promise<void> {
+    try {
+      await db.query(
+        'INSERT INTO chat_messages (nickname, message, timestamp, user_id) VALUES ($1, $2, $3, $4)',
+        [chatMessage.nickname, chatMessage.message, chatMessage.timestamp, chatMessage.userId]
+      )
+    } catch (error) {
+      console.error('DB에 메시지 저장 실패:', error)
+    }
+  }
 
   constructor(port: number = 8010) {
     this.wss = new WebSocketServer({ port })
@@ -48,8 +82,8 @@ class ChatWebSocketServer {
         timestamp: Date.now()
       }))
 
-      // 최근 메시지 히스토리 전송 (최근 50개)
-      const recentMessages = this.messageHistory.slice(-50)
+      // DB에서 최근 메시지 히스토리 전송 (최근 50개)
+      const recentMessages = await this.loadRecentMessages(50)
       recentMessages.forEach(msg => {
         ws.send(JSON.stringify(msg))
       })
@@ -142,11 +176,8 @@ class ChatWebSocketServer {
         userId
       }
 
-      // 메시지 히스토리에 추가 (최대 1000개 유지)
-      this.messageHistory.push(chatMessage)
-      if (this.messageHistory.length > 1000) {
-        this.messageHistory = this.messageHistory.slice(-800)
-      }
+      // DB에 메시지 저장
+      await this.saveMessage(chatMessage)
 
       // 모든 사용자에게 브로드캐스트
       this.broadcast(chatMessage)
@@ -167,8 +198,14 @@ class ChatWebSocketServer {
     return this.connections.size
   }
 
-  getMessageCount(): number {
-    return this.messageHistory.length
+  async getMessageCount(): Promise<number> {
+    try {
+      const result = await db.query('SELECT COUNT(*) as count FROM chat_messages')
+      return parseInt(result.rows[0].count)
+    } catch (error) {
+      console.error('메시지 수 조회 실패:', error)
+      return 0
+    }
   }
 }
 

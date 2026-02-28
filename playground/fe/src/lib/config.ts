@@ -44,8 +44,12 @@ export const clientApiUrls = {
   // Health check
   health: `${config.api.clientBaseUrl}/health`,
 
-  // WebSocket - 브라우저에서만 사용
-  chat: 'ws://localhost:8010',
+  // Chat 관련 API
+  chat: {
+    websocket: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8010',
+    history: `${config.api.clientBaseUrl}/chat/history`,
+    stats: `${config.api.clientBaseUrl}/chat/stats`
+  },
 } as const
 
 // 서버사이드 API URL 생성 헬퍼 함수들 (Next.js 서버에서 사용)

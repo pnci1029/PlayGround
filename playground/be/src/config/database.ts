@@ -13,7 +13,7 @@ export const dbConfig = {
 // 데이터베이스 연결 풀
 export const db = new Pool(dbConfig)
 
-// 연결 테스트
+// 연결 테스트 및 테이블 초기화
 export const testConnection = async () => {
   try {
     const client = await db.connect()
@@ -21,6 +21,39 @@ export const testConnection = async () => {
     client.release()
   } catch (error) {
     console.error('❌ PostgreSQL 연결 실패:', error)
+  }
+}
+
+// 데이터베이스 테이블 초기화
+export const initializeTables = async () => {
+  try {
+    // 채팅 메시지 테이블 생성
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        nickname VARCHAR(50) NOT NULL,
+        message TEXT NOT NULL,
+        timestamp BIGINT NOT NULL,
+        user_id VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+
+    // 성능을 위한 인덱스 생성
+    await db.query(`
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_timestamp 
+      ON chat_messages (timestamp DESC);
+    `)
+
+    await db.query(`
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at 
+      ON chat_messages (created_at DESC);
+    `)
+
+    console.log('✅ 데이터베이스 테이블 초기화 완료')
+  } catch (error) {
+    console.error('❌ 데이터베이스 테이블 초기화 실패:', error)
+    throw error
   }
 }
 
