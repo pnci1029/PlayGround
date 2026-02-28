@@ -46,6 +46,30 @@ export class FreeTrendService {
   private cache = new Map<string, TrendCache>()
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5분 캐시
 
+  // Reddit 카테고리 정규화
+  private normalizeRedditCategory(subreddit: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'r/politics': '정치',
+      'r/pics': '이미지',
+      'r/interestingasfuck': '흥미로운',
+      'r/MadeMeSmile': '기분좋은',
+      'r/pokemon': '게임',
+      'r/meirl': '일상',
+      'r/SipsTea': '소셜',
+      'r/Damnthatsinteresting': '흥미로운',
+      'r/PeterExplainsTheJoke': '유머',
+      'r/law': '법률',
+      'r/AITAH': '조언',
+      'r/NoStupidQuestions': '질문',
+      'r/programming': '개발',
+      'r/all': '인기',
+      'r/popular': '인기',
+      'r/mildlyinfuriating': '짜증나는'
+    }
+    
+    return categoryMap[subreddit] || '소셜'
+  }
+
   // 1. HackerNews API (완전 무료, 공식)
   async getHackerNewsTrends(): Promise<TrendData[]> {
     try {
@@ -65,9 +89,11 @@ export class FreeTrendService {
       const trends = stories
         .filter((story: HackerNewsStory) => story && story.title)
         .map((story: HackerNewsStory, index: number) => ({
-          keyword: story.title,
+          keyword: story.title.length > 70 
+            ? story.title.substring(0, 67) + '...' 
+            : story.title,
           interest: story.score || 0,
-          category: 'Tech News',
+          category: '기술 뉴스',
           source: 'hackernews' as const,
           timestamp: new Date(),
           region: 'Global',
@@ -98,11 +124,11 @@ export class FreeTrendService {
           
           if (data?.data?.children) {
             const posts = data.data.children.map((post: RedditPost, index: number) => ({
-              keyword: post.data.title.length > 80 
-                ? post.data.title.substring(0, 77) + '...' 
+              keyword: post.data.title.length > 60 
+                ? post.data.title.substring(0, 57) + '...' 
                 : post.data.title,
               interest: post.data.score || 0,
-              category: post.data.subreddit_name_prefixed || 'r/unknown',
+              category: this.normalizeRedditCategory(post.data.subreddit_name_prefixed || 'r/unknown'),
               source: 'reddit' as const,
               timestamp: new Date(),
               region: 'Global',
@@ -150,9 +176,11 @@ export class FreeTrendService {
       const data = await response.json() as GitHubSearchResponse
       
       const trends = (data.items || []).map((repo: GitHubRepo, index: number) => ({
-        keyword: `${repo.name}${repo.description ? ` - ${repo.description.substring(0, 60)}` : ''}`,
+        keyword: repo.description && repo.description.length > 30
+          ? `${repo.name} - ${repo.description.substring(0, 45)}...`
+          : repo.name,
         interest: repo.stargazers_count || 0,
-        category: repo.language || 'Code',
+        category: '개발',
         source: 'github' as const,
         timestamp: new Date(),
         region: 'Global',
@@ -177,9 +205,11 @@ export class FreeTrendService {
       const articles = await response.json() as DevToArticle[]
       
       const trends = articles.map((article: DevToArticle, index: number) => ({
-        keyword: article.title,
+        keyword: article.title.length > 70 
+          ? article.title.substring(0, 67) + '...' 
+          : article.title,
         interest: article.public_reactions_count || 0,
-        category: 'Dev Article',
+        category: '개발 아티클',
         source: 'devto' as const,
         timestamp: new Date(),
         region: 'Global',
@@ -236,9 +266,9 @@ export class FreeTrendService {
         titles.slice(1, 9).forEach((title, index) => {
           if (title && title.length > 10) {
             allTrends.push({
-              keyword: title.substring(0, 90),
+              keyword: title.length > 70 ? title.substring(0, 67) + '...' : title,
               interest: 100 - (index * 10),
-              category: feed.category,
+              category: feed.category === 'Tech' ? '기술' : feed.category === 'Development' ? '개발' : '뉴스',
               source: 'rss' as const,
               timestamp: new Date(),
               region: 'Global',
