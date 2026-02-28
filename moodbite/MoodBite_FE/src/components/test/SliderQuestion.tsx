@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { TestStep } from "../../types/test";
 import style from "../../style/common/sliderQuestion.module.scss";
 
@@ -13,6 +13,9 @@ interface Args {
 export function SliderQuestion({ title, value, onChange, testStep, labels }: Args) {
     const [isDragging, setIsDragging] = useState(false);
     const [animateValue, setAnimateValue] = useState(false);
+    const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+    const sliderRef = useRef<HTMLInputElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
 
     // 예산 단계 여부 확인
     const isBudgetStep = testStep === TestStep.STEP6_BUDGET;
@@ -76,25 +79,127 @@ export function SliderQuestion({ title, value, onChange, testStep, labels }: Arg
         };
     };
 
+    // 트랙 클릭으로 값 설정
+    const handleTrackClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+        if (!trackRef.current || isDragging) return;
+        
+        const rect = trackRef.current.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(100, (clickX / rect.width) * 100));
+        
+        const newValue = isBudgetStep
+            ? Math.round(minValue + (percentage / 100) * (maxValue - minValue))
+            : Math.round(percentage);
+            
+        onChange(newValue);
+        setAnimateValue(true);
+    }, [isDragging, isBudgetStep, minValue, maxValue, onChange]);
+
+    // 키보드 접근성 개선
+    const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+        const step = isBudgetStep ? 1000 : 5;
+        let newValue = value;
+        
+        switch (event.key) {
+            case 'ArrowLeft':
+            case 'ArrowDown':
+                event.preventDefault();
+                newValue = Math.max(minValue, value - step);
+                break;
+            case 'ArrowRight':
+            case 'ArrowUp':
+                event.preventDefault();
+                newValue = Math.min(maxValue, value + step);
+                break;
+            case 'Home':
+                event.preventDefault();
+                newValue = minValue;
+                break;
+            case 'End':
+                event.preventDefault();
+                newValue = maxValue;
+                break;
+            default:
+                return;
+        }
+        
+        onChange(newValue);
+        setAnimateValue(true);
+    }, [value, minValue, maxValue, isBudgetStep, onChange]);
+
+    // 터치 접근성 개선
+    const handleTouchStart = useCallback(() => {
+        setIsDragging(true);
+        setIsKeyboardFocused(false);
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    // 마우스 접근성 개선
+    const handleMouseDown = useCallback(() => {
+        setIsDragging(true);
+        setIsKeyboardFocused(false);
+    }, []);
+
+    const handleMouseUp = useCallback(() => {
+        setIsDragging(false);
+    }, []);
+
+    // 포커스 관리
+    const handleFocus = useCallback(() => {
+        setIsKeyboardFocused(true);
+    }, []);
+
+    const handleBlur = useCallback(() => {
+        setIsKeyboardFocused(false);
+    }, []);
+
     return (
         <section className={style.testSection}>
             <h2 className={style.questionTitle}>{title}</h2>
 
             <div className={`${style.sliderContainer} ${isBudgetStep ? style.budgetSlider : ''}`}>
                 <div className={style.sliderWrapper}>
+                    {/* 클릭 가능한 트랙 영역 */}
+                    <div 
+                        ref={trackRef}
+                        className={style.sliderTrack}
+                        onClick={handleTrackClick}
+                        role="presentation"
+                        aria-hidden="true"
+                    >
+                        <div 
+                            className={style.sliderProgress} 
+                            style={{
+                                width: `${isBudgetStep ? ((value - minValue) / (maxValue - minValue)) * 100 : value}%`
+                            }}
+                        />
+                    </div>
+                    
                     <input
+                        ref={sliderRef}
                         type="range"
                         min={minValue}
                         max={maxValue}
                         value={value}
                         step={isBudgetStep ? 100 : 1}
                         onChange={(e) => onChange(Number(e.target.value))}
-                        className={style.slider}
-                        style={getSliderStyle()}
-                        onMouseDown={() => setIsDragging(true)}
-                        onMouseUp={() => setIsDragging(false)}
-                        onTouchStart={() => setIsDragging(true)}
-                        onTouchEnd={() => setIsDragging(false)}
+                        onKeyDown={handleKeyDown}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        className={`${style.slider} ${isKeyboardFocused ? style.keyboardFocused : ''}`}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
+                        aria-label={title}
+                        aria-valuemin={minValue}
+                        aria-valuemax={maxValue}
+                        aria-valuenow={value}
+                        aria-valuetext={getDisplayValue(value).toString()}
+                        role="slider"
                     />
 
                     <div className={style.sliderLabels}>
@@ -110,7 +215,11 @@ export function SliderQuestion({ title, value, onChange, testStep, labels }: Arg
                     </div>
                 </div>
 
-                <div className={`${style.scoreDisplay} ${(isDragging || animateValue) ? style.active : ''}`}>
+                <div 
+                    className={`${style.scoreDisplay} ${(isDragging || animateValue || isKeyboardFocused) ? style.active : ''}`}
+                    role="status"
+                    aria-live="polite"
+                >
                     {getDisplayValue(value)}
                 </div>
 

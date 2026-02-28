@@ -24,83 +24,161 @@
 
   .sliderWrapper {
     position: relative;
-    padding: 1.5rem 0;
+    padding: 2rem 0;
     margin-bottom: 1.5rem;
   }
 
+  // 클릭 가능한 트랙 영역
+  .sliderTrack {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 20px; // 더 넓은 터치 영역
+    transform: translateY(-50%);
+    cursor: pointer;
+    border-radius: 10px;
+    background: #f5f5f5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    
+    &:hover {
+      background: #f0f0f0;
+    }
+    
+    &:active {
+      background: #ebebeb;
+    }
+  }
+  
+  .sliderProgress {
+    height: 100%;
+    background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+    border-radius: 10px;
+    transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 1px 3px rgba(43, 181, 172, 0.2);
+  }
+
   .slider {
+    position: relative;
     width: 100%;
-    height: 6px;
+    height: 20px;
     -webkit-appearance: none;
     appearance: none;
-    background: linear-gradient(to right, #e0e0e0, #e0e0e0);
+    background: transparent;
     outline: none;
-    border-radius: 6px;
-    transition: background 0.3s ease;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 2;
+    
+    // 키보드 포커스 스타일
+    &.keyboardFocused {
+      &::-webkit-slider-thumb {
+        box-shadow: 0 0 0 4px rgba(43, 181, 172, 0.3), 0 2px 15px rgba(43, 181, 172, 0.5);
+      }
+      
+      &::-moz-range-thumb {
+        box-shadow: 0 0 0 4px rgba(43, 181, 172, 0.3), 0 2px 15px rgba(43, 181, 172, 0.5);
+      }
+    }
 
     &::-webkit-slider-runnable-track {
-      height: 6px;
-      border-radius: 6px;
+      height: 20px;
+      background: transparent;
+      border-radius: 10px;
     }
 
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 32px;
-      height: 32px;
-      margin-top: -13px;
+      width: 40px;
+      height: 40px;
+      margin-top: -10px;
       background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
       border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid #ffffff;
-      box-shadow: 0 2px 10px rgba(43, 181, 172, 0.3);
+      cursor: grab;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(43, 181, 172, 0.25);
       transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      z-index: 3;
+      
+      // 더 넓은 터치 영역을 위한 가상 요소
+      &::before {
+        content: '';
+        position: absolute;
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        background: transparent;
+        border-radius: 50%;
+      }
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(43, 181, 172, 0.35);
+        cursor: grab;
+      }
 
       &:active {
-        transform: scale(1.2);
-        box-shadow: 0 2px 15px rgba(43, 181, 172, 0.5);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(43, 181, 172, 0.45);
+        cursor: grabbing;
       }
     }
 
     &::-moz-range-thumb {
-      width: 28px;
-      height: 28px;
+      width: 36px;
+      height: 36px;
       background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
       border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid #ffffff;
-      box-shadow: 0 2px 10px rgba(43, 181, 172, 0.3);
+      cursor: grab;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(43, 181, 172, 0.25);
       transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(43, 181, 172, 0.35);
+        cursor: grab;
+      }
+
       &:active {
-        transform: scale(1.2);
-        box-shadow: 0 2px 15px rgba(43, 181, 172, 0.5);
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(43, 181, 172, 0.45);
+        cursor: grabbing;
       }
     }
 
     &:focus {
       outline: none;
-
-      &::-webkit-slider-thumb {
-        box-shadow: 0 0 0 6px rgba(43, 181, 172, 0.15);
-      }
-
-      &::-moz-range-thumb {
-        box-shadow: 0 0 0 6px rgba(43, 181, 172, 0.15);
-      }
     }
   }
 
   .sliderLabels {
     display: flex;
     justify-content: space-between;
-    padding: 1rem 0 0;
+    padding: 1.5rem 0 0;
     color: #6b7280;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
-    opacity: 0.9;
+    opacity: 0.8;
     transition: opacity 0.3s ease;
+    
+    .minLabel, .midLabel, .maxLabel {
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.3;
+      word-break: keep-all;
+      
+      &:first-child {
+        text-align: left;
+      }
+      
+      &:last-child {
+        text-align: right;
+      }
+    }
   }
 }
 
@@ -189,6 +267,19 @@
   }
 }
 
+/* 스크린 리더 전용 클래스 */
+:global(.sr-only) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* 모바일 최적화 */
 @media (max-width: 480px) {
   .testSection {
@@ -207,11 +298,34 @@
   }
 
   .sliderContainer {
+    .sliderTrack {
+      height: 24px; // 모바일에서 더 넓은 터치 영역
+    }
+    
     .slider {
+      height: 24px;
+      
+      &::-webkit-slider-runnable-track {
+        height: 24px;
+      }
+      
       &::-webkit-slider-thumb {
-        width: 28px;
-        height: 28px;
-        margin-top: -11px;
+        width: 44px;
+        height: 44px;
+        margin-top: -10px;
+        
+        // 모바일 터치 영역 확장
+        &::before {
+          top: -20px;
+          left: -20px;
+          right: -20px;
+          bottom: -20px;
+        }
+      }
+      
+      &::-moz-range-thumb {
+        width: 40px;
+        height: 40px;
       }
     }
   }
