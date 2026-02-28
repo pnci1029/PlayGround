@@ -167,7 +167,7 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                                     {/* 추천 이유 */}
                                     {foodRecommendation && foodRecommendation.reason && (
                                         <div className={style.reasonCard}>
-                                            <h3 className={style.reasonTitle}>🤔 왜 이 음식을 추천하나요?</h3>
+                                            <h3 className={style.reasonTitle}>추천 이유</h3>
                                             <p className={style.reasonText}>{foodRecommendation?.reason}</p>
                                         </div>
                                     )}
@@ -191,7 +191,7 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                                     {/* 대안 음식들 */}
                                     {foodRecommendation && foodRecommendation.alternativefoods && foodRecommendation.alternativefoods.length > 0 && (
                                         <div className={style.alternativesSection}>
-                                            <h3 className={style.alternativesTitle}>🍽️ 다른 추천 음식</h3>
+                                            <h3 className={style.alternativesTitle}>다른 추천 음식</h3>
                                             <div className={style.alternativesList}>
                                                 {foodRecommendation.alternativefoods.map((food, index) => (
                                                     <div key={index} className={style.alternativeCard}>

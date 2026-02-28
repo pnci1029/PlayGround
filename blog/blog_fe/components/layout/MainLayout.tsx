@@ -12,17 +12,13 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const categories = [
-    { name: '개발', slug: 'dev', count: 12 },
-    { name: '독서', slug: 'reading', count: 8 },
-    { name: '일상', slug: 'life', count: 5 },
-    { name: '리뷰', slug: 'review', count: 3 },
+    { name: '개발', slug: 'dev', count: 0 },
+    { name: '독서', slug: 'reading', count: 0 },
+    { name: '일상', slug: 'life', count: 0 },
+    { name: '리뷰', slug: 'review', count: 0 },
   ];
 
-  const recentPosts = [
-    { title: '블로그 시스템 구축하기', slug: 'building-blog-system', date: '2024-02-24' },
-    { title: '클린 아키텍처 독서 노트', slug: 'clean-architecture-notes', date: '2024-02-20' },
-    { title: 'Next.js 16의 새로운 기능들', slug: 'nextjs-16-features', date: '2024-02-18' },
-  ];
+  const recentPosts: { title: string; slug: string; date: string; }[] = [];
 
   return (
     <div className="min-h-screen bg-surface">
@@ -113,20 +109,26 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
                 <div className="bg-surface-elevated rounded-lg p-6">
                   <h2 className="text-lg font-semibold text-text-primary mb-4">최근 포스트</h2>
                   <div className="space-y-4">
-                    {recentPosts.map((post) => (
-                      <Link
-                        key={post.slug}
-                        href={`/post/${post.slug}`}
-                        className="block group"
-                      >
-                        <h3 className="font-medium text-text-primary group-hover:text-primary transition-colors mb-1 line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <time className="text-xs text-text-muted">
-                          {new Date(post.date).toLocaleDateString('ko')}
-                        </time>
-                      </Link>
-                    ))}
+                    {recentPosts.length > 0 ? (
+                      recentPosts.map((post) => (
+                        <Link
+                          key={post.slug}
+                          href={`/post/${post.slug}`}
+                          className="block group"
+                        >
+                          <h3 className="font-medium text-text-primary group-hover:text-primary transition-colors mb-1 line-clamp-2">
+                            {post.title}
+                          </h3>
+                          <time className="text-xs text-text-muted">
+                            {new Date(post.date).toLocaleDateString('ko')}
+                          </time>
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-text-muted text-sm">
+                        최근 포스트가 없습니다
+                      </p>
+                    )}
                   </div>
                 </div>
 

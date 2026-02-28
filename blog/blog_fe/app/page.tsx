@@ -1,38 +1,4 @@
 import MainLayout from '@/components/layout/MainLayout';
-import PostCard from '@/components/reader/PostCard';
-import { Post } from '@/types';
-
-// Mock data for demonstration
-const mockPosts: Post[] = [
-  {
-    id: '1',
-    title: '블로그 시스템 구축하기',
-    slug: 'building-blog-system',
-    content: '개인 기술 블로그를 만들면서...',
-    excerpt: '개인 기술 블로그를 만들면서 고려한 설계 원칙들과 구현 과정을 정리해보았습니다. 마크다운 에디터부터 읽기 최적화까지, 개발자가 쓰고 읽기 편한 블로그를 만드는 여정을 담았습니다.',
-    category: '개발',
-    tags: ['Next.js', 'TypeScript', 'TailwindCSS'],
-    publishedAt: new Date('2024-02-24'),
-    updatedAt: new Date('2024-02-24'),
-    readingTime: 5,
-    codeLanguages: ['typescript', 'javascript', 'css'],
-    isPublished: true
-  },
-  {
-    id: '2',
-    title: '클린 아키텍처 독서 노트',
-    slug: 'clean-architecture-notes',
-    content: '로버트 C. 마틴의 클린 아키텍처를 읽으며...',
-    excerpt: '로버트 C. 마틴의 클린 아키텍처를 읽으며 정리한 핵심 개념들입니다. 의존성 규칙부터 경계와 플러그인 아키텍처까지, 실무에 적용할 수 있는 인사이트를 담았습니다.',
-    category: '독서',
-    tags: ['아키텍처', '설계', '클린코드'],
-    publishedAt: new Date('2024-02-20'),
-    updatedAt: new Date('2024-02-20'),
-    readingTime: 8,
-    codeLanguages: [],
-    isPublished: true
-  }
-];
 
 export default function Home() {
   return (
@@ -47,13 +13,19 @@ export default function Home() {
           </p>
         </header>
         
-        {mockPosts.map((post, index) => (
-          <PostCard 
-            key={post.id} 
-            post={post} 
-            variant={index === 0 ? 'featured' : 'default'}
-          />
-        ))}
+        <div className="text-center py-16">
+          <div className="text-text-muted mb-4">
+            <svg className="w-16 h-16 mx-auto mb-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 className="text-lg font-medium text-text-secondary mb-2">
+              아직 작성된 포스트가 없습니다
+            </h3>
+            <p className="text-text-muted">
+              첫 번째 글을 작성해보세요!
+            </p>
+          </div>
+        </div>
       </div>
     </MainLayout>
   )
