@@ -59,7 +59,7 @@ class ChatWebSocketServer {
   constructor(port: number = 8010) {
     this.wss = new WebSocketServer({ port })
     
-    this.wss.on('connection', (ws) => {
+    this.wss.on('connection', async (ws) => {
       const userId = this.generateId()
       const nickname = this.generateNickname()
       
@@ -83,10 +83,14 @@ class ChatWebSocketServer {
       }))
 
       // DB에서 최근 메시지 히스토리 전송 (최근 50개)
-      const recentMessages = await this.loadRecentMessages(50)
-      recentMessages.forEach(msg => {
-        ws.send(JSON.stringify(msg))
-      })
+      try {
+        const recentMessages = await this.loadRecentMessages(50)
+        recentMessages.forEach(msg => {
+          ws.send(JSON.stringify(msg))
+        })
+      } catch (error) {
+        console.error('최근 메시지 로드 실패:', error)
+      }
       
       // 다른 사용자들에게 새 사용자 입장 알림
       this.broadcast({
@@ -97,10 +101,10 @@ class ChatWebSocketServer {
         users: Array.from(this.users.values()).map(u => u.nickname)
       }, userId)
 
-      ws.on('message', (data) => {
+      ws.on('message', async (data) => {
         try {
           const message = JSON.parse(data.toString())
-          this.handleMessage(userId, message)
+          await this.handleMessage(userId, message)
         } catch (error) {
           console.error('Chat message parse error:', error)
         }
@@ -157,7 +161,7 @@ class ChatWebSocketServer {
     return `${adjective}${noun}${number}`
   }
 
-  private handleMessage(userId: string, data: any) {
+  private async handleMessage(userId: string, data: any) {
     const user = this.users.get(userId)
     if (!user) return
 
