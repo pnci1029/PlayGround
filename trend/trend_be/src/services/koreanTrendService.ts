@@ -1,4 +1,5 @@
 import { TrendData } from '../types/trend.types'
+import { dataEnrichmentService } from './dataEnrichmentService'
 
 export class KoreanTrendService {
   private cache = new Map<string, any>()
@@ -96,7 +97,7 @@ export class KoreanTrendService {
     }))
   }
 
-  // 5. 통합 한국 트렌드
+  // 5. 통합 한국 트렌드 (데이터 강화 포함)
   async getAllKoreanTrends(): Promise<TrendData[]> {
     console.log('🇰🇷 한국 트렌드 수집 시작...')
     const startTime = Date.now()
@@ -117,11 +118,16 @@ export class KoreanTrendService {
 
     // 관심도 기준으로 정렬
     allTrends.sort((a, b) => b.interest - a.interest)
+    const topTrends = allTrends.slice(0, 100) // 상위 100개
+
+    // 데이터 강화 적용 (상위 20개만)
+    console.log('📈 트렌드 데이터 강화 시작...')
+    const enrichedTrends = await dataEnrichmentService.enrichTrendDataBatch(topTrends)
 
     const endTime = Date.now()
-    console.log(`🎉 한국 트렌드 ${allTrends.length}개 수집 완료 (${endTime - startTime}ms)`)
+    console.log(`🎉 한국 트렌드 ${enrichedTrends.length}개 수집 및 강화 완료 (${endTime - startTime}ms)`)
 
-    return allTrends.slice(0, 100) // 상위 100개
+    return enrichedTrends
   }
 }
 

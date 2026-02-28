@@ -12,6 +12,14 @@ interface TrendDetail {
   region: string
   url?: string
   timestamp: Date
+  // Enriched data fields
+  description?: string
+  summary?: string
+  tags?: string[]
+  relatedKeywords?: string[]
+  trendReason?: string
+  newsContext?: string
+  wikipediaUrl?: string
 }
 
 export default function TrendDetailPage() {
@@ -159,10 +167,93 @@ export default function TrendDetailPage() {
             </div>
           </header>
 
-          {/* 요약 정보 섹션 */}
+          {/* 설명 섹션 */}
+          {trendDetail.description && (
+            <section className="trend-detail-description">
+              <h2 className="trend-detail-section-title">설명</h2>
+              <div className="trend-detail-description-content">
+                <p className="trend-detail-description-text">
+                  {trendDetail.description}
+                </p>
+                {trendDetail.wikipediaUrl && (
+                  <a 
+                    href={trendDetail.wikipediaUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="trend-detail-wiki-link"
+                    aria-label="위키피디아에서 더 자세히 보기"
+                  >
+                    위키피디아에서 더 보기
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* 트렌드 이유 섹션 */}
+          {trendDetail.trendReason && (
+            <section className="trend-detail-reason">
+              <h2 className="trend-detail-section-title">왜 트렌딩 중인가?</h2>
+              <div className="trend-detail-reason-content">
+                <p className="trend-detail-reason-text">
+                  {trendDetail.trendReason}
+                </p>
+              </div>
+            </section>
+          )}
+
+          {/* 뉴스 컨텍스트 섹션 */}
+          {trendDetail.newsContext && (
+            <section className="trend-detail-news">
+              <h2 className="trend-detail-section-title">최근 소식</h2>
+              <div className="trend-detail-news-content">
+                <p className="trend-detail-news-text">
+                  {trendDetail.newsContext}
+                </p>
+              </div>
+            </section>
+          )}
+
+          {/* 태그 섹션 */}
+          {trendDetail.tags && trendDetail.tags.length > 0 && (
+            <section className="trend-detail-tags">
+              <h2 className="trend-detail-section-title">태그</h2>
+              <div className="trend-detail-tags-list">
+                {trendDetail.tags.map((tag, index) => (
+                  <span key={index} className="trend-detail-tag">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 관련 키워드 섹션 */}
+          {trendDetail.relatedKeywords && trendDetail.relatedKeywords.length > 0 && (
+            <section className="trend-detail-related-keywords">
+              <h2 className="trend-detail-section-title">관련 키워드</h2>
+              <div className="trend-detail-keywords-list">
+                {trendDetail.relatedKeywords.map((relatedKeyword, index) => (
+                  <button
+                    key={index}
+                    onClick={() => router.push(`/detail/${encodeURIComponent(relatedKeyword)}`)}
+                    className="trend-detail-keyword-button"
+                    aria-label={`${relatedKeyword} 트렌드 보기`}
+                  >
+                    {relatedKeyword}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 기본 요약 정보 섹션 */}
           <section className="trend-detail-summary">
-            <h2 className="trend-detail-summary-title">
-              트렌드 요약
+            <h2 className="trend-detail-section-title">
+              트렌드 정보
             </h2>
             <div className="trend-detail-summary-content">
               <p className="trend-detail-summary-item">

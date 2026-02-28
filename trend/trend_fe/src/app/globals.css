@@ -997,6 +997,160 @@ img[loading="lazy"].loaded {
   color: var(--trend-accent-amber);
 }
 
+/* 강화된 데이터 섹션 스타일 */
+.trend-detail-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--trend-neutral-100);
+  margin-bottom: var(--trend-spacing-lg);
+  padding-bottom: var(--trend-spacing-sm);
+  border-bottom: 1px solid var(--trend-border-primary);
+}
+
+/* 설명 섹션 */
+.trend-detail-description {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-description-content {
+  position: relative;
+}
+
+.trend-detail-description-text {
+  color: var(--trend-neutral-200);
+  line-height: 1.6;
+  font-size: 1rem;
+  margin-bottom: var(--trend-spacing-lg);
+}
+
+.trend-detail-wiki-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--trend-spacing-sm);
+  color: var(--trend-primary-400);
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: var(--trend-spacing-sm) var(--trend-spacing-lg);
+  background: var(--trend-bg-secondary);
+  border-radius: var(--trend-radius-md);
+  border: 1px solid var(--trend-border-primary);
+  transition: all var(--trend-transition-normal);
+}
+
+.trend-detail-wiki-link:hover {
+  color: var(--trend-primary-300);
+  background: var(--trend-bg-primary);
+  border-color: var(--trend-primary-500);
+  transform: translateY(-1px);
+}
+
+/* 트렌드 이유 섹션 */
+.trend-detail-reason {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-reason-text {
+  color: var(--trend-neutral-200);
+  line-height: 1.6;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* 뉴스 컨텍스트 섹션 */
+.trend-detail-news {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-news-text {
+  color: var(--trend-neutral-200);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* 태그 섹션 */
+.trend-detail-tags {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--trend-spacing-sm);
+}
+
+.trend-detail-tag {
+  display: inline-block;
+  background: var(--trend-bg-secondary);
+  color: var(--trend-neutral-200);
+  padding: var(--trend-spacing-sm) var(--trend-spacing-md);
+  border-radius: var(--trend-radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(5px);
+}
+
+/* 관련 키워드 섹션 */
+.trend-detail-related-keywords {
+  background: var(--trend-bg-tertiary);
+  border-radius: var(--trend-radius-lg);
+  padding: var(--trend-spacing-2xl);
+  margin-bottom: var(--trend-spacing-xl);
+  border: 1px solid var(--trend-border-primary);
+  backdrop-filter: blur(10px);
+}
+
+.trend-detail-keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--trend-spacing-sm);
+}
+
+.trend-detail-keyword-button {
+  background: var(--trend-bg-secondary);
+  color: var(--trend-primary-400);
+  border: 1px solid var(--trend-primary-500);
+  padding: var(--trend-spacing-sm) var(--trend-spacing-md);
+  border-radius: var(--trend-radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--trend-transition-normal);
+  backdrop-filter: blur(5px);
+}
+
+.trend-detail-keyword-button:hover {
+  background: var(--trend-primary-500);
+  color: var(--trend-neutral-900);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.trend-detail-keyword-button:focus-visible {
+  outline: 2px solid var(--trend-primary-300);
+  outline-offset: 2px;
+}
+
 .trend-detail-stat-label {
   font-size: 0.875rem;
   color: var(--trend-neutral-400);

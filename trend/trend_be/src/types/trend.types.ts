@@ -7,6 +7,14 @@ export interface TrendData {
   region: string
   url?: string
   rank?: number
+  // Enriched data fields from legitimate APIs
+  description?: string
+  summary?: string
+  tags?: string[]
+  relatedKeywords?: string[]
+  trendReason?: string
+  newsContext?: string
+  wikipediaUrl?: string
 }
 
 export interface TrendResponse {
