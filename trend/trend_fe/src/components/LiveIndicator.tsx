@@ -23,14 +23,13 @@ export default function LiveIndicator({ isConnected, lastUpdate, activeUsers }: 
           )}
         </div>
         <span className={isConnected ? 'text-accent-green' : 'text-accent-red'}>
-          {isConnected ? '🔴 LIVE 연결' : '❌ 연결 끊김'}
+          {isConnected ? 'LIVE 연결' : '연결 끊김'}
         </span>
       </div>
 
       {/* 활성 사용자 수 */}
       {isConnected && activeUsers !== undefined && (
         <div className="glass px-4 py-2.5 rounded-xl text-sm font-semibold text-primary flex items-center gap-2">
-          <span className="text-lg">👥</span>
           <span>{activeUsers}명 접속 중</span>
         </div>
       )}
