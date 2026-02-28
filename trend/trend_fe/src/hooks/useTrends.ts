@@ -49,7 +49,7 @@ export function useTrends() {
     }
 
     try {
-      console.log('🔌 WebSocket 연결 시도...')
+      console.log('WebSocket 연결 시도...')
       const ws = new WebSocket(getWebSocketUrl())
       wsRef.current = ws
 

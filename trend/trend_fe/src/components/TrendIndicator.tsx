@@ -25,7 +25,7 @@ export default function TrendIndicator({ direction, prevRank, currentRank }: Tre
         }
       case 'new':
         return {
-          icon: '✨',
+          icon: 'NEW',
           color: 'text-primary',
           bgColor: 'bg-primary/10',
           label: 'NEW'
@@ -47,8 +47,7 @@ export default function TrendIndicator({ direction, prevRank, currentRank }: Tre
       flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold
       ${bgColor} ${color} transition-all duration-200
     `}>
-      <span className="text-sm">{icon}</span>
-      <span>{label}</span>
+      <span>{direction === 'new' ? icon : icon + ' ' + label}</span>
     </div>
   )
 }
