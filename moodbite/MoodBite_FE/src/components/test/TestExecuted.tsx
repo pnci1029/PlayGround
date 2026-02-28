@@ -158,7 +158,8 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                             {!recommendation || !foodRecommendation || 
                              (!foodRecommendation.primaryFood && 
                               foodRecommendation.alternativefoods.length === 0 && 
-                              (foodRecommendation.reason.includes('추천을 찾지 못했습니다') || 
+                              (!foodRecommendation.reason || 
+                               foodRecommendation.reason.includes('추천을 찾지 못했습니다') || 
                                foodRecommendation.reason.includes('적합한 추천을 찾지 못했습니다'))) ? (
                                 <NoRecommendations onRetry={onRetryTest || onBack} />
                             ) : (

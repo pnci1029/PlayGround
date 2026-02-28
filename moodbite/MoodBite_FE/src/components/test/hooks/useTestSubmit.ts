@@ -5,10 +5,6 @@ import {submitTestResultAsync, submitLocationBasedTestResultAsync} from "../../.
 import {TestResultPostDTO, LocationBasedTestResultRequestDTO, LocationBasedRecommendationResponseDTO, TestResultResponseDTO, FoodRecommendationDTO} from "../../../types/test";
 import {LocationService} from "../../api/LocationService";
 
-const isTestResultResponseDTO = (payload: any): payload is TestResultResponseDTO => {
-    return payload && typeof payload === 'object' && 'id' in payload && 'message' in payload;
-};
-
 const isFoodRecommendationDTO = (payload: any): payload is FoodRecommendationDTO => {
     return payload && typeof payload === 'object' && 'primaryFood' in payload && 'alternativefoods' in payload && 'reason' in payload;
 };
@@ -33,9 +29,7 @@ export function useTestSubmit() {
                         // TypeScript 타입 가드를 사용한 안전한 타입 체크
                         let recommendation = '';
                         
-                        if (isTestResultResponseDTO(result.payload)) {
-                            recommendation = result.payload.aiRecommendation || result.payload.message || '';
-                        } else if (isFoodRecommendationDTO(result.payload)) {
+                        if (isFoodRecommendationDTO(result.payload)) {
                             recommendation = JSON.stringify(result.payload);
                         } else {
                             console.error('Unexpected payload type:', result.payload);
