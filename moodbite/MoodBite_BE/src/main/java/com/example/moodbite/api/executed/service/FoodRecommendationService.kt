@@ -55,61 +55,61 @@ class FoodRecommendationService {
         val scores = request.scores
         var totalScore = 0.0
         
-        // 2025-2026 연구 기반 감정-영양 매칭 (강화된 가중치)
+        // 2025-2026 연구 기반 감정-영양 매칭 (다양성 강화된 가중치)
         
-        // 1. 피로도 분석 (서카디안 리듬 & 에너지 대사 고려)
+        // 1. 피로도 분석 (서카디안 리듬 & 에너지 대사 고려) - 가중치 감소
         totalScore += when {
             scores.tired > 8 -> {
                 // 극도 피로: 복합탄수화물 + 마그네슘 (연구: 근육 이완, 신경 안정)
-                food.comfortLevel * 0.4 + food.energyBoost * 0.2
+                food.comfortLevel * 0.25 + food.energyBoost * 0.15
             }
             scores.tired > 6 -> {
                 // 높은 피로: 편안한 음식 우선
-                food.comfortLevel * 0.3 + food.energyBoost * 0.15
+                food.comfortLevel * 0.2 + food.energyBoost * 0.12
             }
             scores.tired < 3 -> {
                 // 활력 상태: 에너지 부스터 음식
-                food.energyBoost * 0.25
+                food.energyBoost * 0.18
             }
-            else -> (food.comfortLevel + food.energyBoost) * 0.1
+            else -> (food.comfortLevel + food.energyBoost) * 0.08
         }
         
-        // 2. 스트레스 분석 (HPA축 & 코르티솔 조절)
+        // 2. 스트레스 분석 (HPA축 & 코르티솔 조절) - 가중치 감소
         totalScore += when {
             scores.stress > 8 -> {
                 // 극심한 스트레스: 오메가-3 + 프로바이오틱스 (장뇌축 연구)
-                food.stressRelief * 0.4
+                food.stressRelief * 0.25
             }
             scores.stress > 6 -> {
                 // 높은 스트레스: 스트레스 해소 음식
-                food.stressRelief * 0.3
+                food.stressRelief * 0.2
             }
-            else -> food.stressRelief * 0.1
+            else -> food.stressRelief * 0.08
         }
         
         // 3. 식욕 분석 (렙틴/그렐린 호르몬 고려)
         totalScore += when {
             scores.appetite < 3 -> {
                 // 식욕 부진: 위에 부담 적고 영양가 높은 음식
-                food.appetiteMatch * 0.35
+                food.appetiteMatch * 0.22
             }
             scores.appetite > 8 -> {
                 // 과식 경향: 포만감 주는 단백질/섬유질
-                food.energyBoost * 0.25
+                food.energyBoost * 0.18
             }
-            else -> food.appetiteMatch * 0.15
+            else -> food.appetiteMatch * 0.12
         }
         
         // 4. 분노 상태 분석 (도파민/세로토닌 균형)
         totalScore += when {
             scores.anger > 7 -> {
                 // 높은 분노: 스트레스 해소 + 세로토닌 부스터
-                (food.stressRelief + food.comfortLevel) * 0.2
+                (food.stressRelief + food.comfortLevel) * 0.15
             }
             scores.anger > 4 -> {
-                food.stressRelief * 0.1
+                food.stressRelief * 0.08
             }
-            else -> food.stressRelief * 0.05
+            else -> food.stressRelief * 0.04
         }
         
         // 5. 시간생물학 기반 추가 점수 (2025 서카디안 연구)
@@ -124,7 +124,30 @@ class FoodRecommendationService {
         val socialBonus = getSocialContextBonus(food, request.dining)
         totalScore += socialBonus
         
+        // 8. 다양성 보너스 (새로 추가) - 인기 메뉴 편중 방지
+        val diversityBonus = getDiversityBonus(food)
+        totalScore += diversityBonus
+        
+        // 9. 랜덤 요소 (동점자 처리용)
+        val randomFactor = (Math.random() - 0.5) * 0.3 // -0.15 ~ +0.15
+        totalScore += randomFactor
+        
         return totalScore
+    }
+    
+    // 다양성 보너스 - 과도하게 높은 점수 메뉴들의 독점 방지
+    private fun getDiversityBonus(food: Food): Double {
+        return when {
+            // 매우 높은 comfort/stress 점수 음식들에게 페널티
+            food.comfortLevel >= 9 && food.stressRelief >= 9 -> -0.5
+            food.comfortLevel >= 8 && food.stressRelief >= 8 -> -0.3
+            
+            // 중간 점수 음식들에게 보너스 (다양성 증진)
+            food.comfortLevel in 5..7 && food.stressRelief in 5..7 -> 0.4
+            food.comfortLevel in 6..8 || food.stressRelief in 6..8 -> 0.2
+            
+            else -> 0.0
+        }
     }
     
     // 2025 서카디안 리듬 연구 기반 시간별 보너스
@@ -205,10 +228,16 @@ class FoodRecommendationService {
     }
     
     private fun isSituationAppropriate(food: Food, dining: String): Boolean {
+        // JSON 데이터의 diningTypes 배열 형식에 맞춰 수정
+        val foodDiningTypes = food.diningTypes?.split(",")?.map { it.trim() } ?: emptyList()
+        
         return when (dining) {
-            "ALONE" -> food.soloFriendly
-            "DATE" -> food.dateFriendly
-            "FRIENDS", "FAMILY", "COWORKERS", "ETC" -> food.groupFriendly
+            "ALONE" -> foodDiningTypes.contains("ALONE")
+            "FRIENDS" -> foodDiningTypes.contains("WITH_FRIENDS") 
+            "FAMILY" -> foodDiningTypes.contains("WITH_FAMILY")
+            "DATE" -> foodDiningTypes.contains("DATE")
+            "COWORKERS" -> foodDiningTypes.contains("BUSINESS") || foodDiningTypes.contains("WITH_COWORKERS")
+            "ETC" -> true // 기타의 경우 모든 음식 허용
             else -> true
         }
     }
