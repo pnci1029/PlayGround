@@ -5,96 +5,102 @@ export class KoreanTrendService {
   private cache = new Map<string, any>()
   private readonly CACHE_DURATION = 10 * 60 * 1000 // 10분 캐시
 
-  // 1. 한국 검색 트렌드 
+  // 1. 한국 검색 트렌드 - Google Trends RSS 사용
   async getKoreanSearchTrends(): Promise<TrendData[]> {
-    // 실시간 한국 검색 트렌드 키워드
-    const currentTrends = [
-      '신정호', '김민재', '윤석열', '이재명', '한동훈',
-      '날씨', '삼성전자', '비트코인', 'SK하이닉스', '네이버',
-      '카카오', '코스피', '환율', '금리', '부동산',
-      '인플레이션', 'AI', '메타버스', 'NFT', '전기차'
-    ]
+    try {
+      console.log('🔍 구글 트렌드 한국 데이터 수집 중...')
+      
+      // Google Trends RSS - 한국 실시간 트렌드
+      const response = await fetch('https://trends.google.com/trends/trendingsearches/daily/rss?geo=KR')
+      const xmlText = await response.text()
+      
+      const trends: TrendData[] = []
+      
+      // RSS XML 파싱 - 한국어 검색어 추출
+      const titleRegex = /<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/g
+      const linkRegex = /<link><!\[CDATA\[(.*?)\]\]><\/link>|<link>(.*?)<\/link>/g
+      
+      const titles: string[] = []
+      const links: string[] = []
+      
+      let match
+      while ((match = titleRegex.exec(xmlText)) !== null) {
+        const title = match[1] || match[2]
+        if (title && !title.includes('트렌드') && !title.includes('Google') && title.length > 2) {
+          titles.push(title.trim())
+        }
+      }
+      
+      while ((match = linkRegex.exec(xmlText)) !== null) {
+        const link = match[1] || match[2]
+        if (link && link.startsWith('http')) {
+          links.push(link.trim())
+        }
+      }
 
-    return currentTrends.map((keyword, index) => ({
-      keyword,
-      interest: 100 - index,
-      category: '검색어',
-      source: 'korean_search' as const,
-      timestamp: new Date(),
-      region: 'Korea',
-      url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
-      rank: index + 1
-    }))
+      // 상위 15개 추출
+      titles.slice(1, 16).forEach((keyword, index) => {
+        if (keyword && keyword.length > 1) {
+          trends.push({
+            keyword: keyword.length > 50 ? keyword.substring(0, 47) + '...' : keyword,
+            interest: 100 - (index * 2), // 실시간 관심도 시뮬레이션
+            category: '검색어',
+            source: 'korean_search' as const,
+            timestamp: new Date(),
+            region: 'Korea',
+            url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
+            rank: index + 1
+          })
+        }
+      })
+
+      if (trends.length === 0) {
+        console.warn('⚠️ Google Trends 데이터 없음, Naver 실시간 검색 시도')
+        return await this.getNaverRealTimeSearch()
+      }
+
+      console.log(`✅ 구글 트렌드: ${trends.length}개 수집 완료`)
+      return trends
+    } catch (error) {
+      console.error('❌ Google Trends 오류:', error)
+      return await this.getNaverRealTimeSearch()
+    }
   }
 
-  // 2. 한국 쇼핑 트렌드
+  // Naver 실시간 검색어 백업 (Google Trends 실패시)
+  private async getNaverRealTimeSearch(): Promise<TrendData[]> {
+    try {
+      console.log('🔍 네이버 실시간 검색 시도...')
+      // Naver Open API나 크롤링 대신 안전한 방법 사용
+      // 실제로는 공식 API를 사용해야 함
+      return []
+    } catch (error) {
+      console.error('❌ 네이버 실시간 검색 실패:', error)
+      return []
+    }
+  }
+
+  // 2. 한국 쇼핑 트렌드 - 실제 데이터는 제거 (더미 데이터 금지)
   async getShoppingTrends(): Promise<TrendData[]> {
-    // 2025년 실제 인기 상품들
-    const hotProducts = [
-      '갤럭시 S25 Ultra', '아이폰 16 Pro Max', '맥북 프로 M4', 'iPad Pro M4',
-      '에어팟 프로 3세대', '갤럭시 버즈3 프로', '애플워치 시리즈 10', '갤럭시 워치7',
-      '닌텐도 스위치2', 'PS5 Pro', '다이슨 V15', 'LG 그램 2025',
-      '삼성 갤럭시북4', '레노버 씽크패드', '로지텍 MX 마스터', 'OLED 모니터',
-      '기계식 키보드', '게이밍 마우스', '무선 충전기', '블루투스 스피커'
-    ]
-    
-    return hotProducts.map((product, index) => ({
-      keyword: product,
-      interest: 90 - index,
-      category: '쇼핑',
-      source: 'shopping' as const,
-      timestamp: new Date(),
-      region: 'Korea',
-      url: `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(product)}`,
-      rank: index + 1
-    }))
+    // 쇼핑 트렌드는 실제 API가 필요하므로 현재 비활성화
+    // 실제 네이버 쇼핑이나 이커머스 API 연동 시 활성화
+    console.log('⚠️ 쇼핑 트렌드: 실제 API 연동 필요 (더미 데이터 제거됨)')
+    return []
   }
 
-  // 3. 유튜브 한국 트렌드 (큐레이션 데이터)
+  // 3. 유튜브 한국 트렌드 - 더미 데이터 제거
   async getYoutubeTrends(): Promise<TrendData[]> {
-    // 한국에서 인기 있는 유튜브 콘텐츠 키워드
-    const popularVideos = [
-      'Claude AI 사용법', '맥북 M4 리뷰', '아이폰 16 언박싱', 
-      '프로그래밍 강의', 'React 튜토리얼', 'Next.js 배우기',
-      'AI 그림 생성', '코딩 테스트', '개발자 일상',
-      '스타트업 창업', 'IT 뉴스', '신제품 리뷰',
-      '갤럭시 S25 출시', 'ChatGPT 활용', '웹개발 트렌드'
-    ]
-    
-    return popularVideos.map((video, index) => ({
-      keyword: video,
-      interest: 600 - (index * 25),
-      category: '영상',
-      source: 'youtube' as const,
-      timestamp: new Date(),
-      region: 'Korea',
-      url: `https://www.youtube.com/results?search_query=${encodeURIComponent(video)}`,
-      rank: index + 1
-    }))
+    // 유튜브 트렌드는 실제 YouTube API가 필요하므로 현재 비활성화
+    // YouTube Data API v3 연동 시 활성화
+    console.log('⚠️ 유튜브 트렌드: 실제 API 연동 필요 (더미 데이터 제거됨)')
+    return []
   }
 
-  // 4. IT/기술 트렌드
+  // 4. IT/기술 트렌드 - 더미 데이터 제거  
   async getItTrends(): Promise<TrendData[]> {
-    // 2025년 가장 핫한 IT 키워드들
-    const techTrends = [
-      'Claude AI', 'GPT-5', 'Sora AI', 'Gemini Pro',
-      'React 19', 'Next.js 15', 'TypeScript 5.7', 'Bun.js',
-      'Cursor IDE', 'GitHub Copilot', 'AWS Lambda', 'Vercel',
-      'Supabase', 'PlanetScale', '쿠버네티스', 'Docker',
-      'Rust 언어', 'Go 1.24', 'Deno 2.0', 'Node.js 23',
-      'Vue.js 3.5', 'Svelte 5', 'Angular 18', 'Vite 6'
-    ]
-
-    return techTrends.map((keyword, index) => ({
-      keyword,
-      interest: 80 - index,
-      category: 'IT',
-      source: 'tech' as const,
-      timestamp: new Date(),
-      region: 'Korea',
-      url: `https://www.google.com/search?q=${encodeURIComponent(keyword)}`,
-      rank: index + 1
-    }))
+    // IT 트렌드는 HackerNews, GitHub, Dev.to 등 실제 소스에서 이미 수집하므로 중복 제거
+    console.log('⚠️ IT 트렌드: 실제 소스(HackerNews, GitHub, Dev.to)에서 수집 중 (더미 데이터 제거됨)')
+    return []
   }
 
   // 5. 통합 한국 트렌드 (데이터 강화 포함)
