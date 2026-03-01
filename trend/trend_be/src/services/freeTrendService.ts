@@ -1,5 +1,6 @@
 import { TrendData, TrendCache } from '../types/trend.types'
 import { databaseService, StoredTrendData } from './database'
+import { koreanTrendService } from './koreanTrendService'
 
 // API 응답 타입 정의
 interface HackerNewsStory {
@@ -294,12 +295,13 @@ export class FreeTrendService {
     console.log('🚀 전체 트렌드 수집 시작...')
     const startTime = Date.now()
     
-    const [hackerNews, reddit, github, devTo, rss] = await Promise.allSettled([
+    const [hackerNews, reddit, github, devTo, rss, korean] = await Promise.allSettled([
       this.getHackerNewsTrends(),
       this.getRedditTrends(),
       this.getGitHubTrends(), 
       this.getDevToTrends(),
-      this.parseRSSFeeds()
+      this.parseRSSFeeds(),
+      koreanTrendService.getAllKoreanTrends()
     ])
 
     const allTrends: TrendData[] = []
@@ -309,6 +311,7 @@ export class FreeTrendService {
     if (github.status === 'fulfilled') allTrends.push(...github.value)
     if (devTo.status === 'fulfilled') allTrends.push(...devTo.value)
     if (rss.status === 'fulfilled') allTrends.push(...rss.value)
+    if (korean.status === 'fulfilled') allTrends.push(...korean.value)
 
     const endTime = Date.now()
     console.log(`🎉 총 ${allTrends.length}개 트렌드 수집 완료 (${endTime - startTime}ms)`)
