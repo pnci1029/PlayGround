@@ -59,9 +59,6 @@ export default function TrendRankingPage() {
         {/* Header */}
         <header className="trend-header">
           <h1 className="trend-title">트렌드 순위</h1>
-          <p className="trend-subtitle">
-            실시간 한국 트렌드와 글로벌 인사이트를 한눈에
-          </p>
         </header>
           
           <div className="flex flex-col items-center gap-6">
@@ -109,11 +106,8 @@ export default function TrendRankingPage() {
           <div className="trend-loading-state" aria-live="polite">
             <div className="trend-spinner"></div>
             <h3 className="trend-loading-title">
-              데이터 로딩 중
+              로딩 중
             </h3>
-            <p className="trend-loading-description">
-              순위 데이터를 계산하고 있습니다
-            </p>
           </div>
         )}
 
@@ -145,11 +139,8 @@ export default function TrendRankingPage() {
               </svg>
             </div>
             <h3 className="trend-empty-title">
-              순위 데이터가 없습니다
+              데이터 없음
             </h3>
-            <p className="trend-empty-description">
-              새로고침을 시도해보세요
-            </p>
             <button 
               onClick={handleRefresh}
               className="trend-btn-primary"
