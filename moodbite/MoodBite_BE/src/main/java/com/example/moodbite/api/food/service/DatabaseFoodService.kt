@@ -1,20 +1,91 @@
 package com.example.moodbite.api.food.service
 
+import com.example.moodbite.api.executed.dto.ScoresDTO
+import com.example.moodbite.api.executed.dto.TestResultRequestDTO
+import com.example.moodbite.api.executed.service.ScientificFoodRecommendationService
 import com.example.moodbite.api.food.entity.FoodRecommendation
 import com.example.moodbite.api.food.repository.FoodRecommendationRepository
 import com.example.moodbite.api.test.dto.request.TestRequestDTO
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import kotlin.math.min
 
 @Service
 class DatabaseFoodService(
-    private val foodRepository: FoodRecommendationRepository
+    private val foodRepository: FoodRecommendationRepository,
+    private val scientificFoodRecommendationService: ScientificFoodRecommendationService
 ) {
     
+    private val objectMapper = ObjectMapper()
+    
     fun getRecommendations(dto: TestRequestDTO): List<FoodRecommendationResult> {
+        val scientificRequestDTO = TestResultRequestDTO(
+            scores = ScoresDTO(
+                dto.scores.tired,
+                dto.scores.anger,
+                dto.scores.stress,
+                dto.scores.appetite,
+                dto.scores.budget
+            ),
+            dining = dto.dining.name,
+            mealTime = dto.mealTime.name
+        )
+        
+        val scientificResponse = scientificFoodRecommendationService.recommendFoodScientific(scientificRequestDTO)
+        
+        return try {
+            parseScientificResponse(scientificResponse)
+        } catch (e: Exception) {
+            getFallbackRecommendations(dto)
+        }
+    }
+    
+    private fun parseScientificResponse(response: String): List<FoodRecommendationResult> {
+        val jsonNode = objectMapper.readTree(response)
+        val primaryFood = jsonNode.get("primaryFood")?.asText() ?: "추천 음식 없음"
+        val alternativefoods = jsonNode.get("alternativefoods")?.map { it.asText() } ?: emptyList()
+        val reason = jsonNode.get("reason")?.asText() ?: "과학적 분석을 통한 추천입니다"
+        val confidence = jsonNode.get("confidence")?.asText() ?: "보통"
+        
+        val recommendations = mutableListOf<FoodRecommendationResult>()
+        
+        recommendations.add(
+            FoodRecommendationResult(
+                name = primaryFood,
+                description = "2014-2024 연구 기반 과학적 추천",
+                reason = reason,
+                score = when(confidence) {
+                    "높음" -> 95.0
+                    "보통" -> 85.0
+                    "낮음" -> 75.0
+                    else -> 80.0
+                },
+                price = "가격 문의",
+                ingredients = "과학적 분석 기반",
+                healthBenefits = "감정과 상황에 최적화된 영양학적 이점"
+            )
+        )
+        
+        alternativefoods.forEach { food ->
+            recommendations.add(
+                FoodRecommendationResult(
+                    name = food,
+                    description = "대안 추천",
+                    reason = "주요 추천과 유사한 효과를 기대할 수 있습니다",
+                    score = 70.0,
+                    price = "가격 문의", 
+                    ingredients = "분석 기반",
+                    healthBenefits = "균형잡힌 영양 제공"
+                )
+            )
+        }
+        
+        return recommendations
+    }
+    
+    private fun getFallbackRecommendations(dto: TestRequestDTO): List<FoodRecommendationResult> {
         var candidates = findCandidatesWithFallback(dto)
         
-        // 만약 여전히 비어있다면 모든 음식을 대상으로 함
         if (candidates.isEmpty()) {
             candidates = foodRepository.findAll()
         }
@@ -37,7 +108,6 @@ class DatabaseFoodService(
     }
     
     private fun findCandidatesWithFallback(dto: TestRequestDTO): List<FoodRecommendation> {
-        // DTO의 dining 필드를 시스템이 기대하는 형식으로 변환
         val diningType = when (dto.dining.name) {
             "FRIENDS" -> "WITH_FRIENDS"
             "FAMILY" -> "WITH_FAMILY"
@@ -45,7 +115,6 @@ class DatabaseFoodService(
             else -> dto.dining.name
         }
         
-        // 1단계: 모든 조건 매칭 (예산 + 시간대 + 식사동반자)
         var candidates = foodRepository.findRecommendationsByFilters(
             minBudget = dto.scores.budget / 3,
             maxBudget = dto.scores.budget,
@@ -55,7 +124,6 @@ class DatabaseFoodService(
         
         if (candidates.isNotEmpty()) return candidates
         
-        // 2단계: 예산 + 시간대만 매칭 (식사동반자 조건 완화)
         candidates = foodRepository.findRecommendationsByMealTimeAndBudget(
             minBudget = dto.scores.budget / 3,
             maxBudget = dto.scores.budget,
@@ -64,15 +132,12 @@ class DatabaseFoodService(
         
         if (candidates.isNotEmpty()) return candidates
         
-        // 3단계: 예산만 매칭 (시간대 조건도 완화)
         candidates = foodRepository.findRecommendationsByBudgetOnly(
-            minBudget = dto.scores.budget / 4, // 예산 범위도 더 넓게
             maxBudget = (dto.scores.budget * 1.5).toInt()
         )
         
         if (candidates.isNotEmpty()) return candidates
         
-        // 4단계: 시간대만 매칭 (예산 조건 완화)
         candidates = foodRepository.findRecommendationsByMealTimeOnly(
             mealTime = dto.mealTime.name
         )
@@ -149,7 +214,6 @@ class DatabaseFoodService(
     private fun generateReason(food: FoodRecommendation, dto: TestRequestDTO): String {
         val reasons = mutableListOf<String>()
         
-        // 감정 상태별 추천 이유
         if (dto.scores.tired > 60 && food.energyBoostScore > 70) {
             reasons.add("피로 회복에 효과적인 ${food.ingredients}이 포함되어 있습니다")
         } else if (dto.scores.tired > 60 && food.energyBoostScore > 50) {
@@ -174,7 +238,6 @@ class DatabaseFoodService(
             reasons.add("부담 없이 섭취할 수 있어 영양 보충에 좋습니다")
         }
         
-        // 시간대별 추천 이유 추가
         val mealTimeReason = when (dto.mealTime.name) {
             "MORNING" -> if (food.energyBoostScore > 60) "아침 식사로 하루를 활기차게 시작할 수 있습니다" else null
             "LUNCH" -> if (food.energyBoostScore > 50 || food.stressReliefScore > 50) "점심 시간 에너지 보충에 적합합니다" else null
@@ -186,9 +249,7 @@ class DatabaseFoodService(
         mealTimeReason?.let { reasons.add(it) }
         
         return if (reasons.isNotEmpty()) {
-            reasons.take(2).joinToString(", ") // 최대 2개의 이유만 표시
         } else {
-            // 마지막 대안 메시지들
             when {
                 food.category == "한식" -> "한국인의 입맛에 친숙한 영양 만점 음식입니다"
                 food.category == "서양식" -> "다양한 영양소를 균형있게 섭취할 수 있습니다"

@@ -70,7 +70,6 @@ class DataInitializer {
     }
 }
 
-// JSON 데이터 매핑을 위한 데이터 클래스
 data class FoodData(
     val name: String,
     val category: String,
