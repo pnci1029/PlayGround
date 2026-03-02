@@ -21,7 +21,6 @@ class RestaurantDataInitializer {
     
     private fun initSampleRestaurants() {
         val restaurants = listOf(
-            // 강남 지역
             Restaurant(
                 name = "할머니 김치찌개",
                 category = "한식",
@@ -68,7 +67,6 @@ class RestaurantDataInitializer {
                 foodTags = mutableListOf("우동", "일식", "국물요리", "면요리")
             ),
             
-            // 홍대 지역
             Restaurant(
                 name = "홍대 치킨 맛집",
                 category = "치킨",
@@ -100,7 +98,6 @@ class RestaurantDataInitializer {
                 foodTags = mutableListOf("떡볶이", "분식", "김밥", "매운음식", "간식")
             ),
             
-            // 명동 지역
             Restaurant(
                 name = "프리미엄 스테이크 하우스",
                 category = "양식",
@@ -132,7 +129,6 @@ class RestaurantDataInitializer {
                 foodTags = mutableListOf("갈비탕", "한식", "국물요리", "보양식")
             ),
             
-            // 건대 지역
             Restaurant(
                 name = "대학로 라면 거리",
                 category = "분식",

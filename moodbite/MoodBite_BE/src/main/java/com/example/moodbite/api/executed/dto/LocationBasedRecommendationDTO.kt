@@ -2,7 +2,6 @@ package com.example.moodbite.api.executed.dto
 
 import com.example.moodbite.api.location.RestaurantSearchResult
 
-// 요청 DTO
 data class LocationBasedTestResultRequestDTO(
     val scores: ScoresDTO,
     val dining: String,
@@ -15,7 +14,6 @@ data class LocationDTO(
     val longitude: Double
 )
 
-// 응답 DTO
 data class LocationBasedRecommendationResponseDTO(
     val id: Long,
     val message: String,
