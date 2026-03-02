@@ -203,6 +203,7 @@ class ScientificFoodRecommendationService {
                 val groupFriendly = if (food.groupFriendly) 0.5 else -0.2
                 val shareableFood = if (food.category in listOf("치킨", "피자", "중식", "양식")) 0.3 else 0.0
 
+                val socialFacilitation = if (food.groupFriendly) 0.4 else -0.2
                 socialFacilitation + groupFriendly + shareableFood
             }
             "DATE" -> {
@@ -267,6 +268,7 @@ class ScientificFoodRecommendationService {
                                           food.ingredients?.contains("트립토판") == true) 0.8 else 0.0
                 val coolingEffect = if (food.stressRelief >= 7) 0.6 else 0.0
                 val spicyPenalty = if (food.ingredients?.contains("고추") == true) -0.4 else 0.0
+                val comorbidStress = stress >= 7 && anger >= 6
                 val comorbidBonus = if (comorbidStress && food.comfortLevel >= 8) 0.3 else 0.0
 
                 serotoninBooster + coolingEffect + spicyPenalty + comorbidBonus

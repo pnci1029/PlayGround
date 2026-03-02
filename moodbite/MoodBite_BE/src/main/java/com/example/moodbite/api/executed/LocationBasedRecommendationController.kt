@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/mood-test/location-based")
-@CrossOrigin(origins = ["http://localhost:3000"])
 class LocationBasedRecommendationController {
     
     @Autowired
