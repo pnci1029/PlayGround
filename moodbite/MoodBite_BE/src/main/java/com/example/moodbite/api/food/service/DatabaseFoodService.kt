@@ -19,6 +19,7 @@ class DatabaseFoodService(
     private val objectMapper = ObjectMapper()
     
     fun getRecommendations(dto: TestRequestDTO): List<FoodRecommendationResult> {
+        // 새로운 과학적 추천 서비스 사용
         val scientificRequestDTO = TestResultRequestDTO(
             scores = ScoresDTO(
                 dto.scores.tired,
@@ -36,6 +37,7 @@ class DatabaseFoodService(
         return try {
             parseScientificResponse(scientificResponse)
         } catch (e: Exception) {
+            // 과학적 추천 실패 시 기존 로직 사용
             getFallbackRecommendations(dto)
         }
     }
@@ -49,6 +51,7 @@ class DatabaseFoodService(
         
         val recommendations = mutableListOf<FoodRecommendationResult>()
         
+        // 주요 추천 음식
         recommendations.add(
             FoodRecommendationResult(
                 name = primaryFood,
@@ -66,6 +69,7 @@ class DatabaseFoodService(
             )
         )
         
+        // 대안 음식들
         alternativefoods.forEach { food ->
             recommendations.add(
                 FoodRecommendationResult(
@@ -86,6 +90,7 @@ class DatabaseFoodService(
     private fun getFallbackRecommendations(dto: TestRequestDTO): List<FoodRecommendationResult> {
         var candidates = findCandidatesWithFallback(dto)
         
+        // 만약 여전히 비어있다면 모든 음식을 대상으로 함
         if (candidates.isEmpty()) {
             candidates = foodRepository.findAll()
         }
@@ -108,6 +113,7 @@ class DatabaseFoodService(
     }
     
     private fun findCandidatesWithFallback(dto: TestRequestDTO): List<FoodRecommendation> {
+        // DTO의 dining 필드를 시스템이 기대하는 형식으로 변환
         val diningType = when (dto.dining.name) {
             "FRIENDS" -> "WITH_FRIENDS"
             "FAMILY" -> "WITH_FAMILY"
@@ -115,6 +121,7 @@ class DatabaseFoodService(
             else -> dto.dining.name
         }
         
+        // 1단계: 모든 조건 매칭 (예산 + 시간대 + 식사동반자)
         var candidates = foodRepository.findRecommendationsByFilters(
             minBudget = dto.scores.budget / 3,
             maxBudget = dto.scores.budget,
@@ -124,6 +131,7 @@ class DatabaseFoodService(
         
         if (candidates.isNotEmpty()) return candidates
         
+        // 2단계: 예산 + 시간대만 매칭 (식사동반자 조건 완화)
         candidates = foodRepository.findRecommendationsByMealTimeAndBudget(
             minBudget = dto.scores.budget / 3,
             maxBudget = dto.scores.budget,
@@ -132,12 +140,15 @@ class DatabaseFoodService(
         
         if (candidates.isNotEmpty()) return candidates
         
+        // 3단계: 예산만 매칭 (시간대 조건도 완화)
         candidates = foodRepository.findRecommendationsByBudgetOnly(
+            minBudget = dto.scores.budget / 4, // 예산 범위도 더 넓게
             maxBudget = (dto.scores.budget * 1.5).toInt()
         )
         
         if (candidates.isNotEmpty()) return candidates
         
+        // 4단계: 시간대만 매칭 (예산 조건 완화)
         candidates = foodRepository.findRecommendationsByMealTimeOnly(
             mealTime = dto.mealTime.name
         )
@@ -249,6 +260,7 @@ class DatabaseFoodService(
         mealTimeReason?.let { reasons.add(it) }
         
         return if (reasons.isNotEmpty()) {
+            reasons.take(2).joinToString(", ") // 최대 2개의 이유만 표시
         } else {
             when {
                 food.category == "한식" -> "한국인의 입맛에 친숙한 영양 만점 음식입니다"

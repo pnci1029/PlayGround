@@ -34,7 +34,6 @@ interface FoodRecommendationRepository : JpaRepository<FoodRecommendation, Long>
         @Param("diningType") diningType: String
     ): List<FoodRecommendation>
     
-    // 시간대만 매칭하는 fallback 쿼리
     @Query("""
         SELECT f FROM FoodRecommendation f 
         WHERE f.minPrice <= :maxBudget 
@@ -52,7 +51,6 @@ interface FoodRecommendationRepository : JpaRepository<FoodRecommendation, Long>
         @Param("mealTime") mealTime: String
     ): List<FoodRecommendation>
     
-    // 예산만 매칭하는 최종 fallback 쿼리
     @Query("""
         SELECT f FROM FoodRecommendation f 
         WHERE f.minPrice <= :maxBudget 
@@ -63,7 +61,6 @@ interface FoodRecommendationRepository : JpaRepository<FoodRecommendation, Long>
         @Param("maxBudget") maxBudget: Int
     ): List<FoodRecommendation>
     
-    // 예산도 무시하는 최후의 수단 쿼리
     @Query("""
         SELECT f FROM FoodRecommendation f 
         WHERE (

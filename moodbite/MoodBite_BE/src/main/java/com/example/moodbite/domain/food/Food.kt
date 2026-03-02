@@ -8,15 +8,40 @@ class Food(
     val id: Long? = null,
     
     var name: String,
+    var category: String, // 한식, 양식, 중식, 일식, 분식 등
     var description: String? = null,
     var imageUrl: String? = null,
     
+    // 감정과의 매칭을 위한 점수들 (1-10)
+    var comfortLevel: Int = 5, // 피로할 때 얼마나 좋은지
+    var energyBoost: Int = 5, // 에너지를 얼마나 주는지
+    var stressRelief: Int = 5, // 스트레스 해소에 좋은지
+    var appetiteMatch: Int = 5, // 식욕이 없을 때 좋은지
     
+    // 가격대 (1: 저렴, 2: 보통, 3: 비싸다)
     var priceLevel: Int = 2,
     
+    // 추가된 필드들
+    var ingredients: String? = null, // 주재료
+    var healthBenefits: String? = null, // 건강상 이점
+    var mealTimes: String? = null, // 적합한 식사 시간 (쉼표로 구분)
+    var diningTypes: String? = null, // 적합한 식사 동반자 (쉼표로 구분)
+    var minPrice: Int = 0, // 최소 가격
+    var maxPrice: Int = 0, // 최대 가격
     
+    // 영양정보 필드들
+    var calories: Int = 0, // 칼로리
+    var protein: Double = 0.0, // 단백질 (g)
+    var carbs: Double = 0.0, // 탄수화물 (g)  
+    var fat: Double = 0.0, // 지방 (g)
+    var prepTimeMinutes: Int = 0, // 준비 시간 (분)
     
+    // 기존 상황별 적합도
+    var soloFriendly: Boolean = true, // 혼자 먹기 좋은지
+    var groupFriendly: Boolean = true, // 단체로 먹기 좋은지
+    var dateFriendly: Boolean = false, // 데이트에 좋은지
     
+    // 기존 시간대별 적합도
     var morningFriendly: Boolean = false,
     var lunchFriendly: Boolean = true,
     var dinnerFriendly: Boolean = true,
