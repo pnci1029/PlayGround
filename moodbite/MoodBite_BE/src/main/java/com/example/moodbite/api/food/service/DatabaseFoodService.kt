@@ -79,7 +79,7 @@ class DatabaseFoodService(
                     score = 70.0,
                     price = "가격 문의", 
                     ingredients = "분석 기반",
-                    healthBenefits = "균형잡힌 영양 제공"
+                    healthBenefits = "영양가 높은 음식"
                 )
             )
         }
@@ -268,7 +268,7 @@ class DatabaseFoodService(
                 food.category == "중식" -> "든든하고 만족스러운 식사가 될 것입니다"
                 food.category == "일식" -> "깔끔하고 건강한 식사 옵션입니다"
                 food.category == "분식" -> "간편하면서도 맛있는 선택입니다"
-                else -> "현재 상황에 적합한 균형잡힌 영양을 제공합니다"
+                else -> "현재 상황에 적합한 맛있는 음식입니다"
             }
         }
     }
