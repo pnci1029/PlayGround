@@ -108,7 +108,7 @@ class LocationBasedRecommendationService {
      * 텍스트에서 주요 추천 음식 추출
      */
     private fun extractPrimaryFoodFromText(text: String): String {
-        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "치킨", "우동", "갈비탕", "떡볶이", "라면", "스테이크")
+        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "후라이드치킨", "우동", "갈비탕", "떡볶이", "라면", "등심스테이크", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국")
         return foodKeywords.find { text.contains(it) } ?: "김치찌개"
     }
 
@@ -116,7 +116,7 @@ class LocationBasedRecommendationService {
      * 텍스트에서 대안 음식들 추출
      */
     private fun extractAlternativeFoodsFromText(text: String): List<String> {
-        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "치킨", "우동", "갈비탕", "떡볶이", "라면", "스테이크")
+        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "후라이드치킨", "우동", "갈비탕", "떡볶이", "라면", "등심스테이크", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국")
         return foodKeywords.filter { text.contains(it) }.take(3).ifEmpty {
             listOf("김치찌개", "된장찌개", "비빔밥")
         }
