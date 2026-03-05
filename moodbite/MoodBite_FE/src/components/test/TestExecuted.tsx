@@ -217,7 +217,7 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
 
                 {/* 액션 버튼 */}
                 <section className={style.actionSection}>
-                    <button className={style.retryButton} onClick={() => window.location.reload()}>
+                    <button className={style.retryButton} onClick={onRetryTest || onBack}>
                         <RefreshCw size={18} />
                         다시 추천받기
                     </button>
