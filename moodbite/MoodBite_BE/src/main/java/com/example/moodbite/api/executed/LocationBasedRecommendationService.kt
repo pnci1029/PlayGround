@@ -105,20 +105,82 @@ class LocationBasedRecommendationService {
     }
 
     /**
-     * 텍스트에서 주요 추천 음식 추출
+     * 텍스트에서 주요 추천 음식 추출 - 다양한 국제 요리 포함
      */
     private fun extractPrimaryFoodFromText(text: String): String {
-        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "후라이드치킨", "우동", "갈비탕", "떡볶이", "라면", "등심스테이크", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국")
-        return foodKeywords.find { text.contains(it) } ?: "김치찌개"
+        val foodKeywords = listOf(
+            // 한식
+            "김치찌개", "된장찌개", "순두부찌개", "갈비탕", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국", "불고기",
+            // 이탈리아
+            "마르게리타 피자", "치즈 리조또", "페스토 파스타", "파스타",
+            // 일식
+            "연어 사시미", "연어 아보카도 롤", "스시 세트", "테리야키 치킨 덮밥", "우동", "라멘",
+            // 중식
+            "마파두부",
+            // 멕시코
+            "타코", "부리또",
+            // 태국
+            "팟타이", "코코넛 새우 카레",
+            // 베트남
+            "쌀국수",
+            // 인도
+            "치킨 티카 마살라",
+            // 터키
+            "터키 케밥",
+            // 모로코
+            "모로코 타진",
+            // 중동
+            "팔라펠",
+            // 그리스
+            "그릭 요거트", "견과류",
+            // 유럽
+            "훈제 연어 베이글",
+            // 서양식
+            "그린 샐러드", "버거 스테이크", "등심스테이크",
+            // 기타
+            "후라이드치킨", "치킨", "떡볶이", "라면"
+        )
+        return foodKeywords.find { text.contains(it) } ?: "연어 사시미"
     }
 
     /**
-     * 텍스트에서 대안 음식들 추출
+     * 텍스트에서 대안 음식들 추출 - 다양한 국제 요리 포함
      */
     private fun extractAlternativeFoodsFromText(text: String): List<String> {
-        val foodKeywords = listOf("김치찌개", "된장찌개", "순두부찌개", "파스타", "후라이드치킨", "우동", "갈비탕", "떡볶이", "라면", "등심스테이크", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국")
+        val foodKeywords = listOf(
+            // 한식
+            "김치찌개", "된장찌개", "순두부찌개", "갈비탕", "비빔밥", "삼겹살구이", "김치볶음밥", "닭죽", "미역국", "불고기",
+            // 이탈리아
+            "마르게리타 피자", "치즈 리조또", "페스토 파스타", "파스타",
+            // 일식
+            "연어 사시미", "연어 아보카도 롤", "스시 세트", "테리야키 치킨 덮밥", "우동", "라멘",
+            // 중식
+            "마파두부",
+            // 멕시코
+            "타코", "부리또",
+            // 태국
+            "팟타이", "코코넛 새우 카레",
+            // 베트남
+            "쌀국수",
+            // 인도
+            "치킨 티카 마살라",
+            // 터키
+            "터키 케밥",
+            // 모로코
+            "모로코 타진",
+            // 중동
+            "팔라펠",
+            // 그리스
+            "그릭 요거트", "견과류",
+            // 유럽
+            "훈제 연어 베이글",
+            // 서양식
+            "그린 샐러드", "버거 스테이크", "등심스테이크",
+            // 기타
+            "후라이드치킨", "치킨", "떡볶이", "라면"
+        )
         return foodKeywords.filter { text.contains(it) }.take(3).ifEmpty {
-            listOf("김치찌개", "된장찌개", "비빔밥")
+            listOf("연어 사시미", "치킨 티카 마살라", "마르게리타 피자")
         }
     }
 
@@ -193,16 +255,50 @@ class LocationBasedRecommendationService {
     }
 
     /**
-     * 음식으로부터 카테고리 추출
+     * 음식으로부터 카테고리 추출 - 다양한 국제 요리 포함
      */
     private fun getCategoryFromFood(food: String): String {
         return when {
-            food.contains("찌개") || food.contains("국") || food.contains("탕") -> "한식"
-            food.contains("파스타") || food.contains("스테이크") -> "양식"
-            food.contains("우동") || food.contains("라멘") -> "일식"
+            // 한식
+            food.contains("찌개") || food.contains("국") || food.contains("탕") || food.contains("비빔밥") || food.contains("불고기") || food.contains("삼겹살") -> "한식"
+            
+            // 이탈리아
+            food.contains("피자") || food.contains("파스타") || food.contains("리조또") || food.contains("페스토") -> "이탈리아음식"
+            
+            // 일식
+            food.contains("우동") || food.contains("라멘") || food.contains("사시미") || food.contains("스시") || food.contains("테리야키") -> "일식"
+            
+            // 중식
+            food.contains("마파두부") -> "중식"
+            
+            // 멕시코
+            food.contains("타코") || food.contains("부리또") -> "멕시코음식"
+            
+            // 태국
+            food.contains("팟타이") || food.contains("카레") -> "태국음식"
+            
+            // 베트남
+            food.contains("쌀국수") -> "베트남음식"
+            
+            // 인도
+            food.contains("치킨 티카") || food.contains("마살라") -> "인도음식"
+            
+            // 터키
+            food.contains("케밥") -> "터키음식"
+            
+            // 중동
+            food.contains("팔라펠") -> "중동음식"
+            
+            // 서양식
+            food.contains("스테이크") || food.contains("샐러드") || food.contains("버거") || food.contains("베이글") -> "서양음식"
+            
+            // 치킨
             food.contains("치킨") -> "치킨"
+            
+            // 분식
             food.contains("떡볶이") || food.contains("라면") -> "분식"
-            else -> "한식"
+            
+            else -> "음식점"
         }
     }
 
