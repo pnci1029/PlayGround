@@ -27,25 +27,19 @@ import { toolCategories } from '@/lib/tools-data'
 import { LoadingSkeleton, CardSkeleton } from '@/components/ui/LoadingSpinner'
 import { ErrorState, LoadError } from '@/components/ui/ErrorState'
 import { apiUrls, logger } from '@/lib/config'
+import type { Tool, ToolStatsMap, SortableCategoryProps } from '@/types/tools'
 
 // 드래그 가능한 카테고리 컴포넌트
-function SortableCategory({ 
-  categoryName, 
-  tools, 
-  isOpen, 
-  onToggle,
-  isDraggedOver,
-  draggedId,
-  toolStats 
-}: {
-  categoryName: string
-  tools: any[]
-  isOpen: boolean
-  onToggle: () => void
-  isDraggedOver: boolean
-  draggedId: string | null
-  toolStats: Record<string, any>
-}) {
+function SortableCategory(props: SortableCategoryProps) {
+  const {
+    categoryName,
+    tools,
+    isOpen,
+    onToggle,
+    isDraggedOver,
+    draggedId,
+    toolStats
+  } = props
   const {
     attributes,
     listeners,
@@ -212,7 +206,7 @@ export default function ToolCategoryGrid() {
   const [error, setError] = useState<string | null>(null)
   
   // 통계 데이터 상태 관리
-  const [toolStats, setToolStats] = useState<Record<string, any>>({})
+  const [toolStats, setToolStats] = useState<ToolStatsMap>({})
   
   // 아코디언 상태 관리
   const [openCategories, setOpenCategories] = useState<string[]>(['창작 도구'])

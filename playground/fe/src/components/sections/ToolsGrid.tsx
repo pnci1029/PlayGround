@@ -58,86 +58,82 @@ export default function ToolsGrid({ tools, renderIcon }: ToolsGridProps) {
 
           {/* JSON Formatter - Featured Tool */}
           <ToolCard
-            tool={tools[0]} // JSON Formatter
-            size="lg"
-            featured={true}
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
-            className="md:col-span-2 lg:col-span-2 xl:col-span-2"
+            title={tools[0]?.name || ''}
+            href={tools[0]?.href || ''}
+            category={tools[0]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* Variable Generator */}
           <ToolCard
-            tool={tools[1]} // Variable Generator
-            size="md"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
-            className="md:col-span-1 lg:col-span-1 xl:col-span-1"
+            title={tools[1]?.name || ''}
+            href={tools[1]?.href || ''}
+            category={tools[1]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* 그림판 */}
           <ToolCard
-            tool={tools[2]} // Canvas
-            size="sm"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
+            title={tools[2]?.name || ''}
+            href={tools[2]?.href || ''}
+            category={tools[2]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* AI Assistant */}
           <ToolCard
-            tool={tools[3]} // AI Assistant
-            size="sm"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
+            title={tools[3]?.name || ''}
+            href={tools[3]?.href || ''}
+            category={tools[3]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* URL Encoder */}
           <ToolCard
-            tool={tools[4]} // URL Encoder
-            size="md"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
-            className="md:col-span-1 lg:col-span-1 xl:col-span-1"
+            title={tools[4]?.name || ''}
+            href={tools[4]?.href || ''}
+            category={tools[4]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* Base64 Converter */}
           <ToolCard
-            tool={tools[5]} // Base64
-            size="sm"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
+            title={tools[5]?.name || ''}
+            href={tools[5]?.href || ''}
+            category={tools[5]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* Hash Generator */}
           <ToolCard
-            tool={tools[6]} // Hash Generator
-            size="sm"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
+            title={tools[6]?.name || ''}
+            href={tools[6]?.href || ''}
+            category={tools[6]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
           {/* QR Generator */}
           <ToolCard
-            tool={tools[7]} // QR Generator
-            size="sm"
-            selectedTool={selectedTool}
-            onSelect={handleToolSelect}
-            onNavigate={handleToolNavigation}
-            renderIcon={renderIcon}
+            title={tools[7]?.name || ''}
+            href={tools[7]?.href || ''}
+            category={tools[7]?.category || ''}
+            icon={null}
+            status='active'
+            isExternal={false}
           />
 
         </div>
