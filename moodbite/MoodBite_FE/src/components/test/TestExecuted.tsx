@@ -3,6 +3,8 @@ import { ArrowLeft, RefreshCw, MapPin, Clock, DollarSign, Users, Utensils } from
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
 import NoRecommendations from '../ui/NoRecommendations';
+import { LocationPermission } from '../location/LocationPermission';
+import { RestaurantRecommendations } from '../location/RestaurantRecommendations';
 
 interface FoodRecommendation {
     primaryFood: string | null;
@@ -20,11 +22,35 @@ interface TestExecutedProps {
 export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest }: TestExecutedProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [recommendation, setRecommendation] = useState(aiRecommendation || '');
+    const [showLocationPermission, setShowLocationPermission] = useState(false);
+    const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(null);
+    const [showRestaurants, setShowRestaurants] = useState(false);
 
     useEffect(() => {
         setIsLoading(false);
         setRecommendation(aiRecommendation || '');
+        // 추천이 완료되면 자동으로 위치 권한 요청 표시
+        if (aiRecommendation && !isLoading) {
+            setTimeout(() => {
+                setShowLocationPermission(true);
+            }, 1500);
+        }
     }, [aiRecommendation]);
+
+    const handleLocationGranted = (location: GeolocationPosition) => {
+        setUserLocation(location);
+        setShowLocationPermission(false);
+        setShowRestaurants(true);
+    };
+
+    const handleLocationDenied = () => {
+        setShowLocationPermission(false);
+    };
+
+    const handleCloseRestaurants = () => {
+        setShowRestaurants(false);
+        setUserLocation(null);
+    };
 
     const getDiningText = (dining: string) => {
         const diningTexts: Record<string, string> = {
@@ -215,12 +241,41 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                     )}
                 </section>
 
+                {/* 위치 권한 요청 */}
+                {showLocationPermission && !showRestaurants && foodRecommendation?.primaryFood && (
+                    <LocationPermission
+                        primaryFood={foodRecommendation.primaryFood}
+                        onLocationGranted={handleLocationGranted}
+                        onLocationDenied={handleLocationDenied}
+                    />
+                )}
+
+                {/* 음식점 추천 */}
+                {showRestaurants && userLocation && foodRecommendation?.primaryFood && (
+                    <RestaurantRecommendations
+                        location={userLocation}
+                        primaryFood={foodRecommendation.primaryFood}
+                        onClose={handleCloseRestaurants}
+                    />
+                )}
+
                 {/* 액션 버튼 */}
                 <section className={style.actionSection}>
                     <button className={style.retryButton} onClick={onRetryTest || onBack}>
                         <RefreshCw size={18} />
                         다시 추천받기
                     </button>
+                    
+                    {/* 수동 맛집 찾기 버튼 (위치 권한을 건너뛰었거나 아직 요청하지 않은 경우) */}
+                    {!showLocationPermission && !showRestaurants && foodRecommendation?.primaryFood && (
+                        <button 
+                            className={style.findRestaurantsButton}
+                            onClick={() => setShowLocationPermission(true)}
+                        >
+                            <MapPin size={18} />
+                            주변 맛집 찾기
+                        </button>
+                    )}
                 </section>
             </main>
         </div>
