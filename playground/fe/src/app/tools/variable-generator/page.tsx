@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { api } from '@/lib/api'
+import type { VariableGeneratorResponse } from '@/types/api'
 
 interface GeneratedVariable {
   camelCase: string
@@ -26,12 +27,12 @@ export default function VariableGeneratorPage() {
     setError('')
 
     try {
-      const response = await api.post('/api/tools/variable-generator', {
+      const response = await api.post<VariableGeneratorResponse>('/api/tools/variable-generator', {
         text: input
       })
 
       if (response.success) {
-        setOutput(response.data.variables)
+        setOutput(response.data)
       } else {
         setError(response.error || '변수명 생성 실패')
       }
