@@ -1,0 +1,429 @@
+@import "../common/variables";
+
+.container {
+  width: 100%;
+  margin: 1.5rem 0;
+  animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow-soft);
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    margin: 0 -0.5rem 1rem;
+  }
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .headerIcon {
+    color: var(--primary-500);
+    background: rgba(20, 184, 166, 0.1);
+    padding: 0.5rem;
+    border-radius: 12px;
+  }
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  @media (max-width: 480px) {
+    font-size: var(--text-base);
+  }
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-primary);
+  }
+}
+
+// Loading State
+.loadingCard {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  box-shadow: var(--shadow-elegant);
+  
+  @media (max-width: 480px) {
+    padding: 2rem 1rem;
+    margin: 0 -0.5rem;
+  }
+}
+
+.loadingIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  
+  .spinner {
+    color: white;
+    animation: spin 2s linear infinite;
+  }
+}
+
+.loadingTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.loadingDescription {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+// Error State
+.errorCard {
+  text-align: center;
+  padding: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 24px;
+  box-shadow: var(--shadow-elegant);
+}
+
+.errorTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--error-600);
+  margin: 0 0 0.75rem 0;
+}
+
+.errorDescription {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem 0;
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+.retryButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
+  }
+}
+
+// No Results
+.noResultsCard {
+  text-align: center;
+  padding: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.noResultsTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem 0;
+}
+
+.noResultsDescription {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem 0;
+}
+
+.expandSearchButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(251, 146, 60, 0.3);
+  }
+}
+
+// Restaurant List
+.restaurantsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.restaurantCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: var(--shadow-soft);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elegant);
+    border-color: var(--primary-200);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1.25rem;
+    margin: 0 -0.5rem;
+  }
+}
+
+.restaurantHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.restaurantName {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+  
+  @media (max-width: 480px) {
+    font-size: var(--text-base);
+  }
+}
+
+.distance {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--primary-600);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  background: rgba(20, 184, 166, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  
+  svg {
+    color: var(--primary-500);
+  }
+}
+
+.restaurantInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.address,
+.phone,
+.category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  
+  svg {
+    color: var(--primary-400);
+    flex-shrink: 0;
+  }
+}
+
+.category {
+  span {
+    background: rgba(107, 114, 128, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: var(--text-xs);
+  }
+}
+
+.restaurantActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
+}
+
+.mapButton,
+.directionsButton,
+.detailButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 12px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.75rem;
+    font-size: var(--text-xs);
+    flex: none;
+    min-width: calc(50% - 0.25rem);
+    
+    &:last-child:nth-child(odd) {
+      flex: 1 1 100%;
+    }
+  }
+}
+
+.mapButton {
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  
+  &:hover {
+    background: var(--primary-500);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  }
+}
+
+.directionsButton {
+  background: rgba(251, 146, 60, 0.1);
+  color: var(--secondary-700);
+  border: 1px solid var(--secondary-200);
+  
+  &:hover {
+    background: var(--secondary-500);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(251, 146, 60, 0.3);
+  }
+}
+
+.detailButton {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  
+  &:hover {
+    background: var(--gray-500);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+  }
+}
+
+.footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0 0 20px 20px;
+  
+  @media (max-width: 480px) {
+    margin: 1rem -0.5rem 0;
+  }
+}
+
+.footerNote {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+  background: rgba(107, 114, 128, 0.08);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+// Animations
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

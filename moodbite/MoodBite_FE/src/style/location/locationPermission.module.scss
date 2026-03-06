@@ -1,0 +1,310 @@
+@import "../common/variables";
+
+.container {
+  width: 100%;
+  margin: 2rem 0;
+  animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.locationCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-elegant);
+  position: relative;
+  overflow: hidden;
+  
+  // 카드 배경 그래디언트
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle at center,
+      rgba(20, 184, 166, 0.05) 0%,
+      transparent 50%
+    );
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    border-radius: 20px;
+    margin: 0 -0.5rem;
+  }
+}
+
+.iconContainer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(20, 184, 166, 0.3);
+  
+  .locationIcon {
+    color: white;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  // 펄스 효과
+  &::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: ripple 2s ease-out infinite;
+    z-index: -1;
+  }
+  
+  @media (max-width: 480px) {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+  }
+}
+
+.content {
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  @media (max-width: 480px) {
+    font-size: var(--text-lg);
+  }
+}
+
+.description {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+  font-weight: 500;
+  
+  @media (max-width: 480px) {
+    font-size: var(--text-sm);
+  }
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  color: var(--error-600);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+  
+  @media (min-width: 480px) {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.allowButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.25);
+  position: relative;
+  overflow: hidden;
+  min-height: 52px;
+  
+  // 호버 효과용 배경
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 32px rgba(20, 184, 166, 0.4);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    
+    &:hover {
+      transform: none;
+      box-shadow: 0 4px 20px rgba(20, 184, 166, 0.25);
+    }
+  }
+  
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.9rem 1.5rem;
+    font-size: var(--text-sm);
+    min-height: 48px;
+  }
+}
+
+.skipButton {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    color: var(--text-primary);
+    border-color: var(--border-medium);
+    background: rgba(107, 114, 128, 0.05);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+.privacyNote {
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 1;
+  
+  p {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    line-height: 1.4;
+    background: rgba(107, 114, 128, 0.08);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin: 0;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(107, 114, 128, 0.1);
+  }
+}
+
+// 애니메이션
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
