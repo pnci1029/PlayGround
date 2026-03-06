@@ -109,7 +109,7 @@ export class AdminAPI {
     })
   }
 
-  static async updateProject(id: number, data: any) {
+  static async updateProject(id: number, data: Record<string, unknown>) {
     return this.request(`/projects/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data)
