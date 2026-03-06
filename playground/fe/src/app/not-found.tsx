@@ -15,7 +15,9 @@ export default function NotFoundPage() {
           {/* 404 아이콘 */}
           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center animate-in zoom-in-50 duration-700 delay-200">
             <div className="text-4xl animate-pulse">
-              {renderPremiumIcon('help-circle', 'w-10 h-10 text-blue-500')}
+              <div className="w-10 h-10 text-blue-500">
+                {renderPremiumIcon('code', 40)}
+              </div>
             </div>
           </div>
           
@@ -39,7 +41,9 @@ export default function NotFoundPage() {
               href="/"
               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-500 hover:to-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-sm inline-block"
             >
-              {renderPremiumIcon('home', 'w-5 h-5 inline mr-2')}
+              <span className="w-5 h-5 inline mr-2">
+                {renderPremiumIcon('code', 20)}
+              </span>
               홈으로 돌아가기
             </Link>
             
@@ -47,7 +51,9 @@ export default function NotFoundPage() {
               onClick={() => window.history.back()}
               className="w-full bg-white text-gray-700 border border-gray-200 px-6 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
             >
-              {renderPremiumIcon('arrow-left', 'w-5 h-5 inline mr-2')}
+              <span className="w-5 h-5 inline mr-2">
+                {renderPremiumIcon('code', 20)}
+              </span>
               이전 페이지로
             </button>
           </div>
@@ -63,7 +69,9 @@ export default function NotFoundPage() {
                 href="/tools/json-formatter"
                 className="bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
               >
-                {renderPremiumIcon('code', 'w-4 h-4 mr-1')}
+                <span className="w-4 h-4 mr-1">
+                  {renderPremiumIcon('code', 16)}
+                </span>
                 JSON 포맷터
               </Link>
               
@@ -71,7 +79,9 @@ export default function NotFoundPage() {
                 href="/canvas"
                 className="bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
               >
-                {renderPremiumIcon('palette', 'w-4 h-4 mr-1')}
+                <span className="w-4 h-4 mr-1">
+                  {renderPremiumIcon('palette', 16)}
+                </span>
                 캔버스
               </Link>
               
@@ -79,7 +89,9 @@ export default function NotFoundPage() {
                 href="/tools/qr-generator"
                 className="bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
               >
-                {renderPremiumIcon('qr-code', 'w-4 h-4 mr-1')}
+                <span className="w-4 h-4 mr-1">
+                  {renderPremiumIcon('qr-code', 16)}
+                </span>
                 QR 생성기
               </Link>
               
@@ -87,7 +99,9 @@ export default function NotFoundPage() {
                 href="/gallery"
                 className="bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
               >
-                {renderPremiumIcon('grid', 'w-4 h-4 mr-1')}
+                <span className="w-4 h-4 mr-1">
+                  {renderPremiumIcon('grid', 16)}
+                </span>
                 갤러리
               </Link>
             </div>

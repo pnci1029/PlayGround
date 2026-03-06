@@ -1,29 +1,28 @@
 // API 클라이언트 설정
+import type { ApiResponse, ApiError, HttpClientConfig } from '@/types/api'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082'
 
-export interface ApiResponse<T = any> {
-  success: boolean
-  data?: T
-  error?: string
-  message?: string
-}
-
 class ApiClient {
   private baseURL: string
+  private defaultHeaders: Record<string, string>
 
-  constructor(baseURL: string = API_BASE_URL) {
-    this.baseURL = baseURL
+  constructor(config: HttpClientConfig = {}) {
+    this.baseURL = config.baseURL || API_BASE_URL
+    this.defaultHeaders = {
+      'Content-Type': 'application/json',
+      ...config.defaultHeaders,
+    }
   }
 
-  async request<T = any>(
+  async request<T = unknown>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         headers: {
-          'Content-Type': 'application/json',
+          ...this.defaultHeaders,
           ...options.headers,
         },
         ...options,
@@ -34,6 +33,7 @@ class ApiClient {
       if (!response.ok) {
         return {
           success: false,
+          data: undefined as T,
           error: data.error || 'API request failed',
           message: data.message,
         }
@@ -41,36 +41,44 @@ class ApiClient {
 
       return {
         success: true,
-        data,
+        data: data as T,
       }
     } catch (error) {
       return {
         success: false,
+        data: undefined as T,
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   }
 
-  get<T = any>(endpoint: string): Promise<ApiResponse<T>> {
+  get<T = unknown>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'GET' })
   }
 
-  post<T = any>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  post<T = unknown, D = unknown>(endpoint: string, data?: D): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: data ? JSON.stringify(data) : undefined,
     })
   }
 
-  put<T = any>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  put<T = unknown, D = unknown>(endpoint: string, data?: D): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: data ? JSON.stringify(data) : undefined,
     })
   }
 
-  delete<T = any>(endpoint: string): Promise<ApiResponse<T>> {
+  delete<T = unknown>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'DELETE' })
+  }
+
+  patch<T = unknown, D = unknown>(endpoint: string, data?: D): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    })
   }
 }
 

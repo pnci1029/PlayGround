@@ -1,25 +1,12 @@
 import { WebSocketServer } from 'ws'
 import { db } from './config/database'
+import type { ChatMessage, ChatUser, WebSocketConnection } from './types/websocket'
 
-interface ChatMessage {
-  type: 'message' | 'user_join' | 'user_leave' | 'user_list'
-  message?: string
-  nickname?: string
-  timestamp: number
-  userId?: string
-  userCount?: number
-  users?: string[]
-}
-
-interface User {
-  id: string
-  nickname: string
-  joinTime: number
-}
+type User = ChatUser
 
 class ChatWebSocketServer {
   private wss: WebSocketServer
-  private connections = new Map<string, any>()
+  private connections = new Map<string, any>() // WebSocket 객체 저장
   private users = new Map<string, User>()
 
   // DB에서 최근 메시지 불러오기
@@ -161,7 +148,7 @@ class ChatWebSocketServer {
     return `${adjective}${noun}${number}`
   }
 
-  private async handleMessage(userId: string, data: any) {
+  private async handleMessage(userId: string, data: ChatMessage) {
     const user = this.users.get(userId)
     if (!user) return
 
