@@ -1,13 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import type { Tool } from '@/types/tools'
 
 interface HeroSectionProps {
   searchTerm: string
   setSearchTerm: (value: string) => void
   isSearchFocused: boolean
   setIsSearchFocused: (value: boolean) => void
-  filteredTools: any[]
+  filteredTools: Tool[]
   renderIcon: (iconName: string) => React.ReactNode
 }
 
@@ -68,7 +69,7 @@ export default function HeroSection({
                         >
                           <div className="w-2 h-2 bg-blue-400 rounded-full" />
                           <div className="flex-1">
-                            <div className="font-medium text-white text-sm">{tool.name}</div>
+                            <div className="font-medium text-white text-sm">{tool.title}</div>
                           </div>
                           <div className="text-white/40 text-xs">→</div>
                         </Link>
