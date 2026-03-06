@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { apiUrls, imageUrls, logger } from '@/lib/config'
+import type { SortOption } from '@/types/canvas'
 
 interface Artwork {
   id: number
@@ -33,7 +34,7 @@ export default function GalleryPage() {
     totalPages: 0
   })
   const [loading, setLoading] = useState(true)
-  const [sortBy, setSortBy] = useState<'latest' | 'popular' | 'views'>('latest')
+  const [sortBy, setSortBy] = useState<SortOption>('latest')
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -173,7 +174,7 @@ export default function GalleryPage() {
             
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
               className="px-4 py-2 bg-white border border-gray-200 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="latest">최신순</option>

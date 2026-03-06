@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { api } from '@/lib/api'
 import { useLanguage } from '@/contexts/LanguageContext'
+import type { JsonFormatterResponse } from '@/types/api'
 
 export default function JsonFormatterPage() {
   const { t } = useLanguage()
@@ -18,7 +19,7 @@ export default function JsonFormatterPage() {
     setError('')
 
     try {
-      const response = await api.post('/api/tools/json-formatter', {
+      const response = await api.post<JsonFormatterResponse>('/api/tools/json-formatter', {
         json: input
       })
 
