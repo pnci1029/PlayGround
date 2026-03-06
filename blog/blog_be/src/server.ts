@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import { config } from '@/utils/config.js';
 import { initializeDatabase } from '@/utils/database.js';
 import postsRoutes from '@/routes/posts.js';
+import authRoutes from '@/routes/auth.js';
 
 const fastify = Fastify({
   logger: true
@@ -21,6 +22,7 @@ async function start() {
     
     // Register routes
     await fastify.register(postsRoutes, { prefix: '/api/posts' });
+    await fastify.register(authRoutes, { prefix: '/api/auth' });
     
     // Health check
     fastify.get('/health', async () => {
