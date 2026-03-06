@@ -3,17 +3,17 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# package.json과 yarn.lock 복사 (의존성 캐싱을 위해)
-COPY package.json yarn.lock ./
+# package.json과 package-lock.json 복사 (의존성 캐싱을 위해)
+COPY package.json package-lock.json* ./
 
-# 의존성 설치
-RUN yarn install --frozen-lockfile
+# 의존성 설치 (legacy peer deps와 force 옵션 사용)
+RUN npm install --legacy-peer-deps
 
 # 소스 코드 복사
 COPY . .
 
-# 프로덕션 빌드
-RUN yarn build
+# 프로덕션 빌드 (--force 옵션으로 의존성 충돌 무시)
+RUN npm run build || (npm install --force && npm run build)
 
 # Nginx로 프로덕션 서빙
 FROM nginx:alpine
