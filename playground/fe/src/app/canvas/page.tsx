@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, MouseEvent } from 'react'
 import { useSearchParams } from 'next/navigation'
 import SaveModal from '@/components/canvas/SaveModal'
 import { apiUrls, logger } from '@/lib/config'
+import type { DrawEvent, WebSocketMessage, ArtworkData } from '@/types/canvas'
 
 export default function CanvasPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -16,7 +17,7 @@ export default function CanvasPage() {
   const wsRef = useRef<WebSocket | null>(null)
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [loadedArtwork, setLoadedArtwork] = useState<any>(null)
+  const [loadedArtwork, setLoadedArtwork] = useState<ArtworkData | null>(null)
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
 
@@ -91,35 +92,35 @@ export default function CanvasPage() {
     setConnectionStatus('disconnected')
   }
 
-  const handleWebSocketMessage = (data: any) => {
+  const handleWebSocketMessage = (data: WebSocketMessage) => {
     switch (data.type) {
-      case 'init':
+      case 'sync':
         // 초기 그림 데이터 로드
         if (data.data && Array.isArray(data.data)) {
-          data.data.forEach((event: any) => {
+          data.data.forEach((event: DrawEvent) => {
             if (event.type === 'draw') {
-              drawFromEvent(event.data)
+              drawFromEvent(event)
             }
           })
         }
         break
 
       case 'draw':
-        drawFromEvent(data.data)
+        if (data.data && data.data.length > 0) {
+          drawFromEvent(data.data[0])
+        }
         break
 
-      case 'clear':
-        clearCanvas()
-        break
-
-      case 'user_join':
-      case 'user_leave':
-        // 사용자 수 업데이트는 서버에서 별도로 관리
+      case 'join':
+      case 'leave':
+        if (typeof data.userCount === 'number') {
+          setActiveUsers(data.userCount)
+        }
         break
     }
   }
 
-  const drawFromEvent = (drawData: any) => {
+  const drawFromEvent = (drawData: DrawEvent) => {
     if (!drawData) return
 
     const canvas = canvasRef.current
@@ -129,19 +130,24 @@ export default function CanvasPage() {
     if (!ctx) return
 
     // 다른 사용자의 그림을 캔버스에 그리기
-    const { x, y, prevX, prevY, color, brushSize, tool } = drawData
+    const { x, y, prevX, prevY, color, lineWidth, tool } = drawData
+    
+    if (typeof x !== 'number' || typeof y !== 'number' || 
+        typeof prevX !== 'number' || typeof prevY !== 'number') {
+      return
+    }
 
     ctx.beginPath()
     ctx.moveTo(prevX, prevY)
 
     if (tool === 'pen') {
       ctx.globalCompositeOperation = 'source-over'
-      ctx.strokeStyle = color
+      ctx.strokeStyle = color || '#ffffff'
     } else {
       ctx.globalCompositeOperation = 'destination-out'
     }
 
-    ctx.lineWidth = brushSize
+    ctx.lineWidth = lineWidth || 5
     ctx.lineTo(x, y)
     ctx.stroke()
   }

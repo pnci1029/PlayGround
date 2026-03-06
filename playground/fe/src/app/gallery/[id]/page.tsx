@@ -11,7 +11,7 @@ interface Artwork {
   description?: string
   author_name: string
   image_url: string
-  canvas_data?: any
+  canvas_data?: string
   width: number
   height: number
   views: number
