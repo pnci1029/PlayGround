@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Environment files  
+.env*
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets management script (민감함)
+sync-secrets.js
+
+# Logs
+logs/
+*.log
