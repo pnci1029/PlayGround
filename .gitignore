@@ -132,3 +132,9 @@ migrations/*.sql
 # MoodBite sensitive data files
 moodbite/**/foods.json
 **/data/foods.json
+
+# Secrets management script (민감함)
+sync-secrets.js
+
+# Config files (설정 정보 포함)  
+playground/fe/src/lib/config.ts
