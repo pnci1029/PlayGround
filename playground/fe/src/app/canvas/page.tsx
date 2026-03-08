@@ -1,12 +1,12 @@
 'use client'
 
-import { useRef, useState, useEffect, MouseEvent } from 'react'
+import { useRef, useState, useEffect, MouseEvent, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import SaveModal from '@/components/canvas/SaveModal'
 import { apiUrls, logger } from '@/lib/config'
 import type { DrawEvent, WebSocketMessage, ArtworkData } from '@/types/canvas'
 
-export default function CanvasPage() {
+function CanvasContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentTool, setCurrentTool] = useState<'pen' | 'eraser'>('pen')
@@ -485,5 +485,13 @@ export default function CanvasPage() {
         } : undefined}
       />
     </div>
+  )
+}
+
+export default function CanvasPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">로딩 중...</div>}>
+      <CanvasContent />
+    </Suspense>
   )
 }
