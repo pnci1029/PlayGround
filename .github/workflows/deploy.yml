@@ -64,9 +64,12 @@ jobs:
             --exclude='*.git*' \
             -czf playground-deploy.tar.gz \
             playground/ \
+            blog/ \
+            moodbite/ \
+            trend/ \
             docker-compose.yml \
             caddy/ \
-            database/
+            $([ -d database ] && echo database/ || echo)
           
     - name: Deploy to Cafe24
       run: |
