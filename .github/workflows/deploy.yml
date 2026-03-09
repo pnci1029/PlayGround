@@ -43,8 +43,6 @@ jobs:
         chmod 700 ~/.ssh
         echo '${{ secrets.SSH_PRIVATE_KEY }}' | base64 -d > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.CAFE24_HOST }} >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
         
