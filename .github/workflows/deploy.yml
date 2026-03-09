@@ -59,23 +59,14 @@ jobs:
         cd ../..
         
         # 전체 프로젝트 압축 (빌드 결과물 + 설정파일)
-        tar -czf playground-deploy.tar.gz \
-          playground/fe/out \
-          playground/fe/.next \
-          playground/be/dist \
-          playground/be/package*.json \
-          playground/be/.env \
-          docker-compose.yml \
-          --exclude='node_modules' \
-          --exclude='*.map' || \
-        tar -czf playground-deploy.tar.gz \
-          playground/fe/.next \
-          playground/be/dist \
-          playground/be/package*.json \
-          playground/be/.env \
-          docker-compose.yml \
-          --exclude='node_modules' \
-          --exclude='*.map'
+        tar --exclude='node_modules' \
+            --exclude='*.map' \
+            --exclude='*.git*' \
+            -czf playground-deploy.tar.gz \
+            playground/ \
+            docker-compose.yml \
+            caddy/ \
+            database/
           
     - name: Deploy to Cafe24
       run: |
