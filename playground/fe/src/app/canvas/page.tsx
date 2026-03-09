@@ -131,8 +131,8 @@ function CanvasContent() {
 
     // 다른 사용자의 그림을 캔버스에 그리기
     const { x, y, prevX, prevY, color, lineWidth, tool } = drawData
-    
-    if (typeof x !== 'number' || typeof y !== 'number' || 
+
+    if (typeof x !== 'number' || typeof y !== 'number' ||
         typeof prevX !== 'number' || typeof prevY !== 'number') {
       return
     }
@@ -365,8 +365,7 @@ function CanvasContent() {
                       ? 'bg-blue-600 text-white' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
-                >
-                  펜
+                >펜
                 </button>
                 <button
                   onClick={() => setCurrentTool('eraser')}
@@ -416,7 +415,7 @@ function CanvasContent() {
             <button
               onClick={() => setShowSaveModal(true)}
               className="px-6 py-2 rounded transition-all duration-200 hover:scale-105 hover:shadow-lg"
-              style={{ 
+              style={{
                 border: '2px solid #000000',
                 color: '#000000',
                 fontWeight: 'normal',
@@ -430,7 +429,7 @@ function CanvasContent() {
             <button
               onClick={clearCanvas}
               className="px-6 py-2 rounded transition-all duration-200 hover:scale-105 hover:shadow-lg"
-              style={{ 
+              style={{
                 border: '2px solid #000000',
                 color: '#000000',
                 fontWeight: 'normal',
