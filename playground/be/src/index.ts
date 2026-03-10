@@ -8,6 +8,7 @@ import { statsRoutes } from './routes/stats'
 import chatRoutes from './routes/chat'
 // import { artworkRoutes } from './routes/artworks'
 import { testConnection, initializeTables, db } from './config/database'
+import { MigrationService } from '../.. /../migrations/migration.service.ts'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
 // import canvasRoutes from './routes/canvas'
 // import websocketPlugin from './plugins/websocket'
@@ -42,8 +43,8 @@ fastify.register(chatRoutes, { prefix: `${config.api.prefix}/chat` })
 
 // 헬스체크 라우트
 fastify.get('/health', async (request, reply) => {
-  return { 
-    status: 'ok', 
+  return {
+    status: 'ok',
     timestamp: new Date().toISOString(),
     service: 'devforge-backend',
     version: '1.0.0'
@@ -58,18 +59,22 @@ const start = async () => {
   try {
     // PostgreSQL 연결 테스트
     await testConnection()
-    
+
     // 데이터베이스 테이블 초기화
     await initializeTables()
-    
-    await fastify.listen({ 
-      port: config.server.port, 
-      host: config.server.host 
+
+    // 🔄 자동 마이그레이션 실행
+    const migrationService = new MigrationService(db)
+    await migrationService.runPendingMigrations()
+
+    await fastify.listen({
+      port: config.server.port,
+      host: config.server.host
     })
     console.log(`🚀 Backend server running on http://localhost:${config.server.port}`)
     console.log(`🔐 Auth API: http://localhost:${config.server.port}${config.api.prefix}/auth`)
     console.log(`🐘 PostgreSQL connected on port 5432`)
-    
+
     // Start chat WebSocket server
     import('./chat-server').catch(console.error)
   } catch (err) {

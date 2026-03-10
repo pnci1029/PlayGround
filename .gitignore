@@ -129,6 +129,7 @@ public/uploads/
 
 # Database migrations (sensitive schema information)
 migrations/*.sql
+migrations/*.ts
 
 # MoodBite sensitive data files
 moodbite/**/foods.json
