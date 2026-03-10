@@ -46,24 +46,17 @@ jobs:
         ssh-keyscan -H ${{ secrets.CAFE24_HOST }} >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
         
-    - name: Build and package
+    - name: Package source code
       run: |
-        # FE 빌드
-        cd playground/fe
-        npm ci
-        npm run build
-        cd ../..
-        
-        # BE 빌드
-        cd playground/be
-        npm ci  
-        npm run build
-        cd ../..
-        
-        # 전체 프로젝트 압축 (빌드 결과물 + 설정파일)
+        # 소스코드만 압축 (서버에서 Docker가 빌드)
         tar --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='.next' \
+            --exclude='build' \
             --exclude='*.map' \
             --exclude='*.git*' \
+            --exclude='.npm' \
+            --exclude='.cache' \
             -czf playground-deploy.tar.gz \
             playground/ \
             blog/ \

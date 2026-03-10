@@ -2,14 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# 패키지 파일 복사 및 의존성 설치
+# 패키지 파일 복사 및 의존성 설치 (캐싱 최적화)
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production --silent
 
 # 소스 코드 복사
 COPY . .
 
-# 포트 노출 (실제 개발 서버 포트와 맞춤)
+# 포트 노출
 EXPOSE 3002
 
 # 개발 서버 실행
