@@ -89,6 +89,7 @@ dist
 # Gatsby files
 .cache/
 public
+!moodbite/MoodBite_FE/public/
 
 # Storybook build outputs
 .out
