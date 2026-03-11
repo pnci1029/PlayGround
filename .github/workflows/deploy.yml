@@ -80,14 +80,9 @@ jobs:
             docker-compose.yml \
             caddy/ \
             $([ -d database ] && echo database/ || echo)
-
+          
     - name: Deploy to Cafe24
       run: |
-#         서버에 백업 생성 (주석처리 - 서버 용량 이슈 )
-#         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-#           "cd ${{ secrets.CAFE24_PATH }} && \
-#            [ -d playground ] && cp -r playground playground-backup-\$(date +%Y%m%d-%H%M%S) || true"
-
         # 배포 파일 업로드
         scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
           ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }}:${{ secrets.CAFE24_PATH }}/
