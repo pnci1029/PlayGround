@@ -78,6 +78,11 @@ jobs:
             moodbite/ \
             trend/ \
             docker-compose.yml \
+            docker-compose.playground.yml \
+            docker-compose.moodbite.yml \
+            docker-compose.trend.yml \
+            docker-compose.blog.yml \
+            nginx/ \
             caddy/ \
             $([ -d database ] && echo database/ || echo)
           
