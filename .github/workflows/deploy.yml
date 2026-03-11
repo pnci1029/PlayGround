@@ -8,11 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     # 🔑 .gitignore된 실제 파일들을 복원
     - name: Restore gitignored files
       run: |
@@ -51,7 +51,7 @@ jobs:
         if [ ! -z '${{ secrets.MIGRATION_TREND_SQL }}' ]; then
           echo '${{ secrets.MIGRATION_TREND_SQL }}' | base64 -d > migrations/trend.sql
         fi
-        
+
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
@@ -60,7 +60,7 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.CAFE24_HOST }} >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
-        
+
     - name: Package source code
       run: |
         # 소스코드만 압축 (서버에서 Docker가 빌드)
@@ -80,14 +80,14 @@ jobs:
             docker-compose.yml \
             caddy/ \
             $([ -d database ] && echo database/ || echo)
-          
+
     - name: Deploy to Cafe24
       run: |
-        # 서버에 백업 생성
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-          "cd ${{ secrets.CAFE24_PATH }} && \
-           [ -d playground ] && cp -r playground playground-backup-\$(date +%Y%m%d-%H%M%S) || true"
-           
+#         서버에 백업 생성 (주석처리 - 서버 용량 이슈 )
+#         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
+#           "cd ${{ secrets.CAFE24_PATH }} && \
+#            [ -d playground ] && cp -r playground playground-backup-\$(date +%Y%m%d-%H%M%S) || true"
+
         # 배포 파일 업로드
         scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
           ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }}:${{ secrets.CAFE24_PATH }}/
@@ -112,18 +112,18 @@ jobs:
            cd .. && rm playground-deploy.tar.gz && \
            
            echo '✅ 소스 배포 완료 (Docker 실행은 수동으로 해주세요)'"
-           
+
     # Health check (주석처리 - 수동 배포이므로)
     # - name: Health check
     #   run: |
     #     sleep 15
-    #     
+    #
     #     # 서비스 헬스체크
     #     if curl -f http://${{ secrets.CAFE24_HOST }}:3000/health 2>/dev/null; then
     #       echo "✅ PlayGround 서비스 정상 동작"
     #     else
     #       echo "⚠️  PlayGround 서비스 헬스체크 실패"
-    #       
+    #
     #       # 로그 확인
     #       ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
     #         "cd ${{ secrets.CAFE24_PATH }}/playground && docker-compose logs --tail=20"
