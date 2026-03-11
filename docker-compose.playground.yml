@@ -1,0 +1,87 @@
+services:
+  # PostgreSQL 데이터베이스
+  postgres:
+    image: postgres:15-alpine
+    container_name: playground_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-playground}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # 백엔드 서비스
+  backend:
+    build:
+      context: ./playground/be
+      dockerfile: Dockerfile
+    image: playground-backend:latest
+    container_name: playground_backend
+    ports:
+      - "8000:8000"   # HTTP API
+      - "8010:8010"   # WebSocket
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - JWT_SECRET=${JWT_SECRET:-please_change_this_jwt_secret_in_production}
+      - JWT_EXPIRES_IN=24h
+      - PORT=8000
+      - WS_PORT=8010
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # 프론트엔드 서비스
+  frontend:
+    build:
+      context: ./playground/fe
+      dockerfile: Dockerfile  
+    image: playground-frontend:latest
+    container_name: playground_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=/api
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8010
+      - BACKEND_CONTAINER_URL=http://playground_backend:8000
+      - BACKEND_API_PREFIX=/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Nginx 리버스 프록시 (playground 전용)
+  nginx:
+    image: nginx:alpine
+    container_name: playground_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - playground_network
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  playground_network:
+    driver: bridge

@@ -1,0 +1,70 @@
+services:
+  # PostgreSQL 데이터베이스 (공유)
+  postgres:
+    image: postgres:15-alpine
+    container_name: playground_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-playground}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # MoodBite 백엔드 서비스 (Spring Boot + Kotlin)
+  moodbite-backend:
+    build:
+      context: ./moodbite/MoodBite_BE
+      dockerfile: Dockerfile
+    image: moodbite-backend:latest
+    container_name: moodbite_backend
+    ports:
+      - "8082:8082"  # HTTP API
+      - "8084:8084"  # WebSocket
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8082
+      - WS_PORT=8084
+      - SPRING.APPLICATION.PORT=8082
+      - DB_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-playground}
+      - DB_DRIVER=org.postgresql.Driver
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - DB_SCHEMA=moodbite
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # MoodBite 프론트엔드 서비스 (React)
+  moodbite-frontend:
+    build:
+      context: ./moodbite/MoodBite_FE
+      dockerfile: Dockerfile
+    image: moodbite-frontend:latest
+    container_name: moodbite_frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8082/api
+      - REACT_APP_WS_URL=ws://localhost:8084
+    depends_on:
+      - moodbite-backend
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+volumes:
+  postgres_data:
+
+networks:
+  playground_network:
+    driver: bridge
