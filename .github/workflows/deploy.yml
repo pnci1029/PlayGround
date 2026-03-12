@@ -26,6 +26,11 @@ jobs:
           echo '${{ secrets.PLAYGROUND_FE_ENV_LOCAL_FILE }}' | base64 -d > playground/fe/.env.local
         fi
         
+        # 공통 .env.production 복원 (최상위)
+        if [ ! -z '${{ secrets.ENV_PRODUCTION_FILE }}' ]; then
+          echo '${{ secrets.ENV_PRODUCTION_FILE }}' | base64 -d > .env.production
+        fi
+        
         # PlayGround FE config.ts 복원
         if [ ! -z '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' ]; then
           mkdir -p playground/fe/src/lib
