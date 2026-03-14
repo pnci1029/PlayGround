@@ -19,8 +19,8 @@ services:
   # 백엔드 서비스
   backend:
     build:
-      context: ./playground/be
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./playground/be/Dockerfile
     image: playground-backend:latest
     container_name: playground_backend
     ports:
