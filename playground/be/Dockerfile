@@ -3,11 +3,14 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 패키지 파일 복사 및 의존성 설치 (캐싱 최적화)
-COPY package*.json ./
+COPY playground/be/package*.json ./
 RUN npm ci --only=production --silent
 
 # 소스 코드 복사
-COPY . .
+COPY playground/be/ .
+
+# migrations 디렉토리 복사
+COPY migrations /app/migrations
 
 # 포트 노출
 EXPOSE 8085
