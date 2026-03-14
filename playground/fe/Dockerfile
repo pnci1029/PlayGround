@@ -12,8 +12,13 @@ COPY . .
 # 빌드
 RUN npm run build
 
+# standalone 파일 복사
+COPY .next/standalone ./
+COPY .next/static ./.next/static
+COPY public ./public
+
 # 포트 노출
 EXPOSE 3000
 
 # 실행
-CMD ["node", ".next/standalone/server.js"]
+CMD ["node", "server.js"]
