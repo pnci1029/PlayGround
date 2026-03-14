@@ -1,4 +1,20 @@
 # 메인 도메인 - Playground
+chhong.kr, playground.chhong.kr {
+	# API 요청은 백엔드로
+	handle_path /api/* {
+		reverse_proxy playground_backend:8000
+	}
+	
+	# WebSocket 요청은 백엔드로
+	handle_path /ws/* {
+		reverse_proxy playground_backend:8010
+	}
+	
+	# 나머지는 프론트엔드로
+	reverse_proxy playground_frontend:3000
+}
+
+# localhost (개발용)
 localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
@@ -15,9 +31,7 @@ localhost {
 }
 
 # MoodBite 서브도메인
-moodbite.localhost {
-	tls internal
-	
+moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
 		reverse_proxy moodbite_backend:8082
@@ -33,9 +47,7 @@ moodbite.localhost {
 }
 
 # Trend 서브도메인  
-trend.localhost {
-	tls internal
-	
+trend.chhong.kr, trend.localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
 		reverse_proxy trend_backend:8002
@@ -51,9 +63,7 @@ trend.localhost {
 }
 
 # Blog 서브도메인
-blog.localhost {
-	tls internal
-	
+blog.chhong.kr, blog.localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
 		reverse_proxy blog_backend:8003

@@ -63,15 +63,18 @@ services:
     networks:
       - playground_network
 
-  # Nginx 리버스 프록시 (playground 전용)
-  nginx:
-    image: nginx:alpine
-    container_name: playground_nginx
+  # Caddy 리버스 프록시 (SSL 자동화)
+  caddy:
+    image: caddy:2-alpine
+    container_name: playground_caddy
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
     networks:
       - playground_network
     depends_on:
@@ -80,6 +83,8 @@ services:
 
 volumes:
   postgres_data:
+  caddy_data:
+  caddy_config:
 
 networks:
   playground_network:
