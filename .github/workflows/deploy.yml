@@ -31,6 +31,21 @@ jobs:
           echo '${{ secrets.ENV_PRODUCTION_FILE }}' | base64 -d > .env.production
         fi
         
+        # 마이그레이션 파일들 복원
+        mkdir -p migrations
+        if [ ! -z '${{ secrets.MIGRATION_SERVICE_FILE }}' ]; then
+          echo '${{ secrets.MIGRATION_SERVICE_FILE }}' | base64 -d > migrations/migration.service.ts
+        fi
+        if [ ! -z '${{ secrets.MIGRATION_PLAYGROUND_SQL }}' ]; then
+          echo '${{ secrets.MIGRATION_PLAYGROUND_SQL }}' | base64 -d > migrations/playground.sql
+        fi
+        if [ ! -z '${{ secrets.MIGRATION_MOODBITE_SQL }}' ]; then
+          echo '${{ secrets.MIGRATION_MOODBITE_SQL }}' | base64 -d > migrations/moodbite.sql
+        fi
+        if [ ! -z '${{ secrets.MIGRATION_TREND_SQL }}' ]; then
+          echo '${{ secrets.MIGRATION_TREND_SQL }}' | base64 -d > migrations/trend.sql
+        fi
+        
         # PlayGround FE config.ts 복원
         if [ ! -z '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' ]; then
           mkdir -p playground/fe/src/lib
