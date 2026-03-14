@@ -96,9 +96,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
           "cd ${{ secrets.CAFE24_PATH }} && \
            
-           # 기존 서비스 정지
-           # docker-compose down 2>/dev/null || true && \
-           docker-compose -f playground/docker-compose.playground.yml down 2>/dev/null || true && \
+           # 기존 서비스 정지 및 정리
+           docker-compose -f playground/docker-compose.playground.yml down --remove-orphans 2>/dev/null || true && \
+           docker container prune -f 2>/dev/null || true && \
            
            # 새 버전 소스 배포
            rm -rf playground-temp && mkdir playground-temp && \
