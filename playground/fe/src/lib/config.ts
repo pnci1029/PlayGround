@@ -1,7 +1,7 @@
 // API 설정 중앙 관리
 export const config = {
   api: {
-    // 클라이언트사이드: 브라우저에서 프록시를 통한 API 접근
+    // 클라이언트사이드: 브라우저에서 API 접근
     clientBaseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
     // 서버사이드: Docker 컨테이너 간 통신 (컨테이너 이름 사용)
     serverBaseUrl: process.env.BACKEND_CONTAINER_URL || 'http://playground_backend:8000',
