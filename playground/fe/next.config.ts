@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   async rewrites() {
     // Docker 환경에서는 항상 컨테이너 이름 사용
     const apiUrl = 'http://playground_backend:8000'
