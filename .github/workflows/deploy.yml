@@ -115,6 +115,8 @@ jobs:
            
            # 정리
            cd .. && rm -f playground-deploy.tar.gz && \
+           
+           "
 
     # Health check (주석처리 - 수동 배포이므로)
     # - name: Health check
