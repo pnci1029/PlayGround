@@ -90,7 +90,7 @@ jobs:
             nginx/ \
             caddy/ \
             $([ -d database ] && echo database/ || echo)
-          
+
     - name: Deploy to Cafe24
       run: |
         # 배포 파일 업로드
@@ -115,8 +115,6 @@ jobs:
            
            # 정리
            cd .. && rm -f playground-deploy.tar.gz && \
-           
-           echo '✅ 소스 배포 완료 (Docker 실행은 수동으로 해주세요)'"
 
     # Health check (주석처리 - 수동 배포이므로)
     # - name: Health check
