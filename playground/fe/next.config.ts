@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
+  // CPU 호환성을 위해 SWC 비활성화
+  swcMinify: false,
+  experimental: {
+    esmExternals: false,
+  }
 };
 
 export default nextConfig;

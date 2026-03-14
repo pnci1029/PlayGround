@@ -15,5 +15,5 @@ COPY migrations/ ./migrations/
 # 포트 노출
 EXPOSE 8000 8010
 
-# 프로덕션 서버 실행
-CMD ["npm", "start"]
+# 개발 서버 실행
+CMD ["npm", "run", "dev"]
