@@ -10,7 +10,7 @@ RUN npm ci --silent
 COPY playground/be/ .
 
 # migrations 디렉토리 복사
-COPY migrations /app/migrations
+COPY ../migrations /app/migrations
 
 # 포트 노출
 EXPOSE 8000

@@ -1,6 +1,6 @@
 export const config = {
   server: {
-    port: parseInt(process.env.PORT || '8085'),
+    port: parseInt(process.env.PORT || '8000'),
     host: process.env.HOST || '0.0.0.0',
   },
   cors: {
