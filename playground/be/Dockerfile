@@ -10,10 +10,10 @@ RUN npm ci --silent
 COPY playground/be/ .
 
 # migrations 디렉토리 복사
-COPY ../migrations /app/migrations
+COPY migrations/ ./migrations/
 
 # 포트 노출
-EXPOSE 8000
+EXPOSE 8000 8010
 
-# 개발 서버 실행
-CMD ["npm", "run", "dev"]
+# 프로덕션 서버 실행
+CMD ["npm", "start"]
