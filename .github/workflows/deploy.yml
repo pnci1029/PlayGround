@@ -114,9 +114,9 @@ jobs:
            # docker-compose up -d --build && \
            
            # 정리
-           cd .. && rm -f playground-deploy.tar.gz && \
+           cd .. && rm -f playground-deploy.tar.gz
            
-           "
+           echo '✅ 소스 배포 완료'"
 
     # Health check (주석처리 - 수동 배포이므로)
     # - name: Health check
