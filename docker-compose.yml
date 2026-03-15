@@ -154,6 +154,9 @@ services:
     build:
       context: ./trend/trend_fe
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=https://trend.chhong.kr/api
+        - NEXT_PUBLIC_WS_URL=wss://trend.chhong.kr/ws
     image: trend-frontend:latest
     container_name: trend_frontend
     expose:
