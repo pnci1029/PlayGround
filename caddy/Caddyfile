@@ -39,7 +39,7 @@ localhost {
 # MoodBite 서브도메인
 moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
-	handle_path /api/* {
+	handle /api/* {
 		reverse_proxy moodbite_backend:8082
 	}
 	

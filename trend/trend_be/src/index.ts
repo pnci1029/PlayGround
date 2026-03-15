@@ -1,12 +1,14 @@
 import Fastify, { FastifyInstance } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifyWebsocket from '@fastify/websocket'
+import path from 'path'
 import { config } from 'dotenv'
 import { trendRoutes } from './routes/trends'
 import { trendingRoutes } from './routes/trending'
 import { trendWebSocketService } from './services/trendWebSocket'
 import { databaseService, DatabaseService } from './services/database'
 import { TrendingScheduler } from './services/trendingScheduler'
+import { MigrationService } from './services/migration.service'
 import { randomUUID } from 'crypto'
 
 // 환경변수 로드
@@ -103,6 +105,14 @@ async function startServers() {
   if (!dbConnected) {
     console.warn('⚠️ DB 연결 실패, 메모리 캐시로만 운영됩니다')
   } else {
+    // await databaseService.initializeTables()
+    
+    // 🔄 자동 마이그레이션 실행 (trend 스키마)
+    console.log('🔄 Trend 마이그레이션 실행 중...')
+    const migrationService = new MigrationService(databaseService.pool)
+    await migrationService.runPendingMigrations(['trend.sql'])
+    console.log('✅ Trend 마이그레이션 완료')
+    
     await databaseService.initializeTables()
   }
   
