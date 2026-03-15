@@ -13,7 +13,7 @@ interface SubdomainService {
 const services: SubdomainService[] = [
   {
     title: '실시간 트렌드',
-    description: '전 세계 트렌딩 키워드를 실시간으로 확인하세요',
+    description: '',
     url: config.services.trend,
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,7 +23,7 @@ const services: SubdomainService[] = [
   },
   {
     title: '무드바이트',
-    description: '당신의 기분에 맞는 완벽한 음식을 추천해드려요',
+    description: '',
     url: config.services.moodbite,
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@ const services: SubdomainService[] = [
   },
   {
     title: '개발자 블로그',
-    description: '최신 기술 트렌드와 개발 팁을 공유하는 공간',
+    description: '',
     url: config.services.blog,
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +43,7 @@ const services: SubdomainService[] = [
   },
   {
     title: '실시간 채팅',
-    description: '익명으로 자유롭게 대화를 나누어보세요',
+    description: '',
     url: '/chat',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,29 +63,53 @@ export default function SubdomainShowcase() {
   }
 
   return (
-    <div className="py-16 sm:py-20 lg:py-24 bg-gray-50/50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className="group cursor-pointer bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
-              onClick={() => handleCardClick(service.url)}
-            >
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gray-50 text-gray-600 group-hover:bg-gray-100 transition-colors duration-200 mb-4">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
+      {/* Services Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        {services.map((service, index) => (
+          <div
+            key={service.title}
+            className="group cursor-pointer relative"
+            onClick={() => handleCardClick(service.url)}
+            style={{
+              animationDelay: `${index * 100}ms`
+            }}
+          >
+            {/* Card Background with sophisticated styling */}
+            <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/60 hover:border-gray-300/80 hover:shadow-xl hover:shadow-gray-200/20 transition-all duration-300 group-hover:-translate-y-1">
+              {/* Subtle background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-50/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="relative text-center">
+                {/* Icon container with refined styling */}
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 group-hover:from-gray-100 group-hover:to-gray-200 group-hover:text-gray-800 transition-all duration-300 mb-6 shadow-sm">
                   {service.icon}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                
+                {/* Typography with consistent font families */}
+                <h3 
+                  className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-gray-800 transition-colors duration-200"
+                  style={{
+                    fontFamily: '"Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                    fontWeight: 600
+                  }}
+                >
                   {service.title}
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {service.description}
-                </p>
+                
+                {/* Subtle hover indicator */}
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   )

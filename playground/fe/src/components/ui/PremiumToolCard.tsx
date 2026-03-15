@@ -142,15 +142,6 @@ export default function PremiumToolCard({
             {title}
           </h3>
 
-          {/* 설명 (있는 경우) */}
-          {description && (
-            <p className={`
-              text-sm sm:text-base leading-relaxed
-              ${isDisabled ? 'text-gray-400' : 'text-gray-500'}
-            `}>
-              {description}
-            </p>
-          )}
 
           {/* 카테고리 */}
           <div className="flex items-center justify-between">
