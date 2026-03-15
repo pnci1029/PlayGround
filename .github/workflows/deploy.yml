@@ -97,7 +97,7 @@ jobs:
           "cd ${{ secrets.CAFE24_PATH }} && \
            
            # 기존 서비스 정지 및 정리
-           docker-compose -f playground/docker-compose.playground.yml down --remove-orphans 2>/dev/null || true && \
+           docker-compose down --remove-orphans 2>/dev/null || true && \
            docker container prune -f 2>/dev/null || true && \
            
            # 새 버전 소스 배포
@@ -105,8 +105,8 @@ jobs:
            tar -xzf playground-deploy.tar.gz -C playground-temp && \
            rm -rf playground && mv playground-temp playground && \
            
-           # Docker Compose로 서비스 시작
-           docker-compose -f playground/docker-compose.playground.yml up -d --build && \
+           # Docker Compose로 서비스 시작 (전체)
+           docker-compose up -d --build && \
            
            # 헬스체크 대기 (30초)
            sleep 30 && \
@@ -129,7 +129,7 @@ jobs:
           
           # 로그 확인
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-            "docker-compose -f ${{ secrets.CAFE24_PATH }}/playground/docker-compose.playground.yml logs --tail=20"
+            "cd ${{ secrets.CAFE24_PATH }}/playground && docker-compose logs --tail=20"
           
           exit 1
         fi
