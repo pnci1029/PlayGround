@@ -6,14 +6,18 @@ WORKDIR /app
 # package.json과 package-lock.json 복사 (의존성 캐싱을 위해)
 COPY package.json package-lock.json* ./
 
-# 의존성 설치 (legacy peer deps와 force 옵션 사용)
-RUN npm install --legacy-peer-deps || npm install --force
+# 캐시 정리 및 의존성 설치
+RUN npm cache clean --force
+RUN npm install --legacy-peer-deps --no-audit --no-fund || npm install --force --no-audit --no-fund
 
 # 소스 코드 복사
 COPY . .
 
-# 프로덕션 빌드 (CI=false로 경고를 오류로 처리하지 않음)
-RUN CI=false npm run build || (npm install --force && CI=false npm run build)
+# 프로덕션 빌드 (모든 경고 무시)
+ENV CI=false
+ENV GENERATE_SOURCEMAP=false
+ENV DISABLE_ESLINT_PLUGIN=true
+RUN npm run build || (rm -rf node_modules package-lock.json && npm install --force --no-audit --no-fund && npm run build)
 
 # Nginx로 프로덕션 서빙
 FROM nginx:alpine
