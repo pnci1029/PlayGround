@@ -67,7 +67,7 @@ export default function TrendRankingPage() {
               onChange={setTimeframe}
               isLoading={isLoading}
             />
-            <LiveIndicator />
+            <LiveIndicator isConnected={false} lastUpdate={new Date()} />
           </div>
 
         {/* 카테고리 탭 */}

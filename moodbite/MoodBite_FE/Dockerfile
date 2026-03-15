@@ -3,9 +3,9 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# 패키지 파일 복사
-COPY package.json ./
-RUN npm install --silent
+# 패키지 파일 복사 (캐싱 최적화)
+COPY package.json package-lock.json* ./
+RUN npm ci --silent || npm install --silent
 
 # 소스 코드 복사 및 빌드
 COPY . .

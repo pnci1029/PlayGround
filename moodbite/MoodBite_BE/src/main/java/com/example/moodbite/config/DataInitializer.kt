@@ -10,6 +10,7 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Component
+import org.springframework.jdbc.core.JdbcTemplate
 
 @Component
 class DataInitializer {
@@ -17,15 +18,40 @@ class DataInitializer {
     @Autowired
     private lateinit var foodRecommendationRepository: FoodRecommendationRepository
     
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
+    
     private val logger = KotlinLogging.logger {}
     private val objectMapper = ObjectMapper().registerModule(KotlinModule.Builder().build())
     
     @PostConstruct
     fun initData() {
-        if (foodRecommendationRepository.count() == 0L) {
+        // 1. 스키마 생성 (최우선)
+        createSchemaIfNotExists()
+        
+        // 2. JSON 데이터 로드 (Hibernate 테이블 생성 이후)
+        try {
+            if (foodRecommendationRepository.count() < 50L) {
+                initFoodDataFromJson()
+            }
+        } catch (e: Exception) {
+            logger.warn(e) { "테이블이 아직 생성되지 않았습니다. 잠시 후 JSON 데이터를 로드합니다." }
+            // 테이블이 생성될 때까지 잠시 대기 후 재시도
+            Thread.sleep(1000)
             initFoodDataFromJson()
         }
     }
+    
+    private fun createSchemaIfNotExists() {
+        try {
+            val sql = "CREATE SCHEMA IF NOT EXISTS moodbite"
+            jdbcTemplate.execute(sql)
+            logger.info { "✅ Schema 'moodbite' ready" }
+        } catch (e: Exception) {
+            logger.error(e) { "❌ Failed to create moodbite schema" }
+        }
+    }
+    
     
     private fun initFoodDataFromJson() {
         try {

@@ -2,7 +2,7 @@ name: Deploy PlayGround to Cafe24
 
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
   workflow_dispatch:
 
 jobs:
@@ -128,17 +128,17 @@ jobs:
     # - name: Health check
     #   run: |
     #     sleep 15
-    #     
+    #
     #     # 서비스 헬스체크
     #     if curl -f http://${{ secrets.CAFE24_HOST }}:3000/ 2>/dev/null; then
     #       echo "✅ PlayGround 서비스 정상 동작"
     #     else
     #       echo "❌ PlayGround 서비스 헬스체크 실패"
-    #       
+    #
     #       # 로그 확인
     #       ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
     #         "cd ${{ secrets.CAFE24_PATH }}/playground && docker-compose logs --tail=20"
-    #       
+    #
     #       exit 1
     #     fi
     #     sleep 15
