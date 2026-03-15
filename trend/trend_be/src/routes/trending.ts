@@ -53,7 +53,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           SELECT 
             tr.*,
             COALESCE(sw.avg_weight, 1.0) as source_avg_weight
-          FROM trending_rankings tr
+          FROM trend.trending_rankings tr
           LEFT JOIN LATERAL (
             SELECT AVG(sw.weight_value) as avg_weight
             FROM source_weights sw
@@ -70,7 +70,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
 
         const lastUpdateQuery = `
           SELECT MAX(calculated_at) as last_update
-          FROM trending_rankings
+          FROM trend.trending_rankings
           WHERE timeframe = $1 AND DATE(calculated_at) = CURRENT_DATE
         `
         const lastUpdateResult = await db.pool.query(lastUpdateQuery, [timeframe])
@@ -172,7 +172,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           mentions_count,
           engagement_total,
           growth_rate
-        FROM trending_rankings 
+        FROM trend.trending_rankings 
         WHERE LOWER(keyword) = LOWER($1) 
         AND timeframe = $2
         AND calculated_at >= NOW() - INTERVAL '${daysNum} days'
@@ -185,7 +185,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
 
       // 키워드의 현재 상태 조회
       const currentQuery = `
-        SELECT * FROM trending_rankings
+        SELECT * FROM trend.trending_rankings
         WHERE LOWER(keyword) = LOWER($1) AND timeframe = $2
         AND DATE(calculated_at) = CURRENT_DATE
         LIMIT 1
@@ -239,7 +239,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           MAX(trending_score) as max_score,
           SUM(mentions_count) as total_mentions,
           SUM(engagement_total) as total_engagement
-        FROM trending_rankings
+        FROM trend.trending_rankings
         WHERE DATE(calculated_at) = CURRENT_DATE
         GROUP BY timeframe
         ORDER BY 
@@ -261,7 +261,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           unnest(sources) as source,
           COUNT(*) as keyword_count,
           AVG(trending_score) as avg_score
-        FROM trending_rankings
+        FROM trend.trending_rankings
         WHERE DATE(calculated_at) = CURRENT_DATE
         GROUP BY unnest(sources)
         ORDER BY keyword_count DESC
@@ -310,7 +310,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           keyword,
           current_rank,
           trending_score
-        FROM trending_rankings
+        FROM trend.trending_rankings
         WHERE DATE(calculated_at) = CURRENT_DATE
         AND timeframe = '1d'
         ORDER BY trending_score DESC

@@ -37,6 +37,41 @@ export class DatabaseService {
     this.pool.on('error', (err) => {
       console.error('❌ PostgreSQL Pool Error:', err)
     })
+
+    // 필수 테이블 초기화
+    this.initializeTables()
+  }
+
+  // 필수 테이블 초기화
+  private async initializeTables(): Promise<void> {
+    try {
+      // trending_rankings 테이블 생성
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS trend.trending_rankings (
+          id SERIAL PRIMARY KEY,
+          keyword VARCHAR(500) NOT NULL,
+          timeframe VARCHAR(10) NOT NULL,
+          current_rank INTEGER NOT NULL,
+          previous_rank INTEGER,
+          trending_score DECIMAL(10,4) NOT NULL DEFAULT 0,
+          mentions_count INTEGER NOT NULL DEFAULT 0,
+          engagement_total BIGINT NOT NULL DEFAULT 0,
+          growth_rate DECIMAL(8,4) DEFAULT 0,
+          sources TEXT[] DEFAULT '{}',
+          calculated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+        
+        CREATE INDEX IF NOT EXISTS idx_rankings_timeframe_rank ON trend.trending_rankings(timeframe, current_rank);
+        CREATE INDEX IF NOT EXISTS idx_rankings_calculated_at ON trend.trending_rankings(calculated_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_rankings_keyword ON trend.trending_rankings(keyword);
+      `
+      
+      await this.pool.query(createTableQuery)
+      console.log('✅ trending_rankings 테이블 초기화 완료')
+    } catch (error) {
+      console.error('❌ 테이블 초기화 실패:', error)
+    }
   }
 
   async testConnection(): Promise<boolean> {

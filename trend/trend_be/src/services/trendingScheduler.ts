@@ -137,7 +137,7 @@ export class TrendingScheduler {
   private async getPreviousRankings(timeframe: string): Promise<Map<string, number>> {
     const query = `
       SELECT keyword, current_rank
-      FROM trending_rankings
+      FROM trend.trending_rankings
       WHERE timeframe = $1 
       AND calculated_at >= CURRENT_DATE - INTERVAL '1 day'
       ORDER BY calculated_at DESC
@@ -162,7 +162,7 @@ export class TrendingScheduler {
 
     // 기존 오늘 데이터 삭제
     await this.db.query(`
-      DELETE FROM trending_rankings 
+      DELETE FROM trend.trending_rankings 
       WHERE timeframe = $1 AND DATE(calculated_at) = CURRENT_DATE
     `, [timeframe])
 
@@ -172,7 +172,7 @@ export class TrendingScheduler {
     ).join(',')
 
     const insertQuery = `
-      INSERT INTO trending_rankings 
+      INSERT INTO trend.trending_rankings 
       (keyword, timeframe, current_rank, previous_rank, trending_score, mentions_count, engagement_total, growth_rate, sources)
       VALUES ${values}
     `
