@@ -106,34 +106,34 @@ jobs:
            tar -xzf playground-deploy.tar.gz -C playground-temp && \
            rm -rf playground && mv playground-temp playground && \
            
-           # Docker Compose로 서비스 시작 (전체)
-           cd playground && docker-compose up -d --build && \
+           # Docker Compose로 서비스 시작 (수동 실행 필요)
+           # cd playground && docker-compose up -d --build && \
            
            # 헬스체크 대기 (30초)
-           sleep 30 && \
+           # sleep 30 && \
            
            # 정리
            rm -f playground-deploy.tar.gz && \
            
-           echo '✅ PlayGround 배포 완료'"
+           echo '✅ PlayGround 소스 배포 완료 (Docker 실행은 서버에서 수동으로)'"
 
-    # Health check
-    - name: Health check
-      run: |
-        sleep 15
-        
-        # 서비스 헬스체크
-        if curl -f http://${{ secrets.CAFE24_HOST }}:3000/ 2>/dev/null; then
-          echo "✅ PlayGround 서비스 정상 동작"
-        else
-          echo "❌ PlayGround 서비스 헬스체크 실패"
-          
-          # 로그 확인
-          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-            "cd ${{ secrets.CAFE24_PATH }}/playground && docker-compose logs --tail=20"
-          
-          exit 1
-        fi
+    # Health check (주석처리 - 수동 배포)
+    # - name: Health check
+    #   run: |
+    #     sleep 15
+    #     
+    #     # 서비스 헬스체크
+    #     if curl -f http://${{ secrets.CAFE24_HOST }}:3000/ 2>/dev/null; then
+    #       echo "✅ PlayGround 서비스 정상 동작"
+    #     else
+    #       echo "❌ PlayGround 서비스 헬스체크 실패"
+    #       
+    #       # 로그 확인
+    #       ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
+    #         "cd ${{ secrets.CAFE24_PATH }}/playground && docker-compose logs --tail=20"
+    #       
+    #       exit 1
+    #     fi
     #     sleep 15
     #
     #     # 서비스 헬스체크
