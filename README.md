@@ -39,4 +39,3 @@ npm run dev
 - **프론트엔드**: http://localhost:3000
 - **백엔드**: http://localhost:8000
 - **데이터베이스**: localhost:5432
-- 
