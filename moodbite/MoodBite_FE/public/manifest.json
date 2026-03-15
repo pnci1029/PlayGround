@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MoodBite",
+  "name": "MoodBite - 기분맞춤 음식추천",
   "icons": [
     {
       "src": "favicon.ico",
