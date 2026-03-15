@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-playground}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
@@ -34,7 +34,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - JWT_SECRET=${JWT_SECRET:-please_change_this_jwt_secret_in_production}
       - JWT_EXPIRES_IN=24h
       - PORT=8000
@@ -90,7 +90,7 @@ services:
       - DB_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-playground}
       - DB_DRIVER=org.postgresql.Driver
       - DB_USERNAME=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - DB_SCHEMA=moodbite
     depends_on:
@@ -110,8 +110,8 @@ services:
       - "3000"
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=/api
-      - REACT_APP_WS_URL=/ws
+      - REACT_APP_API_URL=https://moodbite.chhong.kr/api
+      - REACT_APP_WS_URL=wss://moodbite.chhong.kr/ws
       - CI=false
       - GENERATE_SOURCEMAP=false
       - DISABLE_ESLINT_PLUGIN=true

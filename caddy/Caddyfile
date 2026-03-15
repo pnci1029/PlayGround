@@ -7,7 +7,10 @@ chhong.kr, playground.chhong.kr {
 	
 	# WebSocket 요청은 백엔드로
 	handle /ws/* {
-		reverse_proxy playground_backend:8010
+		reverse_proxy playground_backend:8010 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+		}
 	}
 	
 	# 나머지는 프론트엔드로
@@ -23,7 +26,10 @@ localhost {
 	
 	# WebSocket 요청은 백엔드로
 	handle /ws/* {
-		reverse_proxy playground_backend:8010
+		reverse_proxy playground_backend:8010 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+		}
 	}
 	
 	# 나머지는 프론트엔드로
@@ -39,7 +45,10 @@ moodbite.chhong.kr, moodbite.localhost {
 	
 	# WebSocket 요청은 백엔드로  
 	handle /ws/* {
-		reverse_proxy moodbite_backend:8084
+		reverse_proxy moodbite_backend:8084 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+		}
 	}
 	
 	# 나머지는 프론트엔드로
