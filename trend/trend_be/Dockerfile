@@ -9,6 +9,9 @@ RUN npm ci --silent
 # 소스 코드 복사
 COPY . .
 
+# TypeScript 빌드
+RUN npm run build
+
 # 포트 노출
 EXPOSE 8002 8012
 
