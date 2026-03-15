@@ -1,12 +1,12 @@
 # 메인 도메인 - Playground
 chhong.kr, playground.chhong.kr {
 	# API 요청은 백엔드로
-	handle_path /api/* {
+	handle /api/* {
 		reverse_proxy playground_backend:8000
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle_path /ws/* {
+	handle /ws/* {
 		reverse_proxy playground_backend:8010
 	}
 	
@@ -22,7 +22,7 @@ localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle_path /ws/* {
+	handle /ws/* {
 		reverse_proxy playground_backend:8010
 	}
 	
@@ -38,7 +38,7 @@ moodbite.chhong.kr, moodbite.localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로  
-	handle_path /ws/* {
+	handle /ws/* {
 		reverse_proxy moodbite_backend:8084
 	}
 	
@@ -54,7 +54,7 @@ trend.chhong.kr, trend.localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle_path /ws/* {
+	handle /ws/* {
 		reverse_proxy trend_backend:8012
 	}
 	
@@ -70,7 +70,7 @@ blog.chhong.kr, blog.localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle_path /ws/* {
+	handle /ws/* {
 		reverse_proxy blog_backend:8013
 	}
 	
