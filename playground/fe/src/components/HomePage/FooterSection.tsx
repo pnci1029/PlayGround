@@ -12,15 +12,6 @@ export default function FooterSection() {
         >
           PlayGround
         </h3>
-        <p 
-          className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed"
-          style={{
-            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            fontWeight: 500
-          }}
-        >
-          개발자를 위한 정교한 도구와 서비스의 플랫폼
-        </p>
       </div>
 
       {/* Separator */}
@@ -35,7 +26,7 @@ export default function FooterSection() {
             fontWeight: 500
           }}
         >
-          지속적인 혁신과 개선을 추구하는 개인 프로젝트
+          개인 프로젝트
         </p>
         
         <div className="flex justify-center items-center space-x-2 text-sm text-gray-500">

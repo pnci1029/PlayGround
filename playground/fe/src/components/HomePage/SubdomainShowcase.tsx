@@ -65,31 +65,32 @@ export default function SubdomainShowcase() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+      {/* Mobile-optimized services grid with better spacing */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
         {services.map((service, index) => (
           <div
             key={service.title}
-            className="group cursor-pointer relative"
+            className="group cursor-pointer relative touch-manipulation"
             onClick={() => handleCardClick(service.url)}
             style={{
               animationDelay: `${index * 100}ms`
             }}
           >
-            {/* Card Background with sophisticated styling */}
-            <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/60 hover:border-gray-300/80 hover:shadow-xl hover:shadow-gray-200/20 transition-all duration-300 group-hover:-translate-y-1">
+            {/* Mobile-optimized card with enhanced touch targets */}
+            <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-200/60 hover:border-gray-300/80 hover:shadow-xl hover:shadow-gray-200/20 active:shadow-lg active:scale-[0.98] transition-all duration-300 group-hover:-translate-y-1"
+                 style={{ minHeight: '120px' }}>
               {/* Subtle background gradient */}
               <div className="absolute inset-0 bg-gradient-to-br from-gray-50/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
               <div className="relative text-center">
-                {/* Icon container with refined styling */}
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 group-hover:from-gray-100 group-hover:to-gray-200 group-hover:text-gray-800 transition-all duration-300 mb-6 shadow-sm">
+                {/* Mobile-optimized icon container with proper spacing */}
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 group-hover:from-gray-100 group-hover:to-gray-200 group-hover:text-gray-800 transition-all duration-300 mb-4 sm:mb-6 shadow-sm">
                   {service.icon}
                 </div>
                 
-                {/* Typography with consistent font families */}
+                {/* Mobile-optimized typography with responsive sizing */}
                 <h3 
-                  className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-gray-800 transition-colors duration-200"
+                  className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3 group-hover:text-gray-800 transition-colors duration-200"
                   style={{
                     fontFamily: '"Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                     fontWeight: 600
@@ -98,9 +99,9 @@ export default function SubdomainShowcase() {
                   {service.title}
                 </h3>
                 
-                {/* Subtle hover indicator */}
-                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center">
+                {/* Mobile-optimized hover indicator with responsive positioning */}
+                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-800 rounded-full flex items-center justify-center">
                     <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6L16 12l-6 6" />
                     </svg>

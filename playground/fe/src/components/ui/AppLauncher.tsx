@@ -15,21 +15,21 @@ const apps: AppItem[] = [
   {
     name: 'MoodBite',
     url: config.services.moodbite,
-    description: '감정 기반 음식 추천',
+    description: '',
     icon: '🍽️',
     category: 'services'
   },
   {
     name: 'Trend',
     url: config.services.trend,
-    description: '실시간 트렌드 분석',
+    description: '',
     icon: '📈',
     category: 'services'
   },
   {
     name: 'Blog',
     url: config.services.blog,
-    description: '개인 블로그',
+    description: '',
     icon: '📝',
     category: 'services'
   }
@@ -53,13 +53,17 @@ export default function AppLauncher() {
 
   return (
     <div className="relative">
-      {/* 런처 버튼 */}
+      {/* Mobile-optimized launcher button with enhanced touch target */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+        className="p-3 sm:p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition-all duration-200 touch-manipulation"
+        style={{
+          minHeight: '44px',
+          minWidth: '44px'
+        }}
         aria-label="앱 런처"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="w-5 h-5 mx-auto">
           <rect x="3" y="3" width="6" height="6" rx="1" fill="currentColor" />
           <rect x="11" y="3" width="6" height="6" rx="1" fill="currentColor" />
           <rect x="3" y="11" width="6" height="6" rx="1" fill="currentColor" />
@@ -76,8 +80,8 @@ export default function AppLauncher() {
             onClick={() => setIsOpen(false)}
           />
           
-          {/* 메뉴 컨텐츠 */}
-          <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
+          {/* Mobile-optimized menu content with responsive positioning */}
+          <div className="absolute top-full right-0 mt-2 w-80 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
             <div className="p-4">
               <h3 className="text-sm font-semibold text-gray-900 mb-3">앱 런처</h3>
               
@@ -95,15 +99,13 @@ export default function AppLauncher() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors duration-150 group"
+                        className="flex items-center p-3 sm:p-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 group touch-manipulation"
+                        style={{ minHeight: '52px' }}
                       >
                         <span className="text-2xl mr-3">{app.icon}</span>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
                             {app.name}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate">
-                            {app.description}
                           </div>
                         </div>
                         <svg 
@@ -122,12 +124,6 @@ export default function AppLauncher() {
                 </div>
               ))}
               
-              {/* 향후 확장 영역 표시 */}
-              <div className="border-t border-gray-100 pt-3 mt-3">
-                <div className="text-xs text-gray-400 text-center">
-                  더 많은 서비스가 곧 추가됩니다
-                </div>
-              </div>
             </div>
           </div>
         </>

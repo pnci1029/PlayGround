@@ -55,17 +55,18 @@ export default function PremiumToolCard({
     <div
       onClick={handleClick}
       className={`
-        group relative font-sans
+        group relative font-sans touch-manipulation
         bg-white rounded-2xl border border-gray-100
         transition-all duration-300 ease-out
         ${isClickable 
-          ? 'cursor-pointer hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 hover:-translate-y-1' 
+          ? 'cursor-pointer hover:border-blue-200 hover:shadow-xl hover:shadow-blue-50 hover:-translate-y-1 active:scale-[0.98] active:shadow-lg' 
           : 'cursor-not-allowed'
         }
         ${isDisabled ? 'opacity-50' : ''}
       `}
       style={{
-        boxShadow: isClickable ? '0 4px 12px rgba(0, 0, 0, 0.05)' : '0 2px 4px rgba(0, 0, 0, 0.02)'
+        boxShadow: isClickable ? '0 4px 12px rgba(0, 0, 0, 0.05)' : '0 2px 4px rgba(0, 0, 0, 0.02)',
+        minHeight: '160px' // Ensure adequate touch target size
       }}
     >
       
@@ -108,10 +109,10 @@ export default function PremiumToolCard({
         )}
       </div>
 
-      {/* 메인 컨테이너 */}
+      {/* Mobile-optimized main container with better touch spacing */}
       <div className="p-4 sm:p-6">
         
-        {/* 아이콘 영역 */}
+        {/* Mobile-optimized icon area with responsive sizing */}
         <div className="mb-4 sm:mb-6">
           <div className={`
             w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center
@@ -127,12 +128,12 @@ export default function PremiumToolCard({
           </div>
         </div>
 
-        {/* 텍스트 영역 */}
-        <div className="space-y-2 sm:space-y-3">
+        {/* Mobile-optimized text area with better spacing */}
+        <div className="space-y-3 sm:space-y-3">
           
-          {/* 제목 */}
+          {/* Mobile-optimized title with responsive typography */}
           <h3 className={`
-            text-lg sm:text-xl font-semibold leading-tight
+            text-base sm:text-lg lg:text-xl font-semibold leading-tight
             transition-colors duration-300
             ${isDisabled 
               ? 'text-gray-500' 
@@ -143,11 +144,11 @@ export default function PremiumToolCard({
           </h3>
 
 
-          {/* 카테고리 */}
+          {/* Mobile-optimized category and navigation */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className={`
-                text-xs font-medium px-3 py-1 rounded-full
+                text-xs font-medium px-2 sm:px-3 py-1 rounded-full
                 ${isDisabled 
                   ? 'bg-gray-50 text-gray-400 border border-gray-100' 
                   : 'bg-gray-50 text-gray-600 border border-gray-100'
@@ -157,10 +158,10 @@ export default function PremiumToolCard({
               </span>
             </div>
             
-            {/* 화살표 아이콘 */}
+            {/* Mobile-optimized arrow icon */}
             {isClickable && (
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="text-gray-400">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="text-gray-400 sm:w-4 sm:h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </div>

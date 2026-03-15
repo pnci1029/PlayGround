@@ -101,12 +101,13 @@ function SortableCategory(props: SortableCategoryProps) {
       >
       {/* 아코디언 헤더 */}
       <div className="flex">
-        {/* 드래그 핸들 */}
+        {/* Mobile-optimized drag handle with enhanced touch target */}
         <div 
           {...attributes}
           {...listeners}
-          className="flex items-center justify-center w-8 bg-gray-50 hover:bg-gray-100 cursor-move transition-colors duration-200"
+          className="flex items-center justify-center w-10 sm:w-8 bg-gray-50 hover:bg-gray-100 cursor-move transition-colors duration-200 touch-manipulation"
           title="드래그해서 순서 변경"
+          style={{ minHeight: '44px' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400">
             <circle cx="9" cy="12" r="1"/>
@@ -118,30 +119,32 @@ function SortableCategory(props: SortableCategoryProps) {
           </svg>
         </div>
         
-        {/* 제목 영역 - 클릭과 드래그 모두 지원 */}
+        {/* Mobile-optimized title area with enhanced touch support */}
         <div 
           {...attributes}
           {...listeners}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
-          className="flex-1 p-4 sm:p-6 select-none transition-all duration-200 group cursor-move hover:bg-gray-50"
+          className="flex-1 p-4 sm:p-6 select-none transition-all duration-200 group cursor-move hover:bg-gray-50 touch-manipulation active:bg-gray-100"
+          style={{ minHeight: '60px' }}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <h2 className="text-xl sm:text-2xl font-bold font-sans transition-colors duration-200 text-gray-900 group-hover:text-blue-600">
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-sans transition-colors duration-200 text-gray-900 group-hover:text-blue-600">
                 {categoryName}
               </h2>
-              <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100">
+              <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100 flex-shrink-0">
                 {tools.length}개
               </span>
             </div>
             
-            {/* 화살표 아이콘 - 클릭으로 아코디언 토글 */}
+            {/* Mobile-optimized arrow toggle with enhanced touch target */}
             <div 
               onClick={handleArrowClick}
-              className={`transform transition-all duration-300 cursor-pointer p-2 -mr-2 rounded hover:bg-gray-100 ${
+              className={`transform transition-all duration-300 cursor-pointer p-3 sm:p-2 -mr-1 sm:-mr-2 rounded hover:bg-gray-100 active:bg-gray-200 touch-manipulation ${
                 isOpen ? 'rotate-90' : 'rotate-0'
               }`}
+              style={{ minWidth: '44px', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <svg 
                 width="20" 
@@ -166,11 +169,11 @@ function SortableCategory(props: SortableCategoryProps) {
           ? 'max-h-[2000px] opacity-100'
           : 'max-h-0 opacity-0'
       }`}>
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
+        <div className="px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 ml-8 sm:ml-8">
           <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
           
-          {/* 도구 카드 그리드 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Mobile-optimized tool card grid with responsive spacing */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {tools.map((tool, index) => {
               const stats = toolStats[tool.title] || {}
               return (
@@ -399,9 +402,9 @@ export default function ToolCategoryGrid() {
             
             {/* 스켈레톤 컨텐츠 (일부만 열린 상태로) */}
             {index === 0 && (
-              <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
+              <div className="px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 ml-8 sm:ml-8">
                 <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                   {Array.from({ length: 6 }).map((_, cardIndex) => (
                     <CardSkeleton key={cardIndex} />
                   ))}
@@ -426,7 +429,7 @@ export default function ToolCategoryGrid() {
               className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300 hover:border-gray-200 hover:shadow-md"
             >
               <div className="flex">
-                <div className="flex items-center justify-center w-8 bg-gray-50 hover:bg-gray-100 cursor-move transition-colors duration-200">
+                <div className="flex items-center justify-center w-10 sm:w-8 bg-gray-50 hover:bg-gray-100 cursor-move transition-colors duration-200 touch-manipulation" style={{ minHeight: '44px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400">
                     <circle cx="9" cy="12" r="1"/>
                     <circle cx="9" cy="5" r="1"/>
@@ -437,13 +440,13 @@ export default function ToolCategoryGrid() {
                   </svg>
                 </div>
                 
-                <div className="flex-1 p-4 sm:p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 group">
+                <div className="flex-1 p-4 sm:p-6 cursor-pointer select-none transition-all duration-200 hover:bg-gray-50 active:bg-gray-100 touch-manipulation group" style={{ minHeight: '60px' }}>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 sm:space-x-4">
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
+                    <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 font-sans group-hover:text-blue-600 transition-colors duration-200">
                         {categoryName}
                       </h2>
-                      <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100">
+                      <span className="bg-blue-50 text-blue-600 text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full border border-blue-100 flex-shrink-0">
                         {tools.length}개
                       </span>
                     </div>
@@ -469,10 +472,10 @@ export default function ToolCategoryGrid() {
               <div className={`transition-all duration-500 ease-out overflow-hidden ${
                 isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
               }`}>
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 ml-8">
+                <div className="px-3 sm:px-4 md:px-6 pb-4 sm:pb-6 ml-8 sm:ml-8">
                   <div className="h-px bg-gray-100 mb-4 sm:mb-6"></div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                     {tools.map((tool, index) => {
                       const stats = toolStats[tool.title] || {}
                       return (

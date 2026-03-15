@@ -19,11 +19,11 @@ export default function HeroSection() {
           }}></div>
         </div>
         
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-24 sm:py-32 lg:py-40">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 md:py-32 lg:py-40">
           <div className="text-center">
-            {/* Typography matching header style with sophisticated enhancement */}
+            {/* Mobile-optimized typography with responsive scaling */}
             <h1 
-              className="text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-8 sm:mb-12 tracking-tight leading-none"
+              className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-6 sm:mb-8 md:mb-12 tracking-tight leading-[0.85] sm:leading-none px-2 sm:px-0"
               style={{
                 fontFamily: '"Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
                 fontWeight: 700,
@@ -36,10 +36,9 @@ export default function HeroSection() {
           </div>
         </div>
         
-        {/* Enhanced section separator */}
+        {/* Section separator */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-          <div className="h-12 bg-gradient-to-t from-gray-50/50 to-transparent"></div>
         </div>
       </div>
     </>
