@@ -37,13 +37,10 @@ export class DatabaseService {
     this.pool.on('error', (err) => {
       console.error('❌ PostgreSQL Pool Error:', err)
     })
-
-    // 필수 테이블 초기화
-    this.initializeTables()
   }
 
   // 필수 테이블 초기화
-  private async initializeTables(): Promise<void> {
+  async initializeTables(): Promise<void> {
     try {
       // trending_rankings 테이블 생성
       const createTableQuery = `

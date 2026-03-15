@@ -9,6 +9,13 @@ RUN npm ci --silent || npm install --silent
 
 # 소스 코드 복사 및 빌드
 COPY . .
+
+# 빌드 시점에 환경변수 설정
+ARG REACT_APP_API_URL=https://moodbite.chhong.kr
+ARG REACT_APP_WS_URL=wss://moodbite.chhong.kr/ws
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ENV REACT_APP_WS_URL=${REACT_APP_WS_URL}
+
 RUN npm run build
 
 # Nginx 서빙

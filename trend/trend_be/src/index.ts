@@ -97,11 +97,13 @@ async function startServers() {
   console.log(`📍 HTTP API: http://localhost:${PORT}`)
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}/ws`)
   
-  // 데이터베이스 연결 테스트
+  // 데이터베이스 연결 테스트 및 테이블 초기화
   console.log('🔗 PostgreSQL 연결 테스트 중...')
   const dbConnected = await databaseService.testConnection()
   if (!dbConnected) {
     console.warn('⚠️ DB 연결 실패, 메모리 캐시로만 운영됩니다')
+  } else {
+    await databaseService.initializeTables()
   }
   
   await startHttpServer()
