@@ -54,7 +54,11 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=/api
-      - NEXT_PUBLIC_WS_URL=ws://localhost:8010
+      - NEXT_PUBLIC_WS_URL=/ws
+      - NEXT_PUBLIC_PLAYGROUND_URL=https://chhong.kr
+      - NEXT_PUBLIC_MOODBITE_URL=https://moodbite.chhong.kr
+      - NEXT_PUBLIC_TREND_URL=https://trend.chhong.kr
+      - NEXT_PUBLIC_BLOG_URL=https://blog.chhong.kr
       - BACKEND_CONTAINER_URL=http://playground_backend:8000
       - BACKEND_API_PREFIX=/api
     depends_on:
