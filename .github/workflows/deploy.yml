@@ -55,6 +55,12 @@ jobs:
         if [ ! -z '${{ secrets.MAIN_ENV_FILE }}' ]; then
           echo '${{ secrets.MAIN_ENV_FILE }}' | base64 -d > .env
         fi
+        
+        # MoodBite BE secret 복원
+        if [ ! -z '${{ secrets.MOODBITE_BE_SECRET_FILE }}' ]; then
+          mkdir -p moodbite/MoodBite_BE/src/main/resources
+          echo '${{ secrets.MOODBITE_BE_SECRET_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/application-secret.yml
+        fi
 
     - name: Setup SSH
       run: |
