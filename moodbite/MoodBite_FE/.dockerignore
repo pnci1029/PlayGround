@@ -7,9 +7,13 @@ Dockerfile
 .gitignore
 README.md
 .env
+.env.local
+.env.production
 .nyc_output
 coverage
-.nyc_output
 .cache
 .parcel-cache
 .DS_Store
+*.log
+.next
+dist
