@@ -97,8 +97,9 @@ jobs:
           "cd ${{ secrets.CAFE24_PATH }} && \
            
            # 기존 서비스 정지 및 정리
-           docker-compose down --remove-orphans 2>/dev/null || true && \
+           cd playground 2>/dev/null && docker-compose down --remove-orphans 2>/dev/null || true && \
            docker container prune -f 2>/dev/null || true && \
+           cd .. && \
            
            # 새 버전 소스 배포
            rm -rf playground-temp && mkdir playground-temp && \
@@ -106,7 +107,7 @@ jobs:
            rm -rf playground && mv playground-temp playground && \
            
            # Docker Compose로 서비스 시작 (전체)
-           docker-compose up -d --build && \
+           cd playground && docker-compose up -d --build && \
            
            # 헬스체크 대기 (30초)
            sleep 30 && \
