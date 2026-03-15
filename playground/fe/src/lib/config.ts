@@ -16,10 +16,10 @@ export const config = {
     isProd: process.env.NODE_ENV === 'production',
   },
   services: {
-    playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL || 'http://localhost:3000',
-    moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'http://localhost:3001',
-    trend: process.env.NEXT_PUBLIC_TREND_URL || 'http://localhost:3002',
-    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'http://localhost:3003',
+    playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL || 'https://chhong.kr',
+    moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'https://moodbite.chhong.kr',
+    trend: process.env.NEXT_PUBLIC_TREND_URL || 'https://trend.chhong.kr',
+    blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.chhong.kr',
   },
 } as const
 
