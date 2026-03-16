@@ -62,10 +62,10 @@ jobs:
           echo '${{ secrets.MOODBITE_BE_SECRET_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/application-secret.yml
         fi
         
-        # MoodBite foods.json data 복원
+        # MoodBite foods.json data 복원 (압축됨)
         if [ ! -z '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' ]; then
           mkdir -p moodbite/MoodBite_BE/src/main/resources/data
-          echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/data/foods.json
+          echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d | gunzip > moodbite/MoodBite_BE/src/main/resources/data/foods.json
         fi
 
     - name: Setup SSH
