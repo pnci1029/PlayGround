@@ -13,7 +13,7 @@ docker-compose -f docker-compose.playground.yml up -d
 docker-compose -f docker-compose.moodbite.yml up -d
 # 접속: http://localhost:3001 (프론트엔드), http://localhost:8082 (백엔드)
 ```
-
+ 
 ### Trend
 ```bash
 docker-compose -f docker-compose.trend.yml up -d
