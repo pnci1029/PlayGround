@@ -50,12 +50,7 @@ localhost {
 moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
 	handle /api/* {
-		reverse_proxy moodbite_backend:8082 {
-			fail_duration 10s
-			max_fails 3
-			health_uri /health
-			health_interval 30s
-		}
+		reverse_proxy moodbite_backend:8082
 	}
 	
 	# WebSocket 요청은 백엔드로  
