@@ -61,6 +61,12 @@ jobs:
           mkdir -p moodbite/MoodBite_BE/src/main/resources
           echo '${{ secrets.MOODBITE_BE_SECRET_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/application-secret.yml
         fi
+        
+        # MoodBite foods.json data 복원
+        if [ ! -z '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' ]; then
+          mkdir -p moodbite/MoodBite_BE/src/main/resources/data
+          echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/data/foods.json
+        fi
 
     - name: Setup SSH
       run: |
@@ -110,10 +116,10 @@ jobs:
           "cd ${{ secrets.CAFE24_PATH }} && \
            
            # 기존 서비스 정지 및 정리
-           cd playground 2>/dev/null && docker-compose down --remove-orphans 2>/dev/null || true && \
-           docker container prune -f 2>/dev/null || true && \
-           cd .. && \
-           
+#           cd playground 2>/dev/null && docker-compose down --remove-orphans 2>/dev/null || true && \
+#           docker container prune -f 2>/dev/null || true && \
+#           cd .. && \
+
            # 새 버전 소스 배포
            rm -rf playground-temp && mkdir playground-temp && \
            tar -xzf playground-deploy.tar.gz -C playground-temp && \
