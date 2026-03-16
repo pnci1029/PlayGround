@@ -114,26 +114,12 @@ jobs:
         # 서버에서 소스 배포 (Docker 실행은 수동)
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
           "cd ${{ secrets.CAFE24_PATH }} && \
-           
-           # 기존 서비스 정지 및 정리
-#           cd playground 2>/dev/null && docker-compose down --remove-orphans 2>/dev/null || true && \
-#           docker container prune -f 2>/dev/null || true && \
-#           cd .. && \
-
-           # 새 버전 소스 배포
-           rm -rf playground-temp && mkdir playground-temp && \
+           rm -rf playground-temp && \
+           mkdir playground-temp && \
            tar -xzf playground-deploy.tar.gz -C playground-temp && \
-           rm -rf playground && mv playground-temp playground && \
-           
-           # Docker Compose로 서비스 시작 (수동 실행 필요)
-           # cd playground && docker-compose up -d --build && \
-           
-           # 헬스체크 대기 (30초)
-           # sleep 30 && \
-           
-           # 정리
+           rm -rf playground && \
+           mv playground-temp playground && \
            rm -f playground-deploy.tar.gz && \
-           
            echo '✅ PlayGround 소스 배포 완료 (Docker 실행은 서버에서 수동으로)'"
 
     # Health check (주석처리 - 수동 배포)
