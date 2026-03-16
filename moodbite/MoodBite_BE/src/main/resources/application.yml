@@ -12,8 +12,7 @@ spring:
 
   sql:
     init:
-      continue-on-error: 'true'
-      mode: always
+      mode: never  # 커스텀 마이그레이션 시스템을 사용하므로 비활성화
 logging:
   level:
     com.example.pro.controller: debug

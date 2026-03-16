@@ -6,7 +6,7 @@ export class MainApi extends HttpClient {
     public static api = MainApi.getInstance().instance;
 
     private constructor() {
-        super(process.env.REACT_APP_BASE_URL as string);
+        super((process.env.REACT_APP_API_URL || process.env.REACT_APP_BASE_URL) as string);
     }
 
     public static getInstance() {

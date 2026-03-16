@@ -6,7 +6,7 @@ chhong.kr, playground.chhong.kr {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle /ws/* {
+	handle /ws {
 		reverse_proxy playground_backend:8010 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
@@ -25,7 +25,7 @@ localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle /ws/* {
+	handle /ws {
 		reverse_proxy playground_backend:8010 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
@@ -39,12 +39,12 @@ localhost {
 # MoodBite 서브도메인
 moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
-	handle_path /api/* {
+	handle /api/* {
 		reverse_proxy moodbite_backend:8082
 	}
 	
 	# WebSocket 요청은 백엔드로  
-	handle /ws/* {
+	handle /ws {
 		reverse_proxy moodbite_backend:8084 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
@@ -63,12 +63,15 @@ trend.chhong.kr, trend.localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle /ws/* {
-		reverse_proxy trend_backend:8012
+	handle /ws {
+		reverse_proxy trend_backend:8012 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+		}
 	}
 	
 	# 나머지는 프론트엔드로
-	reverse_proxy trend_frontend:3002
+	reverse_proxy trend_frontend:3000
 }
 
 # Blog 서브도메인
@@ -79,7 +82,7 @@ blog.chhong.kr, blog.localhost {
 	}
 	
 	# WebSocket 요청은 백엔드로
-	handle /ws/* {
+	handle /ws {
 		reverse_proxy blog_backend:8013
 	}
 	

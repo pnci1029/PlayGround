@@ -86,7 +86,7 @@ export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendin
         setLastUpdate(new Date())
         
         // 통계 계산
-        const avgScore = rankings.reduce((sum, r) => sum + r.score, 0) / rankings.length
+        const avgScore = rankings.reduce((sum: number, r) => sum + r.score, 0) / rankings.length
         const maxScore = Math.max(...rankings.map(r => r.score))
         
         setStats({

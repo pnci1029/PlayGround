@@ -1,12 +1,14 @@
 import Fastify, { FastifyInstance } from 'fastify'
 import fastifyCors from '@fastify/cors'
 import fastifyWebsocket from '@fastify/websocket'
+import path from 'path'
 import { config } from 'dotenv'
 import { trendRoutes } from './routes/trends'
 import { trendingRoutes } from './routes/trending'
 import { trendWebSocketService } from './services/trendWebSocket'
 import { databaseService, DatabaseService } from './services/database'
 import { TrendingScheduler } from './services/trendingScheduler'
+import { MigrationService } from './services/migration.service'
 import { randomUUID } from 'crypto'
 
 // 환경변수 로드
@@ -97,23 +99,42 @@ async function startServers() {
   console.log(`📍 HTTP API: http://localhost:${PORT}`)
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}/ws`)
   
-  // 데이터베이스 연결 테스트
+  // 데이터베이스 연결 테스트 및 테이블 초기화
   console.log('🔗 PostgreSQL 연결 테스트 중...')
   const dbConnected = await databaseService.testConnection()
   if (!dbConnected) {
     console.warn('⚠️ DB 연결 실패, 메모리 캐시로만 운영됩니다')
+  } else {
+    // await databaseService.initializeTables()
+    
+    // 🔄 자동 마이그레이션 실행 (trend 스키마) - 강제 재실행
+    console.log('🔄 Trend 마이그레이션 강제 재실행 중...')
+    const migrationService = new MigrationService(databaseService.pool)
+    
+    // 서버에서 trend.sql 마이그레이션 기록 삭제 후 재실행
+    try {
+      await databaseService.pool.query("DELETE FROM migrations WHERE filename = 'trend.sql'")
+      console.log('🗑️ 기존 trend.sql 마이그레이션 기록 삭제')
+    } catch (error) {
+      console.log('⚠️ 마이그레이션 기록 삭제 실패 (테이블이 없을 수 있음)')
+    }
+    
+    await migrationService.runPendingMigrations(['trend.sql'])
+    console.log('✅ Trend 마이그레이션 완료')
+    
+    await databaseService.initializeTables()
   }
   
   await startHttpServer()
   await startWebSocketServer()
 
-  // 트렌드 순위 스케줄러 시작
+  // 트렌드 순위 스케줄러 시작 (임시 비활성화)
   if (dbConnected) {
-    console.log('📊 트렌드 순위 스케줄러 시작 중...')
-    const db = new DatabaseService()
-    const scheduler = new TrendingScheduler(db)
-    scheduler.start()
-    console.log('✅ 트렌드 순위 스케줄러 시작됨 (10분 간격)')
+    console.log('⚠️ 트렌드 순위 스케줄러 임시 비활성화')
+    // const db = new DatabaseService()
+    // const scheduler = new TrendingScheduler(db)
+    // scheduler.start()
+    // console.log('✅ 트렌드 순위 스케줄러 시작됨 (10분 간격)')
   }
 
   console.log('✅ 모든 서버가 성공적으로 시작되었습니다!')
