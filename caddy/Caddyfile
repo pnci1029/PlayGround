@@ -2,7 +2,12 @@
 chhong.kr, playground.chhong.kr {
 	# API 요청은 백엔드로
 	handle /api/* {
-		reverse_proxy playground_backend:8000
+		reverse_proxy playground_backend:8000 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
 	}
 	
 	# WebSocket 요청은 백엔드로
@@ -21,7 +26,12 @@ chhong.kr, playground.chhong.kr {
 localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy playground_backend:8000
+		reverse_proxy playground_backend:8000 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
 	}
 	
 	# WebSocket 요청은 백엔드로
@@ -40,7 +50,12 @@ localhost {
 moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
 	handle /api/* {
-		reverse_proxy moodbite_backend:8082
+		reverse_proxy moodbite_backend:8082 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
 	}
 	
 	# WebSocket 요청은 백엔드로  
@@ -59,7 +74,12 @@ moodbite.chhong.kr, moodbite.localhost {
 trend.chhong.kr, trend.localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy trend_backend:8002
+		reverse_proxy trend_backend:8002 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
 	}
 	
 	# WebSocket 요청은 백엔드로
@@ -78,7 +98,12 @@ trend.chhong.kr, trend.localhost {
 blog.chhong.kr, blog.localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy blog_backend:8003
+		reverse_proxy blog_backend:8003 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
 	}
 	
 	# WebSocket 요청은 백엔드로
