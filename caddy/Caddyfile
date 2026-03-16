@@ -51,6 +51,7 @@ moodbite.chhong.kr, moodbite.localhost {
 	# API 요청은 백엔드로
 	handle /api/* {
 		reverse_proxy moodbite_backend:8082 {
+			header_up Host moodbite.chhong.kr
 			fail_duration 10s
 			max_fails 3
 			health_uri /health
