@@ -32,6 +32,27 @@ const apps: AppItem[] = [
     description: '',
     icon: '📝',
     category: 'services'
+  },
+  {
+    name: '재미 도구',
+    url: '/fun-tools',
+    description: '',
+    icon: '',
+    category: 'tools'
+  },
+  {
+    name: '개발 도구',
+    url: '/dev-tools',
+    description: '',
+    icon: '',
+    category: 'tools'
+  },
+  {
+    name: '정보 도구',
+    url: '/info-tools',
+    description: '',
+    icon: '',
+    category: 'tools'
   }
 ]
 
@@ -92,34 +113,65 @@ export default function AppLauncher() {
                   </h4>
                   
                   <div className="space-y-1">
-                    {categoryApps.map((app) => (
-                      <a
-                        key={app.name}
-                        href={app.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center p-3 sm:p-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 group touch-manipulation"
-                        style={{ minHeight: '52px' }}
-                      >
-                        <span className="text-2xl mr-3">{app.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                            {app.name}
-                          </div>
-                        </div>
-                        <svg 
-                          width="16" 
-                          height="16" 
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                          className="text-gray-400 group-hover:text-gray-600 transition-colors"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
-                    ))}
+                    {categoryApps.map((app) => {
+                      if (app.category === 'tools') {
+                        return (
+                          <a
+                            key={app.name}
+                            href={app.url}
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center p-3 sm:p-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 group touch-manipulation"
+                            style={{ minHeight: '52px' }}
+                          >
+                            {app.icon && <span className="text-2xl mr-3">{app.icon}</span>}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                                {app.name}
+                              </div>
+                            </div>
+                            <svg 
+                              width="16" 
+                              height="16" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                              className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </a>
+                        )
+                      } else {
+                        return (
+                          <a
+                            key={app.name}
+                            href={app.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center p-3 sm:p-3 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors duration-150 group touch-manipulation"
+                            style={{ minHeight: '52px' }}
+                          >
+                            {app.icon && <span className="text-2xl mr-3">{app.icon}</span>}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                                {app.name}
+                              </div>
+                            </div>
+                            <svg 
+                              width="16" 
+                              height="16" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                              className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        )
+                      }
+                    })}
                   </div>
                 </div>
               ))}
