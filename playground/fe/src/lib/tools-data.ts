@@ -17,6 +17,86 @@ export interface ToolCategories {
   [key: string]: Tool[]
 }
 
+export interface CategoryMetadata {
+  page: 'main' | 'dev-tools' | 'info-tools' | 'fun-tools'
+  priority: number
+  description: string
+}
+
+export const categoryMetadata: { [key: string]: CategoryMetadata } = {
+  '창작 도구': { 
+    page: 'main', 
+    priority: 1,
+    description: '창의적인 작업을 위한 도구들'
+  },
+  '커뮤니케이션': { 
+    page: 'main', 
+    priority: 2,
+    description: '소통과 협업을 위한 도구들'
+  },
+  '생활 도구': { 
+    page: 'main', 
+    priority: 3,
+    description: '일상생활에 유용한 도구들'
+  },
+  '재미 도구': { 
+    page: 'fun-tools', 
+    priority: 1,
+    description: '일상에 즐거움을 더하는 도구들'
+  },
+  '개발 도구': { 
+    page: 'dev-tools', 
+    priority: 1,
+    description: '개발자를 위한 전문 유틸리티'
+  },
+  '정보 도구': { 
+    page: 'info-tools', 
+    priority: 1,
+    description: '정보 분석과 트렌드 도구들'
+  }
+}
+
+// 페이지별 카테고리 필터링 함수
+export const getMainPageCategories = (): ToolCategories => {
+  const result: ToolCategories = {}
+  Object.entries(toolCategories).forEach(([categoryName, tools]) => {
+    if (categoryMetadata[categoryName]?.page === 'main') {
+      result[categoryName] = tools
+    }
+  })
+  return result
+}
+
+export const getDevToolsCategories = (): ToolCategories => {
+  const result: ToolCategories = {}
+  Object.entries(toolCategories).forEach(([categoryName, tools]) => {
+    if (categoryMetadata[categoryName]?.page === 'dev-tools') {
+      result[categoryName] = tools
+    }
+  })
+  return result
+}
+
+export const getInfoToolsCategories = (): ToolCategories => {
+  const result: ToolCategories = {}
+  Object.entries(toolCategories).forEach(([categoryName, tools]) => {
+    if (categoryMetadata[categoryName]?.page === 'info-tools') {
+      result[categoryName] = tools
+    }
+  })
+  return result
+}
+
+export const getFunToolsCategories = (): ToolCategories => {
+  const result: ToolCategories = {}
+  Object.entries(toolCategories).forEach(([categoryName, tools]) => {
+    if (categoryMetadata[categoryName]?.page === 'fun-tools') {
+      result[categoryName] = tools
+    }
+  })
+  return result
+}
+
 // 프리미엄 도구 데이터 - FreeTools.org 스타일
 export const toolCategories: ToolCategories = {
   '창작 도구': [
