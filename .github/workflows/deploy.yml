@@ -2,7 +2,7 @@ name: Deploy PlayGround to Cafe24
 
 on:
   push:
-    branches: [ main ]
+    branches: [ deploy ]  # main을 deploy로 변경해서 배포 비활성화
   workflow_dispatch:
 
 jobs:
