@@ -23,7 +23,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import PremiumToolCard from '@/components/ui/PremiumToolCard'
-import { toolCategories } from '@/lib/tools-data'
+import { getMainPageCategories } from '@/lib/tools-data'
 import { LoadingSkeleton, CardSkeleton } from '@/components/ui/LoadingSpinner'
 import { ErrorState, LoadError } from '@/components/ui/ErrorState'
 import { apiUrls, logger } from '@/lib/config'
@@ -199,6 +199,9 @@ function SortableCategory(props: SortableCategoryProps) {
 }
 
 export default function ToolCategoryGrid() {
+  // 메인페이지용 카테고리만 가져오기
+  const mainPageCategories = getMainPageCategories()
+  
   // 하이드레이션 상태 관리
   const [isHydrated, setIsHydrated] = useState(false)
   
@@ -214,9 +217,9 @@ export default function ToolCategoryGrid() {
   // 아코디언 상태 관리
   const [openCategories, setOpenCategories] = useState<string[]>(['창작 도구'])
   
-  // 카테고리 순서 상태 관리
+  // 카테고리 순서 상태 관리 - 메인페이지 카테고리만
   const [categoryOrder, setCategoryOrder] = useState<string[]>(() => 
-    Object.keys(toolCategories)
+    Object.keys(mainPageCategories)
   )
   
   // 드래그 상태 관리
@@ -420,7 +423,7 @@ export default function ToolCategoryGrid() {
   if (!isHydrated) {
     return (
       <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-        {Object.entries(toolCategories).map(([categoryName, tools]) => {
+        {Object.entries(mainPageCategories).map(([categoryName, tools]) => {
           const isOpen = categoryName === '창작 도구' // 기본값
           
           return (
@@ -516,7 +519,7 @@ export default function ToolCategoryGrid() {
       >
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
           {categoryOrder.map((categoryName) => {
-            const tools = toolCategories[categoryName]
+            const tools = mainPageCategories[categoryName]
             const isOpen = openCategories.includes(categoryName)
             
             if (!tools) return null // 카테고리가 없는 경우 스킵

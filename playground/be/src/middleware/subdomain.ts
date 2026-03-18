@@ -115,7 +115,11 @@ export async function subdomainRoutingMiddleware(
 export function getSubdomainCorsOrigins(): string[] {
   const baseOrigins = [
     'http://localhost:3002',
-    'https://devforge.com'
+    'https://devforge.com',
+    // Vercel 배포 도메인들
+    'https://play-ground-mvmw4niva-pnci1029-2487s-projects.vercel.app',
+    'https://chhong.kr',
+    'https://playground.chhong.kr'
   ]
   
   // 각 서브도메인별 오리진 추가
