@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import AppLauncher from '@/components/ui/AppLauncher'
+import ToolsDropdown from '@/components/ui/ToolsDropdown'
 
 export default function Header() {
   return (
@@ -23,42 +24,9 @@ export default function Header() {
             PlayGround
           </Link>
           
-          {/* Navigation Menu */}
-          <nav className="hidden sm:flex items-center space-x-6">
-            <Link
-              href="/fun-tools"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium"
-            >
-              재미 도구
-            </Link>
-            <Link
-              href="/dev-tools"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium"
-            >
-              개발 도구
-            </Link>
-            <Link
-              href="/info-tools"
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium"
-            >
-              정보 도구
-            </Link>
-          </nav>
-          
-          {/* Mobile-optimized AppLauncher container */}
+          {/* Right side navigation */}
           <div className="flex items-center space-x-2">
-            {/* Mobile Navigation Button */}
-            <div className="sm:hidden">
-              <button
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200"
-                type="button"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-            
+            <ToolsDropdown />
             <AppLauncher />
           </div>
         </div>
