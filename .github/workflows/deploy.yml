@@ -79,7 +79,7 @@ jobs:
 
     - name: Package source code
       run: |
-        # 소스코드만 압축 (서버에서 Docker가 빌드)
+        # 백엔드 관련 파일들만 압축 (서버에서 Docker가 빌드)
         tar --exclude='node_modules' \
             --exclude='dist' \
             --exclude='.next' \
@@ -88,18 +88,16 @@ jobs:
             --exclude='*.git*' \
             --exclude='.npm' \
             --exclude='.cache' \
+            --exclude='playground/fe' \
+            --exclude='moodbite/MoodBite_FE' \
+            --exclude='trend/trend_fe' \
+            --exclude='blog/blog_fe' \
             -czf playground-deploy.tar.gz \
-            playground/ \
-            blog/ \
-            moodbite/ \
-            trend/ \
+            playground/be/ \
+            moodbite/MoodBite_BE/ \
+            trend/trend_be/ \
             migrations/ \
             docker-compose.yml \
-            docker-compose.playground.yml \
-            docker-compose.moodbite.yml \
-            docker-compose.trend.yml \
-            docker-compose.blog.yml \
-            nginx/ \
             caddy/ \
             .env \
             .env.production \
@@ -122,15 +120,10 @@ jobs:
         echo "Changed files:"
         echo "$CHANGED_FILES"
         
-        # 각 서비스별 변경 여부 확인
+        # 백엔드 서비스별 변경 여부 확인
         echo "playground_backend=$(echo '$CHANGED_FILES' | grep -q '^playground/be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "playground_frontend=$(echo '$CHANGED_FILES' | grep -q '^playground/fe/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "moodbite_backend=$(echo '$CHANGED_FILES' | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "moodbite_frontend=$(echo '$CHANGED_FILES' | grep -q '^moodbite/MoodBite_FE/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "trend_backend=$(echo '$CHANGED_FILES' | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "trend_frontend=$(echo '$CHANGED_FILES' | grep -q '^trend/trend_fe/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "blog_backend=$(echo '$CHANGED_FILES' | grep -q '^blog/blog_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "blog_frontend=$(echo '$CHANGED_FILES' | grep -q '^blog/blog_fe/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "caddy_config=$(echo '$CHANGED_FILES' | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "docker_config=$(echo '$CHANGED_FILES' | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         
@@ -156,20 +149,15 @@ jobs:
            rm -f playground-deploy.tar.gz && \
            echo '✅ PlayGround 소스 배포 완료'"
 
-    - name: Restart changed services
+    - name: Restart changed backend services
       run: |
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
           "cd ${{ secrets.CAFE24_PATH }}/playground && \
            
-           # 변경된 서비스만 재시작
+           # 변경된 백엔드 서비스만 재시작
            if [ '${{ steps.changes.outputs.playground_backend }}' = 'true' ]; then
              echo '🔄 PlayGround Backend 재시작 중...'
              docker-compose up -d --build backend
-           fi
-           
-           if [ '${{ steps.changes.outputs.playground_frontend }}' = 'true' ]; then
-             echo '🔄 PlayGround Frontend 재시작 중...'
-             docker-compose up -d --build frontend
            fi
            
            if [ '${{ steps.changes.outputs.moodbite_backend }}' = 'true' ]; then
@@ -177,29 +165,9 @@ jobs:
              docker-compose up -d --build moodbite-backend
            fi
            
-           if [ '${{ steps.changes.outputs.moodbite_frontend }}' = 'true' ]; then
-             echo '🔄 MoodBite Frontend 재시작 중...'
-             docker-compose up -d --build moodbite-frontend
-           fi
-           
            if [ '${{ steps.changes.outputs.trend_backend }}' = 'true' ]; then
              echo '🔄 Trend Backend 재시작 중...'
              docker-compose up -d --build trend-backend
-           fi
-           
-           if [ '${{ steps.changes.outputs.trend_frontend }}' = 'true' ]; then
-             echo '🔄 Trend Frontend 재시작 중...'
-             docker-compose up -d --build trend-frontend
-           fi
-           
-           if [ '${{ steps.changes.outputs.blog_backend }}' = 'true' ]; then
-             echo '🔄 Blog Backend 재시작 중...'
-             docker-compose up -d --build blog-backend
-           fi
-           
-           if [ '${{ steps.changes.outputs.blog_frontend }}' = 'true' ]; then
-             echo '🔄 Blog Frontend 재시작 중...'
-             docker-compose up -d --build blog-frontend
            fi
            
            if [ '${{ steps.changes.outputs.caddy_config }}' = 'true' ]; then
@@ -208,11 +176,11 @@ jobs:
            fi
            
            if [ '${{ steps.changes.outputs.docker_config }}' = 'true' ]; then
-             echo '🔄 전체 서비스 재시작 중...'
+             echo '🔄 전체 백엔드 서비스 재시작 중...'
              docker-compose up -d --build
            fi
            
-           echo '✅ 변경된 서비스 재시작 완료'"
+           echo '✅ 변경된 백엔드 서비스 재시작 완료'"
 
     # Health check (주석처리 - 수동 배포)
     # - name: Health check
