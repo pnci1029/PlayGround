@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-playground}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vheh1177}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -33,7 +33,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-vheh1177}
       - JWT_SECRET=${JWT_SECRET:-please_change_this_jwt_secret_in_production}
       - JWT_EXPIRES_IN=24h
       - PORT=8000

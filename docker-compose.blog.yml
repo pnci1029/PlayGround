@@ -35,7 +35,7 @@ services:
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
       - DB_PASSWORD=${POSTGRES_PASSWORD:-password}
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/playground
+      - DATABASE_URL=postgresql://postgres:vheh1177@postgres:5432/playground
       - BLOG_ADMIN_PASSWORD=myblog2025
     depends_on:
       - postgres
