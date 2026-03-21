@@ -46,7 +46,7 @@ export const clientApiUrls = {
 
   // Chat 관련 API
   chat: {
-    websocket: process.env.NEXT_PUBLIC_WS_URL || (typeof window !== 'undefined' ? (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws' : 'ws://localhost:8010'),
+    websocket: process.env.NEXT_PUBLIC_WS_URL || 'ws://222.122.81.196:8010',
     history: `${config.api.clientBaseUrl}/chat/history`,
     stats: `${config.api.clientBaseUrl}/chat/stats`
   },
