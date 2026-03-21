@@ -35,6 +35,7 @@ NEXT_PUBLIC_APP_NAME=PlayGround
 NEXT_PUBLIC_APP_VERSION=1.0.0
 ```
 
+
 ## 🔗 API 공통화 처리 (중요!)
 
 ### 📋 API URL 관리 체계
