@@ -18,8 +18,8 @@ chhong.kr, playground.chhong.kr {
 		}
 	}
 	
-	# 나머지는 프론트엔드로
-	reverse_proxy playground_frontend:3000
+	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버
+	respond "PlayGround API Server" 404
 }
 
 # localhost (개발용)
@@ -42,8 +42,8 @@ localhost {
 		}
 	}
 	
-	# 나머지는 프론트엔드로
-	reverse_proxy playground_frontend:3000
+	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버  
+	respond "PlayGround API Server" 404
 }
 
 # MoodBite 서브도메인
@@ -61,8 +61,8 @@ moodbite.chhong.kr, moodbite.localhost {
 		}
 	}
 	
-	# 나머지는 프론트엔드로
-	reverse_proxy moodbite_frontend:3000
+	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버
+	respond "MoodBite API Server" 404
 }
 
 # Trend 서브도메인  
@@ -85,8 +85,8 @@ trend.chhong.kr, trend.localhost {
 		}
 	}
 	
-	# 나머지는 프론트엔드로
-	reverse_proxy trend_frontend:3000
+	# 프론트엔드 없음 - API 전용 서버
+	respond "Trend API Server" 404
 }
 
 # Blog 서브도메인
@@ -106,8 +106,8 @@ blog.chhong.kr, blog.localhost {
 		reverse_proxy blog_backend:8013
 	}
 	
-	# 나머지는 프론트엔드로
-	reverse_proxy blog_frontend:3003
+	# 프론트엔드 없음 - API 전용 서버
+	respond "Blog API Server" 404
 }
 
 # 프로덕션 환경 (실제 도메인으로 배포 시 사용)
