@@ -27,9 +27,12 @@
     "@babel/plugin-syntax-flow": "^7.24.0",
     "@babel/plugin-transform-react-jsx": "^7.24.0"
   },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.0"
+  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "npx update-browserslist-db@latest && react-scripts build",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
+    "build": "npx update-browserslist-db@latest && GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
