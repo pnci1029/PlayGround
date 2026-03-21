@@ -12,6 +12,8 @@ export const config = {
       'http://menu.localhost:3002',
       'http://diary.localhost:3002',
       'http://portfolio.localhost:3002',
+      'https://chhong.kr',
+      'https://playground.chhong.kr',
       'https://*.yourdomain.com',
       'https://*.playground.com'
     ],

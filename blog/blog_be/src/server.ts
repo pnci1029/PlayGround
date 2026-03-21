@@ -13,7 +13,7 @@ async function start() {
   try {
     // Register plugins
     await fastify.register(cors, {
-      origin: ['http://localhost:3000', 'http://localhost:3001'],
+      origin: ['https://blog.chhong.kr', 'http://localhost:3003', 'http://localhost:3000', 'http://localhost:3001'],
       credentials: true
     });
     

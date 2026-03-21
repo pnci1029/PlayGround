@@ -32,6 +32,7 @@ async function startHttpServer() {
     // CORS 설정
     await httpServer.register(fastifyCors, {
       origin: [
+        'https://trend.chhong.kr',
         'http://localhost:3002', 
         'http://trend.localhost', 
         'https://trend.localhost',
