@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Star, Clock, Phone, ExternalLink, Navigation, Loader } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Navigation, Loader } from 'lucide-react';
 import style from '../../style/location/restaurantRecommendations.module.scss';
 
 interface Restaurant {
@@ -26,7 +26,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
 
     useEffect(() => {
         fetchNearbyRestaurants();
-    }, [location, primaryFood]);
+    }, [location, primaryFood, fetchNearbyRestaurants]);
 
     const fetchNearbyRestaurants = async () => {
         try {

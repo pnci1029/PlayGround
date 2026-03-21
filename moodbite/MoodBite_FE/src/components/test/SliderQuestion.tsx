@@ -64,20 +64,6 @@ export function SliderQuestion({ title, value, onChange, testStep, labels }: Arg
         return style.highBudget;
     };
 
-    // 슬라이더 배경 스타일 계산 (진행 바 효과)
-    const getSliderStyle = () => {
-        const percentage = isBudgetStep
-            ? ((value - minValue) / (maxValue - minValue)) * 100
-            : value;
-
-        return {
-            background: `linear-gradient(to right, 
-                #4ECDC4 0%, 
-                #2bb5ac ${percentage}%, 
-                #e0e0e0 ${percentage}%, 
-                #e0e0e0 100%)`
-        };
-    };
 
     // 트랙 클릭으로 값 설정
     const handleTrackClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
@@ -199,7 +185,6 @@ export function SliderQuestion({ title, value, onChange, testStep, labels }: Arg
                         aria-valuemax={maxValue}
                         aria-valuenow={value}
                         aria-valuetext={getDisplayValue(value).toString()}
-                        role="slider"
                     />
 
                     <div className={style.sliderLabels}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, MapPin, Clock, DollarSign, Users, Utensils } from 'lucide-react';
+import { ArrowLeft, RefreshCw, MapPin, Clock, Users, Utensils } from 'lucide-react';
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
 import NoRecommendations from '../ui/NoRecommendations';
@@ -35,7 +35,7 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                 setShowLocationPermission(true);
             }, 1500);
         }
-    }, [aiRecommendation]);
+    }, [aiRecommendation, isLoading]);
 
     const handleLocationGranted = (location: GeolocationPosition) => {
         setUserLocation(location);

@@ -2,7 +2,7 @@ import {useCallback, useState} from "react";
 import {useDispatch} from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {submitTestResultAsync, submitLocationBasedTestResultAsync} from "../../../slice/testSlice";
-import {TestResultPostDTO, LocationBasedTestResultRequestDTO, LocationBasedRecommendationResponseDTO, TestResultResponseDTO, FoodRecommendationDTO} from "../../../types/test";
+import {TestResultPostDTO, LocationBasedTestResultRequestDTO, FoodRecommendationDTO} from "../../../types/test";
 import {LocationService} from "../../api/LocationService";
 
 const isFoodRecommendationDTO = (payload: any): payload is FoodRecommendationDTO => {

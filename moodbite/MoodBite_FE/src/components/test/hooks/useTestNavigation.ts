@@ -53,10 +53,6 @@ export function useTestNavigation(
         }
     };
 
-    const calculateFinalScore = (scores: Scores) => {
-        const {tired, anger, stress, appetite, budget} = scores;
-        return (tired + anger + stress + appetite + budget) / 5;
-    };
 
     return {
         testStep,

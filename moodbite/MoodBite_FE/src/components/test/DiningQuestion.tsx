@@ -43,7 +43,7 @@ export function DiningQuestion({selectedOption, onOptionSelect}: DiningQuestionP
                         className={`${style.optionButton} ${selectedOption === option.value ? style.selected : ''}`}
                         onClick={() => handleOptionSelect(option.value)}
                         onKeyDown={(e) => handleKeyDown(e, option.value)}
-                        aria-selected={selectedOption === option.value}
+                        aria-checked={selectedOption === option.value}
                         aria-label={`${option.label} - ${option.description}`}
                         role="radio"
                         tabIndex={0}

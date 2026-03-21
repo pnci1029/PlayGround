@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../test/questionOption.module.scss';
+// import styles from '../test/questionOption.module.scss';
 
 interface NoRecommendationsProps {
   onRetry: () => void;

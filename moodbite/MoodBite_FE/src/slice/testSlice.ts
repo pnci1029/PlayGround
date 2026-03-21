@@ -1,7 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {
     TestResultPostDTO, 
-    TestResultResponseDTO, 
     LocationBasedTestResultRequestDTO, 
     LocationBasedRecommendationResponseDTO,
     FoodRecommendationDTO

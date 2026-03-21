@@ -44,7 +44,7 @@ export function MealTimeQuestion({ selectedTime, onTimeSelect }: Args) {
                         className={`${style.mealTimeButton} ${selectedTime === time.id ? style.selected : ''}`}
                         onClick={() => handleTimeSelect(time.id as MealTime)}
                         onKeyDown={(e) => handleKeyDown(e, time.id as MealTime)}
-                        aria-selected={selectedTime === time.id}
+                        aria-checked={selectedTime === time.id}
                         aria-label={`${time.label} - ${time.description}`}
                         role="radio"
                         tabIndex={0}
