@@ -44,6 +44,13 @@ export default function ChatPage() {
   const connectWebSocket = () => {
     try {
       setConnectionStatus('connecting')
+      // HTTPS에서는 WebSocket 연결을 시도하지 않음 (Mixed Content 제한)
+      if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+        setConnectionStatus('disconnected')
+        logger.log('🔒 HTTPS에서는 보안상 WebSocket 연결을 지원하지 않습니다')
+        return
+      }
+      
       const ws = new WebSocket(apiUrls.chat.websocket)
       wsRef.current = ws
 
