@@ -134,7 +134,10 @@ jobs:
 
     - name: Deploy to Cafe24
       run: |
-        # 배포 파일 업로드
+        # 디렉토리 생성 후 배포 파일 업로드
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
+          "mkdir -p ${{ secrets.CAFE24_PATH }}"
+        
         scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
           ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }}:${{ secrets.CAFE24_PATH }}/
         
