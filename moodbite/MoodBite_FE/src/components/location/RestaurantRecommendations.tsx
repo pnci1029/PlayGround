@@ -24,10 +24,6 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchNearbyRestaurants();
-    }, [location, primaryFood, fetchNearbyRestaurants]);
-
     const fetchNearbyRestaurants = async () => {
         try {
             setIsLoading(true);
@@ -59,6 +55,10 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchNearbyRestaurants();
+    }, [location, primaryFood]);
 
     const openInMap = (restaurant: Restaurant) => {
         const kakaoMapUrl = `https://map.kakao.com/link/map/${restaurant.place_name},${restaurant.y},${restaurant.x}`;
