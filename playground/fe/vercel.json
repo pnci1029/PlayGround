@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "http://222.122.81.196:8000/api/$1"
+      "destination": "https://api.chhong.kr/api/$1"
     },
     {
       "source": "/health",
-      "destination": "http://222.122.81.196:8000/health"
+      "destination": "https://api.chhong.kr/health"
     }
   ]
 }
