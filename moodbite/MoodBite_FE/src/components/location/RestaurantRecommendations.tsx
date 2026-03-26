@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Phone, ExternalLink, Navigation, Loader } from 'lucide-react';
 import style from '../../style/location/restaurantRecommendations.module.scss';
 
@@ -24,7 +24,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchNearbyRestaurants = async () => {
+    const fetchNearbyRestaurants = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
@@ -54,11 +54,11 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [location, primaryFood]);
 
     useEffect(() => {
         fetchNearbyRestaurants();
-    }, [location, primaryFood]);
+    }, [fetchNearbyRestaurants]);
 
     const openInMap = (restaurant: Restaurant) => {
         const kakaoMapUrl = `https://map.kakao.com/link/map/${restaurant.place_name},${restaurant.y},${restaurant.x}`;

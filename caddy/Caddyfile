@@ -1,6 +1,21 @@
-# 메인 도메인 - Playground
-chhong.kr, playground.chhong.kr {
-	# API 요청은 백엔드로
+# API 서브도메인 - 백엔드 + WebSocket
+api.chhong.kr {
+	# SSL 인증서 자동 발급
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	
+	# WebSocket 요청
+	handle /ws {
+		reverse_proxy playground_backend:8010 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
+			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
+		}
+	}
+	
+	# API 요청
 	handle /api/* {
 		reverse_proxy playground_backend:8000 {
 			fail_duration 10s
@@ -10,16 +25,10 @@ chhong.kr, playground.chhong.kr {
 		}
 	}
 	
-	# WebSocket 요청은 백엔드로
-	handle /ws {
-		reverse_proxy playground_backend:8010 {
-			header_up Upgrade {http.request.header.Upgrade}
-			header_up Connection {http.request.header.Connection}
-		}
+	# Health check
+	handle /health {
+		reverse_proxy playground_backend:8000
 	}
-	
-	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버
-	respond "PlayGround API Server" 404
 }
 
 # localhost (개발용)
@@ -46,23 +55,35 @@ localhost {
 	respond "PlayGround API Server" 404
 }
 
-# MoodBite 서브도메인
-moodbite.chhong.kr, moodbite.localhost {
-	# API 요청은 백엔드로
-	handle /api/* {
-		reverse_proxy moodbite_backend:8082
+# MoodBite API 서브도메인
+api.moodbite.chhong.kr {
+	# SSL 인증서 자동 발급
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 	}
 	
-	# WebSocket 요청은 백엔드로  
+	# WebSocket 요청
 	handle /ws {
 		reverse_proxy moodbite_backend:8084 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
+			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
+			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
 		}
 	}
 	
-	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버
-	respond "MoodBite API Server" 404
+	# API 요청
+	handle /api/* {
+		reverse_proxy moodbite_backend:8082 {
+			fail_duration 10s
+			max_fails 3
+		}
+	}
+	
+	# Health check
+	handle /health {
+		reverse_proxy moodbite_backend:8082
+	}
 }
 
 # Trend 서브도메인  
