@@ -2,7 +2,7 @@
 api.chhong.kr {
 	# SSL 인증서 자동 발급 (HTTP Challenge)
 	tls internal
-	
+
 	# WebSocket 요청
 	handle /ws {
 		reverse_proxy playground_backend:8010 {
@@ -12,7 +12,7 @@ api.chhong.kr {
 			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
 		}
 	}
-	
+
 	# API 요청
 	handle /api/* {
 		reverse_proxy playground_backend:8000 {
@@ -22,7 +22,7 @@ api.chhong.kr {
 			health_interval 30s
 		}
 	}
-	
+
 	# Health check
 	handle /health {
 		reverse_proxy playground_backend:8000
@@ -40,7 +40,7 @@ localhost {
 			health_interval 30s
 		}
 	}
-	
+
 	# WebSocket 요청은 백엔드로
 	handle /ws {
 		reverse_proxy playground_backend:8010 {
@@ -48,8 +48,8 @@ localhost {
 			header_up Connection {http.request.header.Connection}
 		}
 	}
-	
-	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버  
+
+	# 프론트엔드는 Vercel로 배포됨 - API 전용 서버
 	respond "PlayGround API Server" 404
 }
 
@@ -57,7 +57,7 @@ localhost {
 api.moodbite.chhong.kr {
 	# SSL 인증서 자동 발급 (HTTP Challenge)
 	tls internal
-	
+
 	# WebSocket 요청
 	handle /ws {
 		reverse_proxy moodbite_backend:8084 {
@@ -67,7 +67,7 @@ api.moodbite.chhong.kr {
 			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
 		}
 	}
-	
+
 	# API 요청
 	handle /api/* {
 		reverse_proxy moodbite_backend:8082 {
@@ -75,15 +75,18 @@ api.moodbite.chhong.kr {
 			max_fails 3
 		}
 	}
-	
+
 	# Health check
 	handle /health {
 		reverse_proxy moodbite_backend:8082
 	}
 }
 
-# Trend 서브도메인  
+# Trend 서브도메인
 trend.chhong.kr, trend.localhost {
+	# SSL 인증서 자동 발급 (HTTP Challenge)
+	tls internal
+
 	# API 요청은 백엔드로
 	handle_path /api/* {
 		reverse_proxy trend_backend:8002 {
@@ -93,7 +96,7 @@ trend.chhong.kr, trend.localhost {
 			health_interval 30s
 		}
 	}
-	
+
 	# WebSocket 요청은 백엔드로
 	handle /ws {
 		reverse_proxy trend_backend:8012 {
@@ -101,13 +104,16 @@ trend.chhong.kr, trend.localhost {
 			header_up Connection {http.request.header.Connection}
 		}
 	}
-	
+
 	# 프론트엔드 없음 - API 전용 서버
 	respond "Trend API Server" 404
 }
 
 # Blog 서브도메인
 blog.chhong.kr, blog.localhost {
+	# SSL 인증서 자동 발급 (HTTP Challenge)
+	tls internal
+
 	# API 요청은 백엔드로
 	handle_path /api/* {
 		reverse_proxy blog_backend:8003 {
@@ -117,12 +123,12 @@ blog.chhong.kr, blog.localhost {
 			health_interval 30s
 		}
 	}
-	
+
 	# WebSocket 요청은 백엔드로
 	handle /ws {
 		reverse_proxy blog_backend:8013
 	}
-	
+
 	# 프론트엔드 없음 - API 전용 서버
 	respond "Blog API Server" 404
 }

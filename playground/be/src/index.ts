@@ -31,7 +31,7 @@ fastify.register(cors, {
 fastify.addHook('preHandler', subdomainRoutingMiddleware)
 
 // WebSocket 플러그인 등록
-fastify.register(websocketPlugin)
+// fastify.register(websocketPlugin)
 
 // 라우트 등록
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
