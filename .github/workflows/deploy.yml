@@ -1,4 +1,4 @@
-name: Deploy PlayGround to Cafe24
+name: Deploy PlayGround to Contabo
 
 on:
   push:
@@ -74,7 +74,7 @@ jobs:
         chmod 700 ~/.ssh
         echo '${{ secrets.SSH_PRIVATE_KEY }}' | base64 -d > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.CAFE24_HOST }} >> ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ secrets.CONTABO_HOST }} >> ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
 
     - name: Package source code
@@ -132,18 +132,18 @@ jobs:
         echo "moodbite_backend=$(echo '$CHANGED_FILES' | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')"
         echo "trend_backend=$(echo '$CHANGED_FILES' | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')"
 
-    - name: Deploy to Cafe24
+    - name: Deploy to Contabo
       run: |
         # 디렉토리 생성 후 배포 파일 업로드
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-          "mkdir -p ${{ secrets.CAFE24_PATH }}"
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "mkdir -p ${{ secrets.CONTABO_PATH }}"
         
         scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
-          ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }}:${{ secrets.CAFE24_PATH }}/
+          ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }}:${{ secrets.CONTABO_PATH }}/
         
         # 서버에서 소스 배포
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-          "cd ${{ secrets.CAFE24_PATH }} && \
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "cd ${{ secrets.CONTABO_PATH }} && \
            rm -rf playground-temp && \
            mkdir playground-temp && \
            tar -xzf playground-deploy.tar.gz -C playground-temp && \
@@ -154,8 +154,8 @@ jobs:
 
     - name: Restart changed backend services
       run: |
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CAFE24_USER }}@${{ secrets.CAFE24_HOST }} \
-          "cd ${{ secrets.CAFE24_PATH }}/playground && \
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "cd ${{ secrets.CONTABO_PATH }}/playground && \
            
            # 변경된 백엔드 서비스만 재시작
            if [ '${{ steps.changes.outputs.playground_backend }}' = 'true' ]; then

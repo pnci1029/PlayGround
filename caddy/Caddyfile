@@ -1,4 +1,4 @@
-# API 서브도메인 - 백엔드 + WebSocket
+# API 서브도메인 - 백엔드 + WebSocket (Contabo)
 api.chhong.kr {
 	# SSL 인증서 자동 발급
 	tls {
@@ -55,7 +55,7 @@ localhost {
 	respond "PlayGround API Server" 404
 }
 
-# MoodBite API 서브도메인
+# MoodBite API 서브도메인 (Contabo)
 api.moodbite.chhong.kr {
 	# SSL 인증서 자동 발급
 	tls {
