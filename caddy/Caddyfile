@@ -5,7 +5,7 @@ api.chhong.kr {
 
 	# WebSocket 요청
 	handle /ws {
-		reverse_proxy playground_backend:8010 {
+		reverse_proxy playground:8010 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
 			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
@@ -15,7 +15,7 @@ api.chhong.kr {
 
 	# API 요청
 	handle /api/* {
-		reverse_proxy playground_backend:8000 {
+		reverse_proxy playground:8000 {
 			fail_duration 10s
 			max_fails 3
 			health_uri /health
@@ -25,7 +25,7 @@ api.chhong.kr {
 
 	# Health check
 	handle /health {
-		reverse_proxy playground_backend:8000
+		reverse_proxy playground:8000
 	}
 }
 
@@ -33,7 +33,7 @@ api.chhong.kr {
 localhost {
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy playground_backend:8000 {
+		reverse_proxy playground:8000 {
 			fail_duration 10s
 			max_fails 3
 			health_uri /health
@@ -43,7 +43,7 @@ localhost {
 
 	# WebSocket 요청은 백엔드로
 	handle /ws {
-		reverse_proxy playground_backend:8010 {
+		reverse_proxy playground:8010 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
 		}
@@ -60,7 +60,7 @@ api.moodbite.chhong.kr {
 
 	# WebSocket 요청
 	handle /ws {
-		reverse_proxy moodbite_backend:8084 {
+		reverse_proxy moodbite:8084 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
 			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
@@ -70,7 +70,7 @@ api.moodbite.chhong.kr {
 
 	# API 요청
 	handle /api/* {
-		reverse_proxy moodbite_backend:8082 {
+		reverse_proxy moodbite:8082 {
 			fail_duration 10s
 			max_fails 3
 		}
@@ -78,7 +78,7 @@ api.moodbite.chhong.kr {
 
 	# Health check
 	handle /health {
-		reverse_proxy moodbite_backend:8082
+		reverse_proxy moodbite:8082
 	}
 }
 
@@ -89,7 +89,7 @@ trend.chhong.kr, trend.localhost {
 
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy trend_backend:8002 {
+		reverse_proxy trend:8002 {
 			fail_duration 10s
 			max_fails 3
 			health_uri /health
@@ -99,7 +99,7 @@ trend.chhong.kr, trend.localhost {
 
 	# WebSocket 요청은 백엔드로
 	handle /ws {
-		reverse_proxy trend_backend:8012 {
+		reverse_proxy trend:8012 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
 		}
@@ -116,7 +116,7 @@ blog.chhong.kr, blog.localhost {
 
 	# API 요청은 백엔드로
 	handle_path /api/* {
-		reverse_proxy blog_backend:8003 {
+		reverse_proxy blog:8003 {
 			fail_duration 10s
 			max_fails 3
 			health_uri /health
@@ -126,7 +126,7 @@ blog.chhong.kr, blog.localhost {
 
 	# WebSocket 요청은 백엔드로
 	handle /ws {
-		reverse_proxy blog_backend:8013
+		reverse_proxy blog:8013
 	}
 
 	# 프론트엔드 없음 - API 전용 서버

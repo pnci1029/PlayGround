@@ -8,7 +8,7 @@ import { statsRoutes } from './routes/stats'
 import chatRoutes from './routes/chat'
 // import { artworkRoutes } from './routes/artworks'
 import { testConnection, initializeTables, db } from './config/database'
-import { MigrationService } from '../migrations/migration.service'
+// import { MigrationService } from '../migrations/migration.service'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
 // import canvasRoutes from './routes/canvas'
 // import websocketPlugin from './plugins/websocket'
@@ -64,8 +64,8 @@ const start = async () => {
     await initializeTables()
 
     // 🔄 자동 마이그레이션 실행 (playground만)
-    const migrationService = new MigrationService(db)
-    await migrationService.runPendingMigrations(['playground.sql'])
+    // const migrationService = new MigrationService(db)
+    // await migrationService.runPendingMigrations(['playground.sql'])
 
     await fastify.listen({
       port: config.server.port,

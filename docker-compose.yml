@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: ./playground/be/Dockerfile
     image: playground-backend:latest
-    container_name: playground_backend
+    container_name: playground
     ports:
       - "8000:8000"   # HTTP API
       - "8010:8010"   # WebSocket
@@ -46,12 +46,12 @@ services:
       - playground_network
 
   # MoodBite 백엔드 서비스 (Spring Boot + Kotlin)
-  moodbite-backend:
+  moodbite:
     build:
       context: ./moodbite/MoodBite_BE
       dockerfile: Dockerfile
     image: moodbite-backend:latest
-    container_name: moodbite_backend
+    container_name: moodbite
     ports:
       - "8082:8082"  # HTTP API
       - "8084:8084"  # WebSocket
@@ -75,12 +75,12 @@ services:
       - playground_network
 
   # Trend 백엔드 서비스 (Node.js + TypeScript)
-  trend-backend:
+  trend:
     build:
       context: .
       dockerfile: ./trend/trend_be/Dockerfile
     image: trend-backend:latest
-    container_name: trend_backend
+    container_name: trend
     ports:
       - "8002:8002"  # HTTP API
       - "8012:8012"  # WebSocket
