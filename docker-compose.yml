@@ -2,7 +2,7 @@ services:
   # PostgreSQL 데이터베이스
   postgres:
     image: postgres:15-alpine
-    container_name: playground_postgres
+    container_name: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-playground}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -105,7 +105,7 @@ services:
   # Caddy 리버스 프록시
   caddy:
     image: caddy:2-alpine
-    container_name: playground_caddy
+    container_name: caddy
     restart: unless-stopped
     ports:
       - "80:80"
@@ -116,10 +116,6 @@ services:
       - caddy_config:/config
     networks:
       - playground_network
-    depends_on:
-      - backend
-      - moodbite
-      - trend
 
 volumes:
   postgres_data:

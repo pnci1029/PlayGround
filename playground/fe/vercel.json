@@ -5,6 +5,10 @@
       "destination": "https://api.chhong.kr/api/$1"
     },
     {
+      "source": "/ws",
+      "destination": "https://api.chhong.kr/ws"
+    },
+    {
       "source": "/health",
       "destination": "https://api.chhong.kr/health"
     }
