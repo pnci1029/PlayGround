@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Phone, ExternalLink, Navigation, Loader } from 'lucide-react';
 import style from '../../style/location/restaurantRecommendations.module.scss';
+import { MainApi } from '../api/MainApi';
 
 interface Restaurant {
     place_name: string;
@@ -29,25 +30,14 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
             setIsLoading(true);
             setError(null);
 
-            const response = await fetch('/api/location/nearby-restaurants', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    foodName: primaryFood,
-                    radius: 2000 // 2km
-                })
+            const response = await MainApi.api.post('/api/location/nearby-restaurants', {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                foodName: primaryFood,
+                radius: 2000 // 2km
             });
 
-            if (!response.ok) {
-                throw new Error('음식점 정보를 가져오는데 실패했습니다.');
-            }
-
-            const data = await response.json();
-            setRestaurants(data.documents || []);
+            setRestaurants(response.documents || []);
         } catch (err) {
             console.error('Error fetching restaurants:', err);
             setError('주변 음식점 정보를 불러올 수 없습니다.');
