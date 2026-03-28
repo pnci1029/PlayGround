@@ -2,7 +2,7 @@ import {TestResultPostDTO, LocationBasedTestResultRequestDTO} from "../../types/
 import {MainApi} from "./MainApi";
 
 export class TestApi {
-    static url = `/test`;
+    static url = `/api/test`;
 
     static submitTestResult = (dto: TestResultPostDTO) => () =>
         MainApi.api.post(`${TestApi.url}`, dto);
