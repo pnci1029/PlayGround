@@ -46,7 +46,7 @@ export const clientApiUrls = {
 
   // Chat 관련 API
   chat: {
-    websocket: process.env.NEXT_PUBLIC_WS_URL || 'wss://api.chhong.kr/ws',
+    websocket: 'wss://api.chhong.kr/ws',
     history: `${config.api.clientBaseUrl}/chat/history`,
     stats: `${config.api.clientBaseUrl}/chat/stats`
   },
