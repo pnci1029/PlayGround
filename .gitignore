@@ -149,4 +149,5 @@ moodbite/MoodBite_FE/.env.production
 
 # Trend environment files  
 trend/trend_fe/.env.local
-trend/trend_be/.env
+trend/trend_be/.env# MoodBite FE 환경변수 파일들
+moodbite/MoodBite_FE/.env*
