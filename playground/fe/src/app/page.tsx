@@ -4,7 +4,7 @@ import ToolCategoryGrid from '@/components/HomePage/ToolCategoryGrid'
 import FooterSection from '@/components/HomePage/FooterSection'
 
 export default function HomePage() {
-    console.log('test4')
+    console.log('test5')
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
