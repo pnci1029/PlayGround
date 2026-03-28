@@ -54,8 +54,7 @@ localhost {
 
 # MoodBite API 서브도메인 (Contabo)
 api.moodbite.chhong.kr {
-	# SSL 인증서 자동 발급 (HTTP Challenge)
-	tls internal
+	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# WebSocket 요청
 	handle /ws {
