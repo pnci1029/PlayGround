@@ -30,7 +30,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
             setIsLoading(true);
             setError(null);
 
-            const response = await MainApi.api.post('/api/location/nearby-restaurants', {
+            const response = await MainApi.api.post('/location/nearby-restaurants', {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
                 foodName: primaryFood,
