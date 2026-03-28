@@ -42,6 +42,30 @@ export const initializeTables = async () => {
       );
     `)
 
+    // 도구 통계 테이블 생성
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS tool_stats (
+        id SERIAL PRIMARY KEY,
+        tool_name VARCHAR(100) UNIQUE NOT NULL,
+        total_visits INTEGER DEFAULT 0,
+        daily_visits INTEGER DEFAULT 0,
+        weekly_visits INTEGER DEFAULT 0,
+        last_visited TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `)
+
+    // 일별 도구 방문 통계 테이블 생성
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS daily_tool_visits (
+        id SERIAL PRIMARY KEY,
+        tool_name VARCHAR(100) NOT NULL,
+        visit_date DATE NOT NULL,
+        visit_count INTEGER DEFAULT 0,
+        UNIQUE(tool_name, visit_date)
+      );
+    `)
+
     // 성능을 위한 인덱스 생성
     await db.query(`
       CREATE INDEX IF NOT EXISTS idx_chat_messages_timestamp 
