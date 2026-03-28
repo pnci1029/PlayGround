@@ -17,12 +17,12 @@ services:
       - playground_network
 
   # MoodBite 백엔드 서비스 (Spring Boot + Kotlin)
-  moodbite-backend:
+  moodbite:
     build:
       context: ./moodbite/MoodBite_BE
       dockerfile: Dockerfile
     image: moodbite-backend:latest
-    container_name: moodbite_backend
+    container_name: moodbite
     ports:
       - "8082:8082"  # HTTP API
       - "8084:8084"  # WebSocket

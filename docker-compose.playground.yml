@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: playground/be/Dockerfile
     image: playground-backend:latest
-    container_name: playground_backend
+    container_name: playground
     ports:
       - "8000:8000"   # HTTP API
       - "8010:8010"   # WebSocket
@@ -61,7 +61,7 @@ services:
       - NEXT_PUBLIC_MOODBITE_URL=https://moodbite.chhong.kr
       - NEXT_PUBLIC_TREND_URL=https://trend.chhong.kr
       - NEXT_PUBLIC_BLOG_URL=https://blog.chhong.kr
-      - BACKEND_CONTAINER_URL=http://playground_backend:8000
+      - BACKEND_CONTAINER_URL=http://playground:8000
       - BACKEND_API_PREFIX=/api
     depends_on:
       - backend

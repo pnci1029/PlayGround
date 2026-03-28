@@ -118,8 +118,8 @@ services:
       - playground_network
     depends_on:
       - backend
-      - moodbite-backend
-      - trend-backend
+      - moodbite
+      - trend
 
 volumes:
   postgres_data:
