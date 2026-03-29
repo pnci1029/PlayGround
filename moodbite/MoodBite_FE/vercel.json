@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://api.moodbite.chhong.kr/api/$1"
+      "destination": "https://moodbite-api.chhong.kr/api/$1"
     }
   ]
 }
