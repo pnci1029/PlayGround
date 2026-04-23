@@ -131,6 +131,26 @@ blog.chhong.kr, blog.localhost {
 	respond "Blog API Server" 404
 }
 
+# SaleHero 프론트엔드 서빙
+salehero.kr, www.salehero.kr {
+	# SSL 인증서 자동 발급
+	
+	# API 요청은 백엔드로
+	handle_path /api/* {
+		reverse_proxy salehero-container:8880 {
+			fail_duration 10s
+			max_fails 3
+		}
+	}
+	
+	# 정적 파일 서빙 (프론트엔드)
+	handle {
+		root * /usr/share/nginx/html
+		file_server
+		try_files {path} /index.html
+	}
+}
+
 # 프로덕션 환경 (실제 도메인으로 배포 시 사용)
 # {$BASE_DOMAIN} {
 # 	reverse_proxy playground_frontend:3000
