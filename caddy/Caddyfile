@@ -151,6 +151,17 @@ salehero.kr, www.salehero.kr {
 	}
 }
 
+# SaleHero n8n 서브도메인
+n8n.salehero.kr {
+	# SSL 인증서 자동 발급
+	
+	# n8n 웹 인터페이스
+	reverse_proxy n8n:5678 {
+		fail_duration 10s
+		max_fails 3
+	}
+}
+
 # 프로덕션 환경 (실제 도메인으로 배포 시 사용)
 # {$BASE_DOMAIN} {
 # 	reverse_proxy playground_frontend:3000
