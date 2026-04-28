@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MoodBiteApplication {
 
     public static void main(String[] args) {
+        System.out.println("🍽️ MoodBite Application 개별 배포 테스트 시작! v1.0");
         SpringApplication.run(MoodBiteApplication.class, args);
     }
 
