@@ -123,18 +123,18 @@ jobs:
         echo "$CHANGED_FILES"
         
         # 백엔드 서비스별 변경 여부 확인
-        echo "playground_backend=$(echo '$CHANGED_FILES' | grep -q '^playground/be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "moodbite_backend=$(echo '$CHANGED_FILES' | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "trend_backend=$(echo '$CHANGED_FILES' | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "blog_backend=$(echo '$CHANGED_FILES' | grep -q '^blog/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "caddy_config=$(echo '$CHANGED_FILES' | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-        echo "docker_config=$(echo '$CHANGED_FILES' | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "playground_backend=$(echo "$CHANGED_FILES" | grep -q '^playground/be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "moodbite_backend=$(echo "$CHANGED_FILES" | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "trend_backend=$(echo "$CHANGED_FILES" | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "blog_backend=$(echo "$CHANGED_FILES" | grep -q '^blog/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "caddy_config=$(echo "$CHANGED_FILES" | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "docker_config=$(echo "$CHANGED_FILES" | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         
         # 변경사항 출력
-        echo "playground_backend=$(echo '$CHANGED_FILES' | grep -q '^playground/be/' && echo 'true' || echo 'false')"
-        echo "moodbite_backend=$(echo '$CHANGED_FILES' | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')"
-        echo "trend_backend=$(echo '$CHANGED_FILES' | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')"
-        echo "blog_backend=$(echo '$CHANGED_FILES' | grep -q '^blog/' && echo 'true' || echo 'false')"
+        echo "playground_backend=$(echo "$CHANGED_FILES" | grep -q '^playground/be/' && echo 'true' || echo 'false')"
+        echo "moodbite_backend=$(echo "$CHANGED_FILES" | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')"
+        echo "trend_backend=$(echo "$CHANGED_FILES" | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')"
+        echo "blog_backend=$(echo "$CHANGED_FILES" | grep -q '^blog/' && echo 'true' || echo 'false')"
 
     - name: Deploy to Contabo
       run: |
