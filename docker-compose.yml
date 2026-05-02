@@ -115,6 +115,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
       - /salehero/nginx/html:/usr/share/nginx/html:ro
+      - ./404-page:/usr/share/caddy/404:ro
     networks:
       - playground_network
 
