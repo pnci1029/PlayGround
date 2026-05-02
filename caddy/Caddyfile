@@ -162,19 +162,19 @@ n8n.salehero.kr {
 	}
 }
 
-# 프로덕션 환경 (실제 도메인으로 배포 시 사용)
-# {$BASE_DOMAIN} {
-# 	reverse_proxy playground_frontend:3000
-# }
-#
-# moodbite.{$BASE_DOMAIN} {
-# 	reverse_proxy moodbite_frontend:3000
-# }
-#
-# trend.{$BASE_DOMAIN} {
-# 	reverse_proxy trend_frontend:3000
-# }
-#
-# blog.{$BASE_DOMAIN} {
-# 	reverse_proxy blog_frontend:3003
-# }
+# 404 전용 서브도메인
+404.chhong.kr {
+	# SSL 인증서 자동 발급
+	
+	# 404 페이지 서빙
+	handle {
+		root * /usr/share/caddy/404
+		file_server
+		try_files {path} /index.html
+	}
+}
+
+# 지원하지 않는 서브도메인에 대한 fallback - 404 서브도메인으로 리다이렉트
+*.chhong.kr {
+	redir https://404.chhong.kr{uri} 302
+}
