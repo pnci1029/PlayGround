@@ -118,6 +118,7 @@ services:
       - ./404-page:/usr/share/caddy/404:ro
     networks:
       - playground_network
+      - salehero_network
 
 volumes:
   postgres_data:
@@ -127,3 +128,6 @@ volumes:
 networks:
   playground_network:
     driver: bridge
+  salehero_network:
+    external: true
+    name: app_salehero-network
