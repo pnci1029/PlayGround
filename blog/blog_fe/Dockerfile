@@ -12,5 +12,8 @@ COPY . .
 # 포트 노출
 EXPOSE 3003
 
-# 개발 서버 실행
-CMD ["npm", "run", "dev"]
+# 빌드 수행
+RUN npm run build
+
+# 프로덕션 서버 실행
+CMD ["npm", "run", "start"]
