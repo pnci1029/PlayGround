@@ -69,6 +69,18 @@ jobs:
           mkdir -p moodbite/MoodBite_BE/src/main/resources/data
           echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d | gunzip > moodbite/MoodBite_BE/src/main/resources/data/foods.json
         fi
+        
+        # Blog BE .env 복원
+        if [ ! -z '${{ secrets.BLOG_BE_ENV_FILE }}' ]; then
+          mkdir -p blog/blog_be
+          echo '${{ secrets.BLOG_BE_ENV_FILE }}' | base64 -d > blog/blog_be/.env
+        fi
+        
+        # Blog BE config.ts 복원
+        if [ ! -z '${{ secrets.BLOG_BE_CONFIG_FILE }}' ]; then
+          mkdir -p blog/blog_be/src/utils
+          echo '${{ secrets.BLOG_BE_CONFIG_FILE }}' | base64 -d > blog/blog_be/src/utils/config.ts
+        fi
 
     - name: Setup SSH
       run: |
@@ -98,8 +110,10 @@ jobs:
             playground/be/ \
             moodbite/MoodBite_BE/ \
             trend/trend_be/ \
+            blog/blog_be/ \
             migrations/ \
             docker-compose.yml \
+            docker-compose.blog.yml \
             caddy/ \
             .env \
             .env.production \
@@ -177,9 +191,16 @@ jobs:
              docker compose up -d --build trend
            fi
            
-           if [ '${{ steps.changes.outputs.blog_backend }}' = 'true' ]; then
+           # Blog Backend는 항상 실행되도록 보장
+           echo '🔄 Blog Backend 실행 확인 중...'
+           if ! docker ps | grep -q blog; then
+             echo '🚀 Blog Backend 시작 중...'
+             docker compose -f docker-compose.blog.yml up -d --build blog-backend
+           elif [ '${{ steps.changes.outputs.blog_backend }}' = 'true' ]; then
              echo '🔄 Blog Backend 재시작 중...'
              docker compose -f docker-compose.blog.yml up -d --build blog-backend
+           else
+             echo '✅ Blog Backend 이미 실행 중'
            fi
            
            if [ '${{ steps.changes.outputs.caddy_config }}' = 'true' ]; then
