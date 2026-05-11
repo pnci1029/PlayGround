@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Route } from 'next';
 
 export default function SearchBar() {
   const searchParams = useSearchParams();
@@ -23,7 +24,7 @@ export default function SearchBar() {
       params.delete('page');
       
       const queryString = params.toString();
-      router.push(`${pathname}${queryString ? '?' + queryString : ''}` as any);
+      router.push(`${pathname}${queryString ? '?' + queryString : ''}` as Route);
     }, 300);
 
     return () => clearTimeout(delayedSearch);

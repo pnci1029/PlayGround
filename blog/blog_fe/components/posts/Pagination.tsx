@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Route } from 'next';
 
 interface PaginationProps {
   currentPage: number;
@@ -23,7 +24,7 @@ export default function Pagination({ currentPage, totalPages, total }: Paginatio
     }
     
     const queryString = params.toString();
-    router.push(`${pathname}${queryString ? '?' + queryString : ''}` as any);
+    router.push(`${pathname}${queryString ? '?' + queryString : ''}` as Route);
   };
 
   const getPageNumbers = () => {

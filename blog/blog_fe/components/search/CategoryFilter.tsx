@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Route } from 'next';
 
 const categories = [
   { value: '', label: '전체 카테고리' },
@@ -31,7 +32,7 @@ export default function CategoryFilter() {
     params.delete('page');
     
     const queryString = params.toString();
-    router.push(`${pathname}${queryString ? '?' + queryString : ''}` as any);
+    router.push(`${pathname}${queryString ? '?' + queryString : ''}` as Route);
   };
 
   return (
