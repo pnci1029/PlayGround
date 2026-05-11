@@ -23,7 +23,7 @@ export default function Pagination({ currentPage, totalPages, total }: Paginatio
     }
     
     const queryString = params.toString();
-    router.push(`${pathname}${queryString ? '?' + queryString : ''}`);
+    router.push(`${pathname}${queryString ? '?' + queryString : ''}` as any);
   };
 
   const getPageNumbers = () => {

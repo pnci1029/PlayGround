@@ -23,7 +23,7 @@ export default function SearchBar() {
       params.delete('page');
       
       const queryString = params.toString();
-      router.push(`${pathname}${queryString ? '?' + queryString : ''}`);
+      router.push(`${pathname}${queryString ? '?' + queryString : ''}` as any);
     }, 300);
 
     return () => clearTimeout(delayedSearch);

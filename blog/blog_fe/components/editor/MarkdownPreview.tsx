@@ -19,7 +19,7 @@ export default function MarkdownPreview({ content, className = '' }: MarkdownPre
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex, rehypeHighlight]}
         components={{
-          code({ inline, className, children, ...props }) {
+          code({ inline, className, children, ...props }: { inline?: boolean; className?: string; children?: React.ReactNode; [key: string]: any }) {
             const match = /language-(\w+)/.exec(className || '');
             
             if (!inline && match) {

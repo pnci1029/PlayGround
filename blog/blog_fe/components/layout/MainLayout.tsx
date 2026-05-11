@@ -35,13 +35,13 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
                 <Link href="/" className="text-text-secondary hover:text-primary transition-colors">
                   홈
                 </Link>
-                <Link href="/category/dev" className="text-text-secondary hover:text-primary transition-colors">
+                <Link href="/category/dev" as any className="text-text-secondary hover:text-primary transition-colors">
                   개발
                 </Link>
-                <Link href="/category/reading" className="text-text-secondary hover:text-primary transition-colors">
+                <Link href="/category/reading" as any className="text-text-secondary hover:text-primary transition-colors">
                   독서
                 </Link>
-                <Link href="/search" className="text-text-secondary hover:text-primary transition-colors">
+                <Link href="/search" as any className="text-text-secondary hover:text-primary transition-colors">
                   검색
                 </Link>
               </nav>
@@ -91,7 +91,7 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
                     {categories.map((category) => (
                       <Link
                         key={category.slug}
-                        href={`/category/${category.slug}`}
+                        href={`/category/${category.slug}` as any}
                         className="flex items-center justify-between py-2 px-3 rounded hover:bg-primary-soft hover:text-primary transition-colors group"
                       >
                         <span className="text-text-secondary group-hover:text-primary">
