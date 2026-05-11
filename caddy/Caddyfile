@@ -127,7 +127,7 @@ blog.chhong.kr, blog.localhost {
 		reverse_proxy blog:8013
 	}
 
-	# 프론트엔드 없음 - API 전용 서버
+	# 프론트엔드는 Vercel에서 처리 - API 전용 서버
 	respond "Blog API Server" 404
 }
 
