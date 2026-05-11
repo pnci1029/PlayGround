@@ -162,6 +162,39 @@ n8n.salehero.kr {
 	}
 }
 
+# 메인 도메인 - 프론트엔드는 Vercel, API는 백엔드
+chhong.kr {
+	# SSL 인증서 자동 발급
+	
+	# API 요청
+	handle /api/* {
+		reverse_proxy playground:8000 {
+			fail_duration 10s
+			max_fails 3
+			health_uri /health
+			health_interval 30s
+		}
+	}
+
+	# WebSocket 요청
+	handle /ws {
+		reverse_proxy playground:8010 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
+			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
+		}
+	}
+
+	# Health check
+	handle /health {
+		reverse_proxy playground:8000
+	}
+	
+	# 프론트엔드는 Vercel에서 처리
+	respond "PlayGround - Frontend at Vercel" 404
+}
+
 # 404 전용 서브도메인
 404.chhong.kr {
 	# SSL 인증서 자동 발급
