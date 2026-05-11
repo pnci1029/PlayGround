@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3004';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://blog.chhong.kr';
 
 export async function GET(request: NextRequest) {
   try {

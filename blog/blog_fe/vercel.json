@@ -1,12 +1,1 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://blog.chhong.kr/api/$1"
-    },
-    {
-      "source": "/ws",
-      "destination": "https://blog.chhong.kr/ws"
-    }
-  ]
-}
+{}
