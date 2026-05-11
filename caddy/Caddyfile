@@ -107,28 +107,32 @@ trend.chhong.kr, trend.localhost {
 	respond "Trend API Server" 404
 }
 
-# Blog 서브도메인
-blog.chhong.kr, blog.localhost {
-	# SSL 인증서 자동 발급 (HTTP Challenge)
-	tls internal
+# Blog API 서브도메인 (Contabo)
+blog-api.chhong.kr {
+	# SSL 인증서 자동 발급 (Let's Encrypt)
 
-	# API 요청은 백엔드로
-	handle_path /api/* {
-		reverse_proxy blog:8003 {
-			fail_duration 10s
-			max_fails 3
-			health_uri /health
-			health_interval 30s
+	# WebSocket 요청
+	handle /ws {
+		reverse_proxy blog:8013 {
+			header_up Upgrade {http.request.header.Upgrade}
+			header_up Connection {http.request.header.Connection}
+			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
+			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
 		}
 	}
 
-	# WebSocket 요청은 백엔드로
-	handle /ws {
-		reverse_proxy blog:8013
+	# API 요청
+	handle /api/* {
+		reverse_proxy blog:8003 {
+			fail_duration 10s
+			max_fails 3
+		}
 	}
 
-	# 프론트엔드는 Vercel에서 처리 - API 전용 서버
-	respond "Blog API Server" 404
+	# Health check
+	handle /health {
+		reverse_proxy blog:8003
+	}
 }
 
 # SaleHero 프론트엔드 서빙
@@ -207,7 +211,7 @@ chhong.kr {
 	}
 }
 
-# 지원하지 않는 서브도메인에 대한 fallback - 404 서브도메인으로 리다이렉트
-*.chhong.kr {
-	redir https://404.chhong.kr{uri} 302
-}
+# 와일드카드 인증서 문제로 임시 제거
+# *.chhong.kr {
+#	redir https://404.chhong.kr{uri} 302
+# }
