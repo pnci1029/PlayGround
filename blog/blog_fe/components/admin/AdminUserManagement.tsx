@@ -30,7 +30,7 @@ export default function AdminUserManagement() {
     username: '',
     email: '',
     password: '',
-    role: 'viewer' as const
+    role: 'viewer' as User['role']
   });
 
   const handleAddUser = async (e: React.FormEvent) => {
