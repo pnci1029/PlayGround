@@ -7,6 +7,10 @@
     {
       "source": "/ws",
       "destination": "https://blog-api.chhong.kr/ws"
+    },
+    {
+      "source": "/health",
+      "destination": "https://blog-api.chhong.kr/health"
     }
   ]
 }

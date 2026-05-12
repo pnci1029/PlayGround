@@ -31,7 +31,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
 
     try {
       // Next.js API 라우트로 비밀번호 확인 (vercel.json 리라이트 회피)
-      const response = await fetch('/_auth/check', {
+      const response = await fetch('/api/auth-admin/check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
