@@ -30,6 +30,7 @@ services:
       - .env
     environment:
       - NODE_ENV=production
+      - HOST=0.0.0.0
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB:-playground}
