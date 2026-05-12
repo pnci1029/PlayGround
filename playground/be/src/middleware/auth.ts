@@ -2,7 +2,11 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import jwt from 'jsonwebtoken'
 import { AdminModel } from '../models/adminModel'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'please_change_this_jwt_secret_in_production'
+const JWT_SECRET = process.env.JWT_SECRET
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
 
 export interface JWTPayload {
   adminId: number
