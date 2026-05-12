@@ -6,7 +6,7 @@ import type {
   PostQuery 
 } from '@/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 class ApiError extends Error {
   constructor(message: string, public status: number) {

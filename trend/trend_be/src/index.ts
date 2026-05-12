@@ -14,8 +14,15 @@ import { randomUUID } from 'crypto'
 // 환경변수 로드
 config()
 
-const PORT = parseInt(process.env.PORT || '8002')
-const WS_PORT = parseInt(process.env.WS_PORT || '8013')
+if (!process.env.PORT) {
+  throw new Error('PORT environment variable is required')
+}
+if (!process.env.WS_PORT) {
+  throw new Error('WS_PORT environment variable is required')
+}
+
+const PORT = parseInt(process.env.PORT)
+const WS_PORT = parseInt(process.env.WS_PORT)
 
 // HTTP 서버 (API)
 const httpServer: FastifyInstance = Fastify({

@@ -1,7 +1,14 @@
+if (!process.env.PORT) {
+  throw new Error('PORT environment variable is required')
+}
+if (!process.env.HOST) {
+  throw new Error('HOST environment variable is required')
+}
+
 export const config = {
   server: {
-    port: parseInt(process.env.PORT || '8000'),
-    host: process.env.HOST || '0.0.0.0',
+    port: parseInt(process.env.PORT),
+    host: process.env.HOST,
   },
   cors: {
     origin: [

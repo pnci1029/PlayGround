@@ -1,7 +1,11 @@
 // API 클라이언트 설정
 import type { ApiResponse, ApiError, HttpClientConfig } from '@/types/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082'
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is required')
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 class ApiClient {
   private baseURL: string
