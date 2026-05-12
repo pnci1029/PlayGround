@@ -124,6 +124,7 @@ services:
       - DB_USER=${POSTGRES_USER:-postgres}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_SCHEMA=blog
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/playground
     depends_on:
       - postgres
     restart: unless-stopped
