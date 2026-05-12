@@ -145,6 +145,7 @@ export async function POST(request: NextRequest) {
     
     // 개발 환경에서는 성공 응답
     if (process.env.NODE_ENV === 'development') {
+      const body = await request.json();
       return NextResponse.json({
         id: Date.now().toString(),
         ...body,

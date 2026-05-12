@@ -4,10 +4,10 @@ const API_BASE_URL = process.env.API_BASE_URL || 'https://blog-api.chhong.kr';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     const backendUrl = `${API_BASE_URL}/api/posts/${id}`;
     
@@ -28,8 +28,9 @@ export async function GET(
     
     // 개발 환경에서는 더미 데이터 반환
     if (process.env.NODE_ENV === 'development') {
+      const { id } = await params;
       return NextResponse.json({
-        id: params.id,
+        id: id,
         title: 'Sample Post',
         slug: 'sample-post',
         content: '<p>This is a sample post content.</p>',
@@ -52,10 +53,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     
     const backendUrl = `${API_BASE_URL}/api/posts/${id}`;
@@ -79,8 +80,9 @@ export async function PUT(
     
     // 개발 환경에서는 성공 응답
     if (process.env.NODE_ENV === 'development') {
+      const { id } = await params;
       return NextResponse.json({
-        id: params.id,
+        id: id,
         ...await request.json(),
         updatedAt: new Date().toISOString()
       });
@@ -95,10 +97,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     const backendUrl = `${API_BASE_URL}/api/posts/${id}`;
     
