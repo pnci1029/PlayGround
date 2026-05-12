@@ -20,10 +20,14 @@ export default function Home() {
         {/* 검색 및 필터링 */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="flex-1">
-            <SearchBar />
+            <Suspense fallback={<div className="h-10 bg-gray-200 rounded animate-pulse"></div>}>
+              <SearchBar />
+            </Suspense>
           </div>
           <div className="sm:w-64">
-            <CategoryFilter />
+            <Suspense fallback={<div className="h-10 bg-gray-200 rounded animate-pulse"></div>}>
+              <CategoryFilter />
+            </Suspense>
           </div>
         </div>
         
