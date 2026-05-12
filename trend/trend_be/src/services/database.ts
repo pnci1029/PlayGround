@@ -22,12 +22,26 @@ export class DatabaseService {
   public pool: Pool
   
   constructor() {
+    // 필수 환경변수 검증
+    if (!process.env.DB_PASSWORD) {
+      throw new Error('DB_PASSWORD environment variable is required')
+    }
+    if (!process.env.DB_HOST) {
+      throw new Error('DB_HOST environment variable is required')
+    }
+    if (!process.env.DB_NAME) {
+      throw new Error('DB_NAME environment variable is required')
+    }
+    if (!process.env.DB_USER) {
+      throw new Error('DB_USER environment variable is required')
+    }
+    
     this.pool = new Pool({
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
-      database: process.env.DB_NAME || 'playground',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'password',
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
       // PostgreSQL connection pool settings
       max: 20,
       idleTimeoutMillis: 30000,

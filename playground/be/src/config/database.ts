@@ -4,11 +4,25 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 // 데이터베이스 연결 설정
+// 필수 환경변수 검증
+if (!process.env.DB_PASSWORD) {
+  throw new Error('DB_PASSWORD environment variable is required')
+}
+if (!process.env.DB_USER) {
+  throw new Error('DB_USER environment variable is required')
+}
+if (!process.env.DB_HOST) {
+  throw new Error('DB_HOST environment variable is required')
+}
+if (!process.env.DB_NAME) {
+  throw new Error('DB_NAME environment variable is required')
+}
+
 export const dbConfig = {
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'playground',
-  password: process.env.DB_PASSWORD || 'please_change_this_password',
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || '5432'),
   ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
 }
