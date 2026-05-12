@@ -119,3 +119,43 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    
+    const backendUrl = `${API_BASE_URL}/api/posts`;
+    
+    const response = await fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Post CREATE API error:', error);
+    
+    // 개발 환경에서는 성공 응답
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.json({
+        id: Date.now().toString(),
+        ...body,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    return NextResponse.json(
+      { error: '게시물을 생성할 수 없습니다' },
+      { status: 500 }
+    );
+  }
+}

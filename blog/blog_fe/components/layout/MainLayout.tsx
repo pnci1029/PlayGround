@@ -50,6 +50,12 @@ export default function MainLayout({ children, showSidebar = true }: MainLayoutP
             
             <div className="flex items-center space-x-4">
               <Link 
+                href="/admin"
+                className="px-3 py-2 text-text-secondary hover:text-primary transition-colors text-sm font-medium"
+              >
+                관리자
+              </Link>
+              <Link 
                 href="/write"
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
               >
