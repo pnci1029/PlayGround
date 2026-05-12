@@ -2,24 +2,25 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json();
+    const { username, password } = await request.json();
     
-    // 환경변수에서 관리자 비밀번호 가져오기
+    // 환경변수에서 관리자 계정 정보 가져오기
+    const adminUsername = process.env.BLOG_ADMIN_USERNAME || 'admin';
     const adminPassword = process.env.BLOG_ADMIN_PASSWORD;
     
     if (!adminPassword) {
       return NextResponse.json(
-        { error: 'Admin password not configured' },
+        { error: 'Admin credentials not configured' },
         { status: 500 }
       );
     }
     
-    // 비밀번호 검증
-    if (password === adminPassword) {
+    // 사용자명과 비밀번호 검증
+    if (username === adminUsername && password === adminPassword) {
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json(
-        { error: 'Invalid password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
