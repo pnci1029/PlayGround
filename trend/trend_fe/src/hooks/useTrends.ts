@@ -20,7 +20,11 @@ interface WebSocketMessage {
   timestamp: number
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is required')
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 const getWebSocketUrl = () => {
   if (typeof window === 'undefined') return 'ws://localhost:8012/ws'

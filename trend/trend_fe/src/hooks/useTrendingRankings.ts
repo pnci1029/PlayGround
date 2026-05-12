@@ -36,7 +36,11 @@ export interface UseTrendingRankingsReturn {
   } | null
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is required')
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export function useTrendingRankings(initialTimeframe: string = '1h'): UseTrendingRankingsReturn {
   const [rankings, setRankings] = useState<TrendingRanking[]>([])

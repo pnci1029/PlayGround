@@ -30,8 +30,8 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
     setError('');
 
     try {
-      // API로 비밀번호 확인
-      const response = await fetch('/api/auth/check', {
+      // Next.js API 라우트로 비밀번호 확인 (vercel.json 리라이트 회피)
+      const response = await fetch('/_auth/check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
