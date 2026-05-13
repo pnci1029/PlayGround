@@ -3,11 +3,11 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 패키지 파일 복사 및 의존성 설치 (캐싱 최적화)
-COPY package*.json ./
-RUN npm ci --silent
+COPY ./blog/blog_be/package*.json ./
+RUN npm install
 
 # 소스 코드 복사
-COPY . .
+COPY ./blog/blog_be/ ./
 
 # 포트 노출
 EXPOSE 8003 8013
