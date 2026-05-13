@@ -125,6 +125,8 @@ services:
       - DB_USER=${POSTGRES_USER:-postgres}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_SCHEMA=blog
+      - BLOG_ADMIN_USERNAME=${BLOG_ADMIN_USERNAME}
+      - BLOG_ADMIN_PASSWORD=${BLOG_ADMIN_PASSWORD}
     depends_on:
       - postgres
     restart: unless-stopped

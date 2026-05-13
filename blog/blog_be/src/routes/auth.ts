@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 interface AuthCheckRequest {
   Body: {
+    username: string;
     password: string;
   };
 }
@@ -9,21 +10,22 @@ interface AuthCheckRequest {
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/check', async (request: FastifyRequest<AuthCheckRequest>, reply: FastifyReply) => {
     try {
-      const { password } = request.body;
+      const { username, password } = request.body;
       
+      const adminUsername = process.env.BLOG_ADMIN_USERNAME;
       const adminPassword = process.env.BLOG_ADMIN_PASSWORD;
       
-      if (!adminPassword) {
+      if (!adminUsername || !adminPassword) {
         return reply.status(500).send({
-          error: 'Admin password not configured'
+          error: 'Admin credentials not configured'
         });
       }
       
-      if (password === adminPassword) {
+      if (username === adminUsername && password === adminPassword) {
         return reply.send({ success: true });
       } else {
         return reply.status(401).send({
-          error: 'Invalid password'
+          error: 'Invalid credentials'
         });
       }
     } catch (error) {
