@@ -30,13 +30,13 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
     setError('');
 
     try {
-      // Next.js API 라우트로 비밀번호 확인 (vercel.json 리라이트 회피)
-      const response = await fetch('/api/auth-admin/check', {
+      // 백엔드 API로 비밀번호 확인
+      const response = await fetch('/api/auth/check', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ password }),
       });
 
       if (response.ok) {
@@ -45,7 +45,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
         setUsername('');
         setPassword('');
       } else {
-        setError('사용자명 또는 비밀번호가 올바르지 않습니다.');
+        setError('비밀번호가 올바르지 않습니다.');
       }
     } catch (error) {
       setError('인증 중 오류가 발생했습니다.');
@@ -75,7 +75,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
               블로그 관리자 인증
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              글을 작성하려면 관리자 비밀번호를 입력하세요
+              관리자 비밀번호를 입력하세요
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -121,7 +121,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
             <div>
               <button
                 type="submit"
-                disabled={isSubmitting || !username.trim() || !password.trim()}
+                disabled={isSubmitting || !password.trim()}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? '확인 중...' : '인증'}

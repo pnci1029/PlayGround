@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import jwt from 'jsonwebtoken'
 import { AdminModel } from '../models/adminModel'
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET as string
 
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required')
@@ -35,7 +35,8 @@ export class AuthMiddleware {
 
   static verifyToken(token: string): JWTPayload {
     try {
-      return jwt.verify(token, JWT_SECRET) as JWTPayload
+      const decoded = jwt.verify(token, JWT_SECRET)
+      return decoded as JWTPayload
     } catch (error) {
       throw new Error('유효하지 않은 토큰입니다')
     }
