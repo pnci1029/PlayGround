@@ -1,0 +1,226 @@
+name: Test and Auto Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          blog/blog_fe/package-lock.json
+          blog/blog_be/package-lock.json
+          
+    - name: Install dependencies and test builds
+      run: |
+        # 블로그 프론트엔드 테스트
+        cd blog/blog_fe
+        npm ci
+        npm run build
+        cd ../..
+        
+        # 블로그 백엔드 테스트  
+        cd blog/blog_be
+        npm ci
+        npm run type-check
+        cd ../..
+        
+        echo "✅ 모든 빌드 테스트 통과"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+
+    # 🔑 .gitignore된 실제 파일들을 복원
+    - name: Restore gitignored files
+      run: |
+        # PlayGround BE .env 복원
+        if [ ! -z '${{ secrets.PLAYGROUND_BE_ENV_FILE }}' ]; then
+          echo '${{ secrets.PLAYGROUND_BE_ENV_FILE }}' | base64 -d > playground/be/.env
+        fi
+        
+        # PlayGround FE .env.local 복원
+        if [ ! -z '${{ secrets.PLAYGROUND_FE_ENV_LOCAL_FILE }}' ]; then
+          echo '${{ secrets.PLAYGROUND_FE_ENV_LOCAL_FILE }}' | base64 -d > playground/fe/.env.local
+        fi
+        
+        # PlayGround FE .env.production 복원
+        if [ ! -z '${{ secrets.PLAYGROUND_FE_ENV_PROD_FILE }}' ]; then
+          echo '${{ secrets.PLAYGROUND_FE_ENV_PROD_FILE }}' | base64 -d > playground/fe/.env.production
+        fi
+        
+        # 공통 .env.production 복원 (최상위)
+        if [ ! -z '${{ secrets.ENV_PRODUCTION_FILE }}' ]; then
+          echo '${{ secrets.ENV_PRODUCTION_FILE }}' | base64 -d > .env.production
+        fi
+        
+        # 마이그레이션 파일들 복원
+        mkdir -p migrations
+        if [ ! -z '${{ secrets.MIGRATION_SERVICE_FILE }}' ]; then
+          echo '${{ secrets.MIGRATION_SERVICE_FILE }}' | base64 -d > migrations/migration.service.ts
+        fi
+        if [ ! -z '${{ secrets.MIGRATION_PLAYGROUND_SQL }}' ]; then
+          echo '${{ secrets.MIGRATION_PLAYGROUND_SQL }}' | base64 -d > migrations/playground.sql
+        fi
+        
+        # PlayGround FE config.ts 복원
+        if [ ! -z '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' ]; then
+          mkdir -p playground/fe/src/lib
+          echo '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' | base64 -d > playground/fe/src/lib/config.ts
+        fi
+        
+        # 메인 .env 복원
+        if [ ! -z '${{ secrets.MAIN_ENV_FILE }}' ]; then
+          echo '${{ secrets.MAIN_ENV_FILE }}' | base64 -d > .env
+        fi
+        
+        # MoodBite BE secret 복원
+        if [ ! -z '${{ secrets.MOODBITE_BE_SECRET_FILE }}' ]; then
+          mkdir -p moodbite/MoodBite_BE/src/main/resources
+          echo '${{ secrets.MOODBITE_BE_SECRET_FILE }}' | base64 -d > moodbite/MoodBite_BE/src/main/resources/application-secret.yml
+        fi
+        
+        # MoodBite foods.json data 복원 (압축됨)
+        if [ ! -z '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' ]; then
+          mkdir -p moodbite/MoodBite_BE/src/main/resources/data
+          echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d | gunzip > moodbite/MoodBite_BE/src/main/resources/data/foods.json
+        fi
+        
+        # Blog BE .env 복원
+        if [ ! -z '${{ secrets.BLOG_BE_ENV_FILE }}' ]; then
+          mkdir -p blog/blog_be
+          echo '${{ secrets.BLOG_BE_ENV_FILE }}' | base64 -d > blog/blog_be/.env
+        fi
+        
+        # Blog BE config.ts 복원
+        if [ ! -z '${{ secrets.BLOG_BE_CONFIG_FILE }}' ]; then
+          mkdir -p blog/blog_be/src/utils
+          echo '${{ secrets.BLOG_BE_CONFIG_FILE }}' | base64 -d > blog/blog_be/src/utils/config.ts
+        fi
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        echo '${{ secrets.SSH_PRIVATE_KEY }}' | base64 -d > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.CONTABO_HOST }} >> ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+
+    - name: Package source code
+      run: |
+        # 백엔드 관련 파일들만 압축 (서버에서 Docker가 빌드)
+        tar --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='.next' \
+            --exclude='build' \
+            --exclude='*.map' \
+            --exclude='*.git*' \
+            --exclude='.npm' \
+            --exclude='.cache' \
+            --exclude='playground/fe' \
+            --exclude='moodbite/MoodBite_FE' \
+            --exclude='trend/trend_fe' \
+            --exclude='blog/blog_fe' \
+            -czf playground-deploy.tar.gz \
+            playground/be/ \
+            moodbite/MoodBite_BE/ \
+            trend/trend_be/ \
+            blog/blog_be/ \
+            migrations/ \
+            docker-compose.yml \
+            docker-compose.blog.yml \
+            caddy/ \
+            deploy.sh \
+            .env \
+            .env.production \
+            $([ -d database ] && echo database/ || echo)
+
+    - name: Detect service changes
+      id: changes
+      run: |
+        echo "Detecting changes..."
+        
+        # HEAD~1이 존재하는지 확인
+        if git rev-parse HEAD~1 >/dev/null 2>&1; then
+          echo "Using git diff with HEAD~1"
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+        else
+          echo "HEAD~1 not found, using all files in current commit"
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
+        fi
+        
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # 백엔드 서비스별 변경 여부 확인
+        echo "playground_backend=$(echo "$CHANGED_FILES" | grep -q '^playground/be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "moodbite_backend=$(echo "$CHANGED_FILES" | grep -q '^moodbite/MoodBite_BE/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "trend_backend=$(echo "$CHANGED_FILES" | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "blog_backend=$(echo "$CHANGED_FILES" | grep -q '^blog/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "caddy_config=$(echo "$CHANGED_FILES" | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "docker_config=$(echo "$CHANGED_FILES" | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+    - name: Deploy to Contabo
+      run: |
+        # 디렉토리 생성 후 배포 파일 업로드
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "mkdir -p ${{ secrets.CONTABO_PATH }}"
+        
+        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
+          ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }}:${{ secrets.CONTABO_PATH }}/
+        
+        # 서버에서 소스 배포 및 deploy.sh 실행
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "cd ${{ secrets.CONTABO_PATH }} && \
+           tar -xzf playground-deploy.tar.gz && \
+           rm -f playground-deploy.tar.gz && \
+           chmod +x deploy.sh && \
+           BLOG_CHANGED='${{ steps.changes.outputs.blog_backend }}' \
+           MOODBITE_CHANGED='${{ steps.changes.outputs.moodbite_backend }}' \
+           PLAYGROUND_CHANGED='${{ steps.changes.outputs.playground_backend }}' \
+           TREND_CHANGED='${{ steps.changes.outputs.trend_backend }}' \
+           DOCKER_CHANGED='${{ steps.changes.outputs.docker_config }}' \
+           ./deploy.sh"
+
+    - name: Post-deployment health check
+      run: |
+        echo "⏳ 배포 후 헬스체크 대기 중..."
+        sleep 10
+        
+        # 블로그 API 헬스체크
+        if ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+           "curl -s -f http://localhost:8003/health"; then
+          echo "✅ 블로그 API 헬스체크 성공"
+        else
+          echo "❌ 블로그 API 헬스체크 실패"
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+            "docker logs blog --tail 10"
+          exit 1
+        fi
+        
+        # 외부 API 접근 테스트
+        if curl -s -f https://blog-api.chhong.kr/health; then
+          echo "✅ 외부 블로그 API 접근 성공"
+        else
+          echo "❌ 외부 블로그 API 접근 실패"
+          exit 1
+        fi
+        
+        echo "🎉 배포 및 헬스체크 완료!"
