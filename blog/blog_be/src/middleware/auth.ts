@@ -35,7 +35,7 @@ export async function authenticateUser(
   }
 }
 
-export async function requireRole(roles: string[]) {
+export function requireRole(roles: string[]) {
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) {
       return reply.status(401).send({ error: 'Authentication required' });
