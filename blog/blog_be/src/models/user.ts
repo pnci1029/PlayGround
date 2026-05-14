@@ -15,10 +15,7 @@ export interface User {
 
 export const createUserSchema = z.object({
   username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores'),
-  email: z.string().email(),
-  password: z.string().min(6),
-  display_name: z.string().max(100).optional(),
-  role: z.enum(['admin', 'editor', 'writer', 'viewer']).default('writer')
+  password: z.string().min(6)
 });
 
 export const loginSchema = z.object({

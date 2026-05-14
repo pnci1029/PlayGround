@@ -18,9 +18,7 @@ export default function AdminUserManagement() {
   const [loading, setLoading] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
-    email: '',
-    password: '',
-    role: 'writer' as User['role']
+    password: ''
   });
 
   // 사용자 목록 불러오기
@@ -56,7 +54,7 @@ export default function AdminUserManagement() {
       if (response.ok) {
         const user = await response.json();
         setUsers([...users, user]);
-        setNewUser({ username: '', email: '', password: '', role: 'writer' });
+        setNewUser({ username: '', password: '' });
         setShowAddUser(false);
         alert('사용자가 추가되었습니다.');
       } else {
@@ -250,53 +248,35 @@ export default function AdminUserManagement() {
             <form onSubmit={handleAddUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  사용자명
+                  관리자 사용자명
                 </label>
                 <input
                   type="text"
                   value={newUser.username}
                   onChange={(e) => setNewUser({...newUser, username: e.target.value})}
                   className="w-full border rounded-lg px-3 py-2"
+                  placeholder="관리자 닉네임 입력"
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  이메일
-                </label>
-                <input
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                  className="w-full border rounded-lg px-3 py-2"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  비밀번호
+                  관리자 비밀번호
                 </label>
                 <input
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser({...newUser, password: e.target.value})}
                   className="w-full border rounded-lg px-3 py-2"
+                  placeholder="비밀번호 입력"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  역할
-                </label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({...newUser, role: e.target.value as User['role']})}
-                  className="w-full border rounded-lg px-3 py-2"
-                >
-                  <option value="viewer">조회자</option>
-                  <option value="editor">편집자</option>
-                  <option value="admin">관리자</option>
-                </select>
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  💡 <strong>관리자 권한으로 자동 생성됩니다</strong><br/>
+                  이메일과 디스플레이 이름은 자동으로 설정됩니다.
+                </p>
               </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <button

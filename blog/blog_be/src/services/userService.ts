@@ -6,27 +6,28 @@ import { config } from '../utils/config.js';
 
 export class UserService {
   async createUser(input: CreateUserInput): Promise<User> {
-    const { username, email, password, display_name, role } = input;
+    const { username, password } = input;
     
     // Check if user already exists
     const existingUser = await pool.query(
-      'SELECT id FROM users WHERE username = $1 OR email = $2',
-      [username, email]
+      'SELECT id FROM users WHERE username = $1',
+      [username]
     );
     
     if (existingUser.rows.length > 0) {
-      throw new Error('Username or email already exists');
+      throw new Error('Username already exists');
     }
     
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
     
-    // Create user
+    // Create admin user (auto-assign admin role and generate email)
+    const email = `${username}@admin.local`;
     const result = await pool.query(
       `INSERT INTO users (username, email, password_hash, display_name, role)
-       VALUES ($1, $2, $3, $4, $5)
+       VALUES ($1, $2, $3, $4, 'admin')
        RETURNING id, username, email, display_name, role, is_active, created_at, updated_at`,
-      [username, email, password_hash, display_name, role]
+      [username, email, password_hash, username]
     );
     
     return result.rows[0];
