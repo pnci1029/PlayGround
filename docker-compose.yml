@@ -13,6 +13,11 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - playground_network
 
@@ -41,7 +46,8 @@ services:
       - PORT=8000
       - WS_PORT=8010
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - playground_network
@@ -70,7 +76,8 @@ services:
       - DB_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - DB_SCHEMA=moodbite
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - playground_network
@@ -98,7 +105,8 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_SCHEMA=trend
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - playground_network
@@ -128,7 +136,8 @@ services:
       - BLOG_ADMIN_USERNAME=${BLOG_ADMIN_USERNAME}
       - BLOG_ADMIN_PASSWORD=${BLOG_ADMIN_PASSWORD}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - playground_network

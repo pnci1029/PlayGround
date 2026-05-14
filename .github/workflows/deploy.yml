@@ -152,68 +152,10 @@ jobs:
 
     - name: Deploy to Contabo
       run: |
-        # 디렉토리 생성 후 배포 파일 업로드
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
-          "mkdir -p ${{ secrets.CONTABO_PATH }}"
-        
-        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
-          ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }}:${{ secrets.CONTABO_PATH }}/
-        
-        # 서버에서 소스 배포
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
-          "cd ${{ secrets.CONTABO_PATH }} && \
-           rm -rf playground-temp && \
-           mkdir playground-temp && \
-           tar -xzf playground-deploy.tar.gz -C playground-temp && \
-           rm -rf playground && \
-           mv playground-temp playground && \
-           rm -f playground-deploy.tar.gz && \
-           echo '✅ PlayGround 소스 배포 완료'"
-
-    - name: Restart changed backend services
-      run: |
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
           "cd ${{ secrets.CONTABO_PATH }}/playground && \
-           
-           # 변경된 백엔드 서비스만 재시작
-           if [ '${{ steps.changes.outputs.playground_backend }}' = 'true' ]; then
-             echo '🔄 PlayGround Backend 재시작 중...'
-             docker compose up -d --build backend
-           fi
-           
-           if [ '${{ steps.changes.outputs.moodbite_backend }}' = 'true' ]; then
-             echo '🔄 MoodBite Backend 재시작 중...'
-             docker compose up -d --build moodbite
-           fi
-           
-           if [ '${{ steps.changes.outputs.trend_backend }}' = 'true' ]; then
-             echo '🔄 Trend Backend 재시작 중...'
-             docker compose up -d --build trend
-           fi
-           
-           # Blog Backend는 항상 실행되도록 보장
-           echo '🔄 Blog Backend 실행 확인 중...'
-           if ! docker ps | grep -q blog; then
-             echo '🚀 Blog Backend 시작 중...'
-             docker compose -f docker-compose.blog.yml up -d --build blog-backend
-           elif [ '${{ steps.changes.outputs.blog_backend }}' = 'true' ]; then
-             echo '🔄 Blog Backend 재시작 중...'
-             docker compose -f docker-compose.blog.yml up -d --build blog-backend
-           else
-             echo '✅ Blog Backend 이미 실행 중'
-           fi
-           
-           if [ '${{ steps.changes.outputs.caddy_config }}' = 'true' ]; then
-             echo '🔄 Caddy 재시작 중...'
-             docker compose restart caddy
-           fi
-           
-           if [ '${{ steps.changes.outputs.docker_config }}' = 'true' ]; then
-             echo '🔄 전체 백엔드 서비스 재시작 중...'
-             docker compose up -d --build
-           fi
-           
-           echo '✅ 변경된 백엔드 서비스 재시작 완료'"
+           ./deploy.sh"
+
 
     # Health check (주석처리 - 수동 배포)
     # - name: Health check
