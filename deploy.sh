@@ -12,13 +12,13 @@ PLAYGROUND_CHANGED=${PLAYGROUND_CHANGED:-"false"}
 TREND_CHANGED=${TREND_CHANGED:-"false"}
 DOCKER_CHANGED=${DOCKER_CHANGED:-"false"}
 
-# 전체 재배포가 필요한 경우
+# 전체 재배포가 필요한 경우 (PostgreSQL 제외)
 if [[ "$DOCKER_CHANGED" == "true" ]]; then
-    echo "🔄 Docker 설정 변경 감지 - 전체 재배포"
-    docker compose down
-    docker compose build --no-cache
-    docker compose up -d
-    echo "✅ 전체 재배포 완료"
+    echo "🔄 Docker 설정 변경 감지 - 백엔드 서비스 재배포"
+    docker compose stop backend moodbite trend blog
+    docker compose build --no-cache backend moodbite trend blog
+    docker compose up -d backend moodbite trend blog
+    echo "✅ 백엔드 서비스 재배포 완료 (PostgreSQL 유지)"
     exit 0
 fi
 

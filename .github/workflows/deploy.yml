@@ -166,6 +166,11 @@ jobs:
            tar -xzf playground-deploy.tar.gz && \
            rm -f playground-deploy.tar.gz && \
            chmod +x deploy.sh && \
+           BLOG_CHANGED='${{ steps.changes.outputs.blog_backend }}' \
+           MOODBITE_CHANGED='${{ steps.changes.outputs.moodbite_backend }}' \
+           PLAYGROUND_CHANGED='${{ steps.changes.outputs.playground_backend }}' \
+           TREND_CHANGED='${{ steps.changes.outputs.trend_backend }}' \
+           DOCKER_CHANGED='${{ steps.changes.outputs.docker_config }}' \
            ./deploy.sh"
 
 
