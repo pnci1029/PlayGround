@@ -6,7 +6,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'editor' | 'writer' | 'viewer';
   isActive: boolean;
   createdAt: string;
   lastLogin?: string;
