@@ -115,6 +115,7 @@ jobs:
             docker-compose.yml \
             docker-compose.blog.yml \
             caddy/ \
+            deploy.sh \
             .env \
             .env.production \
             $([ -d database ] && echo database/ || echo)
@@ -152,8 +153,19 @@ jobs:
 
     - name: Deploy to Contabo
       run: |
+        # 디렉토리 생성 후 배포 파일 업로드
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
-          "cd ${{ secrets.CONTABO_PATH }}/playground && \
+          "mkdir -p ${{ secrets.CONTABO_PATH }}"
+        
+        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa playground-deploy.tar.gz \
+          ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }}:${{ secrets.CONTABO_PATH }}/
+        
+        # 서버에서 소스 배포 및 deploy.sh 실행
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
+          "cd ${{ secrets.CONTABO_PATH }} && \
+           tar -xzf playground-deploy.tar.gz && \
+           rm -f playground-deploy.tar.gz && \
+           chmod +x deploy.sh && \
            ./deploy.sh"
 
 
