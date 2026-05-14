@@ -5,6 +5,7 @@ import {
   updatePostSchema, 
   postQuerySchema 
 } from '@/models/post.js';
+import { authenticateUser, requireRole } from '@/middleware/auth.js';
 
 const postService = new PostService();
 
@@ -27,14 +28,22 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     return post;
   });
   
-  // Create new post
-  fastify.post('/', async (request) => {
-    const input = createPostSchema.parse(request.body);
+  // Create new post (requires authentication)
+  fastify.post('/', {
+    preHandler: [authenticateUser, requireRole(['admin', 'editor', 'writer'])]
+  }, async (request) => {
+    const input = createPostSchema.parse({
+      ...request.body,
+      author_id: request.user!.userId,
+      author_name: request.user!.username
+    });
     return await postService.createPost(input);
   });
   
-  // Update post
-  fastify.put('/:id', async (request) => {
+  // Update post (requires authentication)
+  fastify.put('/:id', {
+    preHandler: [authenticateUser, requireRole(['admin', 'editor', 'writer'])]
+  }, async (request) => {
     const { id } = request.params as { id: string };
     const input = updatePostSchema.parse(request.body);
     
@@ -47,8 +56,10 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     return post;
   });
   
-  // Delete post
-  fastify.delete('/:id', async (request) => {
+  // Delete post (requires authentication)
+  fastify.delete('/:id', {
+    preHandler: [authenticateUser, requireRole(['admin', 'editor'])]
+  }, async (request) => {
     const { id } = request.params as { id: string };
     const success = await postService.deletePost(id);
     
