@@ -4,6 +4,7 @@ import { config } from '@/utils/config.js';
 import { initializeDatabase } from '@/utils/database.js';
 import postsRoutes from '@/routes/posts.js';
 import authRoutes from '@/routes/auth.js';
+import usersRoutes from '@/routes/users.js';
 
 const fastify = Fastify({
   logger: true
@@ -23,6 +24,7 @@ async function start() {
     // Register routes
     await fastify.register(postsRoutes, { prefix: '/api/posts' });
     await fastify.register(authRoutes, { prefix: '/api/auth' });
+    await fastify.register(usersRoutes, { prefix: '/api/users' });
     
     // Health check
     fastify.get('/health', async () => {

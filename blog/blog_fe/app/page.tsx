@@ -2,6 +2,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import PostGrid from '@/components/posts/PostGrid';
 import SearchBar from '@/components/search/SearchBar';
 import CategoryFilter from '@/components/search/CategoryFilter';
+import UserLoginButton from '@/components/auth/UserLoginButton';
 import { Suspense } from 'react';
 
 export default function Home() {
@@ -9,12 +10,17 @@ export default function Home() {
     <MainLayout>
       <div className="space-y-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
-            최근 포스트
-          </h1>
-          <p className="text-text-secondary">
-            개발과 독서, 그리고 생각의 기록
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-text-primary mb-2">
+                최근 포스트
+              </h1>
+              <p className="text-text-secondary">
+                개발과 독서, 그리고 생각의 기록
+              </p>
+            </div>
+            <UserLoginButton />
+          </div>
         </header>
         
         {/* 검색 및 필터링 */}

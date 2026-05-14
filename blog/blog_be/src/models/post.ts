@@ -7,7 +7,9 @@ export const createPostSchema = z.object({
   excerpt: z.string().max(300, 'Excerpt must be less than 300 characters'),
   category: z.string().min(1, 'Category is required'),
   tags: z.array(z.string()).default([]),
-  isPublished: z.boolean().default(false)
+  isPublished: z.boolean().default(false),
+  author_id: z.string().uuid('Valid author ID is required'),
+  author_name: z.string().optional()
 });
 
 export const updatePostSchema = z.object({
