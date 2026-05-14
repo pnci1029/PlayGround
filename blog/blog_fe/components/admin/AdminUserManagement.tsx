@@ -13,66 +13,117 @@ interface User {
 }
 
 export default function AdminUserManagement() {
-  const [users, setUsers] = useState<User[]>([
-    // 더미 데이터 - 실제로는 API에서 가져와야 함
-    {
-      id: '1',
-      username: 'admin',
-      email: 'admin@example.com',
-      role: 'admin',
-      isActive: true,
-      createdAt: '2024-01-01T00:00:00Z',
-      lastLogin: '2024-03-15T10:30:00Z'
-    }
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
   const [showAddUser, setShowAddUser] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
     email: '',
     password: '',
-    role: 'viewer' as User['role']
+    role: 'writer' as User['role']
   });
+
+  // 사용자 목록 불러오기
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/users');
+      if (response.ok) {
+        const userData = await response.json();
+        setUsers(userData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 실제로는 API 호출을 해야 함
-    const user: User = {
-      id: Date.now().toString(),
-      username: newUser.username,
-      email: newUser.email,
-      role: newUser.role,
-      isActive: true,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      });
 
-    setUsers([...users, user]);
-    setNewUser({ username: '', email: '', password: '', role: 'viewer' });
-    setShowAddUser(false);
-    alert('사용자가 추가되었습니다.');
-  };
-
-  const handleToggleUserStatus = (userId: string) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, isActive: !user.isActive }
-        : user
-    ));
-  };
-
-  const handleDeleteUser = (userId: string) => {
-    if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
-      setUsers(users.filter(user => user.id !== userId));
-      alert('사용자가 삭제되었습니다.');
+      if (response.ok) {
+        const user = await response.json();
+        setUsers([...users, user]);
+        setNewUser({ username: '', email: '', password: '', role: 'writer' });
+        setShowAddUser(false);
+        alert('사용자가 추가되었습니다.');
+      } else {
+        const error = await response.json();
+        alert(error.error || '사용자 추가에 실패했습니다.');
+      }
+    } catch (error) {
+      alert('사용자 추가 중 오류가 발생했습니다.');
     }
   };
 
-  const handleChangeRole = (userId: string, newRole: User['role']) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, role: newRole }
-        : user
-    ));
+  const handleToggleUserStatus = async (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !user.isActive })
+      });
+
+      if (response.ok) {
+        setUsers(users.map(u => 
+          u.id === userId ? { ...u, isActive: !u.isActive } : u
+        ));
+      }
+    } catch (error) {
+      alert('사용자 상태 변경에 실패했습니다.');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (confirm('정말로 이 사용자를 삭제하시겠습니까?')) {
+      try {
+        const response = await fetch(`/api/users/${userId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          setUsers(users.filter(user => user.id !== userId));
+          alert('사용자가 삭제되었습니다.');
+        } else {
+          alert('사용자 삭제에 실패했습니다.');
+        }
+      } catch (error) {
+        alert('사용자 삭제 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  const handleChangeRole = async (userId: string, newRole: User['role']) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: newRole })
+      });
+
+      if (response.ok) {
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, role: newRole } : user
+        ));
+      }
+    } catch (error) {
+      alert('권한 변경에 실패했습니다.');
+    }
   };
 
   const getRoleBadgeClass = (role: User['role']) => {

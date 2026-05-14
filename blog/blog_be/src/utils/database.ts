@@ -24,6 +24,20 @@ export async function initializeDatabase() {
 async function createTables() {
   const queries = [
     `
+    CREATE TABLE IF NOT EXISTS users (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      username VARCHAR(50) NOT NULL UNIQUE,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password_hash VARCHAR(255) NOT NULL,
+      display_name VARCHAR(100),
+      role VARCHAR(20) DEFAULT 'writer' CHECK (role IN ('admin', 'editor', 'writer', 'viewer')),
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+      last_login_at TIMESTAMP
+    )
+    `,
+    `
     CREATE TABLE IF NOT EXISTS categories (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name VARCHAR(255) NOT NULL UNIQUE,
@@ -49,6 +63,8 @@ async function createTables() {
       excerpt TEXT,
       category VARCHAR(255) NOT NULL,
       tags TEXT[] DEFAULT ARRAY[]::TEXT[],
+      author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      author_name VARCHAR(100),
       published_at TIMESTAMP,
       updated_at TIMESTAMP DEFAULT NOW(),
       reading_time INTEGER DEFAULT 0,
