@@ -15,7 +15,8 @@ export interface User {
 
 export const createUserSchema = z.object({
   username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores'),
-  password: z.string().min(6)
+  password: z.string().min(6),
+  nickname: z.string().min(1).max(50)
 });
 
 export const loginSchema = z.object({

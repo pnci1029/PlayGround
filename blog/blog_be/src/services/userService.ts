@@ -6,7 +6,7 @@ import { config } from '../utils/config.js';
 
 export class UserService {
   async createUser(input: CreateUserInput): Promise<User> {
-    const { username, password } = input;
+    const { username, password, nickname } = input;
     
     // Check if user already exists
     const existingUser = await pool.query(
@@ -21,13 +21,13 @@ export class UserService {
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
     
-    // Create admin user (auto-assign admin role and generate email)
-    const email = `${username}@admin.local`;
+    // Create user (auto-assign writer role and generate email)
+    const email = `${username}@user.local`;
     const result = await pool.query(
       `INSERT INTO users (username, email, password_hash, display_name, role)
-       VALUES ($1, $2, $3, $4, 'admin')
+       VALUES ($1, $2, $3, $4, 'writer')
        RETURNING id, username, email, display_name, role, is_active, created_at, updated_at`,
-      [username, email, password_hash, username]
+      [username, email, password_hash, nickname]
     );
     
     return result.rows[0];
