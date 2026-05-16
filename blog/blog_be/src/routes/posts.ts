@@ -33,7 +33,7 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
     preHandler: [authenticateUser, requireRole(['admin', 'editor', 'writer'])]
   }, async (request) => {
     const input = createPostSchema.parse({
-      ...request.body,
+      ...(request.body as object),
       author_id: request.user!.userId,
       author_name: request.user!.username
     });

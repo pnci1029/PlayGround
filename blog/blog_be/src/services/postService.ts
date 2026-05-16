@@ -1,16 +1,66 @@
 import { pool } from '@/utils/database.js';
-import { 
-  calculateReadingTime, 
-  extractCodeLanguages, 
-  dbPostToPost 
-} from '@/utils/helpers.js';
 import type { 
   CreatePostInput, 
   UpdatePostInput, 
   PostQueryInput 
 } from '@/models/post.js';
-import type { Post, PostListResponse } from '../../../shared/types/index.js';
-import type { DbPost } from '@/types/database.js';
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  category: string;
+  tags: string[];
+  isPublished: boolean;
+  author_id: string;
+  author_name: string;
+  created_at: string;
+  updated_at: string;
+  published_at?: string;
+  reading_time?: number;
+}
+
+export interface PostListResponse {
+  posts: Post[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit?: number;
+}
+
+type DbPost = any;
+
+// Helper functions
+function calculateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const wordCount = content.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
+}
+
+function extractCodeLanguages(content: string): string[] {
+  const codeBlocks = content.match(/```(\w+)/g) || [];
+  return codeBlocks.map(block => block.replace('```', ''));
+}
+
+function dbPostToPost(dbPost: any): Post {
+  return {
+    id: dbPost.id,
+    title: dbPost.title,
+    slug: dbPost.slug,
+    content: dbPost.content,
+    excerpt: dbPost.excerpt,
+    category: dbPost.category,
+    tags: dbPost.tags || [],
+    isPublished: dbPost.is_published,
+    author_id: dbPost.author_id,
+    author_name: dbPost.author_name,
+    created_at: dbPost.created_at,
+    updated_at: dbPost.updated_at,
+    published_at: dbPost.published_at,
+    reading_time: dbPost.reading_time
+  };
+}
 
 export class PostService {
   async createPost(input: CreatePostInput): Promise<Post> {
@@ -190,6 +240,6 @@ export class PostService {
   async deletePost(id: string): Promise<boolean> {
     const query = 'DELETE FROM posts WHERE id = $1';
     const result = await pool.query(query, [id]);
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 }
