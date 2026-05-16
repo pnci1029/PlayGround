@@ -18,7 +18,8 @@ export default function AdminUserManagement() {
   const [loading, setLoading] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
-    password: ''
+    password: '',
+    nickname: ''
   });
   const [validationErrors, setValidationErrors] = useState<{field: string, message: string}[]>([]);
 
@@ -56,7 +57,7 @@ export default function AdminUserManagement() {
       if (response.ok) {
         const user = await response.json();
         setUsers([...users, user]);
-        setNewUser({ username: '', password: '' });
+        setNewUser({ username: '', password: '', nickname: '' });
         setShowAddUser(false);
         alert('사용자가 추가되었습니다.');
       } else {
@@ -254,7 +255,7 @@ export default function AdminUserManagement() {
             <form onSubmit={handleAddUser} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  관리자 사용자명
+                  사용자 아이디
                 </label>
                 <input
                   type="text"
@@ -268,7 +269,27 @@ export default function AdminUserManagement() {
                       ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
                       : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                   }`}
-                  placeholder="관리자 닉네임 입력"
+                  placeholder="로그인용 아이디 입력"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  닉네임
+                </label>
+                <input
+                  type="text"
+                  value={newUser.nickname}
+                  onChange={(e) => {
+                    setNewUser({...newUser, nickname: e.target.value});
+                    setValidationErrors(prev => prev.filter(err => err.field !== 'nickname'));
+                  }}
+                  className={`w-full border rounded-lg px-3 py-2 ${
+                    validationErrors.some(err => err.field === 'nickname') 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
+                  placeholder="화면에 표시될 닉네임 입력"
                   required
                 />
               </div>
