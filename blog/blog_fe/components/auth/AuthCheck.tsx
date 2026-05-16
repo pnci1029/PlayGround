@@ -33,7 +33,30 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
     setError('');
 
     try {
-      // 사용자 로그인 API 사용
+      // 기존 관리자 계정 확인 먼저
+      const adminResponse = await fetch('/api/auth/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (adminResponse.ok) {
+        // 기존 관리자 로그인 성공
+        localStorage.setItem('user_token', 'admin-token');
+        localStorage.setItem('user_data', JSON.stringify({
+          username: username,
+          role: 'admin',
+          display_name: 'Administrator'
+        }));
+        setIsAuthenticated(true);
+        setUsername('');
+        setPassword('');
+        return;
+      }
+
+      // 일반 사용자 로그인 시도
       const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
@@ -50,8 +73,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
         setUsername('');
         setPassword('');
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || '로그인에 실패했습니다.');
+        setError('로그인에 실패했습니다.');
       }
     } catch (error) {
       setError('인증 중 오류가 발생했습니다.');
