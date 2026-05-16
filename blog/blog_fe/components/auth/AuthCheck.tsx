@@ -18,9 +18,10 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // 세션 스토리지에서 인증 상태 확인
-    const authStatus = sessionStorage.getItem('blog_auth');
-    if (authStatus === 'true') {
+    // 로컬 스토리지에서 JWT 토큰 확인
+    const token = localStorage.getItem('user_token');
+    if (token) {
+      // TODO: 토큰 유효성 검증
       setIsAuthenticated(true);
     }
     setIsLoading(false);
@@ -32,8 +33,8 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
     setError('');
 
     try {
-      // 백엔드 API로 비밀번호 확인
-      const response = await fetch('/api/auth/check', {
+      // 사용자 로그인 API 사용
+      const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,12 +43,15 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
       });
 
       if (response.ok) {
-        sessionStorage.setItem('blog_auth', 'true');
+        const data = await response.json();
+        localStorage.setItem('user_token', data.token);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
         setIsAuthenticated(true);
         setUsername('');
         setPassword('');
       } else {
-        setError('비밀번호가 올바르지 않습니다.');
+        const errorData = await response.json();
+        setError(errorData.error || '로그인에 실패했습니다.');
       }
     } catch (error) {
       setError('인증 중 오류가 발생했습니다.');
@@ -74,10 +78,10 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              블로그 관리자 인증
+              블로그 사용자 로그인
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              관리자 비밀번호를 입력하세요
+              글을 작성하려면 로그인하세요
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -94,7 +98,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="관리자 사용자명"
+                  placeholder="사용자명"
                   disabled={isSubmitting}
                 />
               </div>
@@ -110,7 +114,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="관리자 비밀번호"
+                  placeholder="비밀번호"
                   disabled={isSubmitting}
                 />
               </div>
@@ -126,7 +130,7 @@ export default function AuthCheck({ children, fallback }: AuthCheckProps) {
                 disabled={isSubmitting || !password.trim()}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? '확인 중...' : '인증'}
+                {isSubmitting ? '로그인 중...' : '로그인'}
               </button>
             </div>
           </form>

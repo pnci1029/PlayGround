@@ -1,8 +1,17 @@
 import { FastifyPluginAsync } from 'fastify';
 import { UserService } from '../services/userService.js';
 import { createUserSchema, loginSchema, updateUserSchema } from '../models/user.js';
+import { ZodError } from 'zod';
 
 const userService = new UserService();
+
+// Helper function to format Zod validation errors
+function formatZodError(error: ZodError): { field: string; message: string }[] {
+  return error.errors.map(err => ({
+    field: err.path.join('.'),
+    message: err.message
+  }));
+}
 
 const usersRoutes: FastifyPluginAsync = async (fastify) => {
   // User login
@@ -27,8 +36,16 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       
       return reply.send(user);
     } catch (error) {
+      if (error instanceof ZodError) {
+        const validationErrors = formatZodError(error);
+        return reply.status(400).send({ 
+          error: '입력 데이터가 유효하지 않습니다',
+          details: validationErrors
+        });
+      }
+      
       return reply.status(400).send({ 
-        error: error instanceof Error ? error.message : 'Failed to create user' 
+        error: error instanceof Error ? error.message : '사용자 생성에 실패했습니다' 
       });
     }
   });

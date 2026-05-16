@@ -20,6 +20,7 @@ export default function AdminUserManagement() {
     username: '',
     password: ''
   });
+  const [validationErrors, setValidationErrors] = useState<{field: string, message: string}[]>([]);
 
   // 사용자 목록 불러오기
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function AdminUserManagement() {
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationErrors([]); // Clear previous errors
     
     try {
       const response = await fetch('/api/users', {
@@ -59,7 +61,11 @@ export default function AdminUserManagement() {
         alert('사용자가 추가되었습니다.');
       } else {
         const error = await response.json();
-        alert(error.error || '사용자 추가에 실패했습니다.');
+        if (error.details && Array.isArray(error.details)) {
+          setValidationErrors(error.details);
+        } else {
+          alert(error.error || '사용자 추가에 실패했습니다.');
+        }
       }
     } catch (error) {
       alert('사용자 추가 중 오류가 발생했습니다.');
@@ -253,8 +259,15 @@ export default function AdminUserManagement() {
                 <input
                   type="text"
                   value={newUser.username}
-                  onChange={(e) => setNewUser({...newUser, username: e.target.value})}
-                  className="w-full border rounded-lg px-3 py-2"
+                  onChange={(e) => {
+                    setNewUser({...newUser, username: e.target.value});
+                    setValidationErrors(prev => prev.filter(err => err.field !== 'username'));
+                  }}
+                  className={`w-full border rounded-lg px-3 py-2 ${
+                    validationErrors.some(err => err.field === 'username') 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                   placeholder="관리자 닉네임 입력"
                   required
                 />
@@ -266,12 +279,43 @@ export default function AdminUserManagement() {
                 <input
                   type="password"
                   value={newUser.password}
-                  onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                  className="w-full border rounded-lg px-3 py-2"
+                  onChange={(e) => {
+                    setNewUser({...newUser, password: e.target.value});
+                    setValidationErrors(prev => prev.filter(err => err.field !== 'password'));
+                  }}
+                  className={`w-full border rounded-lg px-3 py-2 ${
+                    validationErrors.some(err => err.field === 'password') 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                   placeholder="비밀번호 입력"
                   required
                 />
               </div>
+              {/* Validation Errors */}
+              {validationErrors.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-red-800 mb-2">입력 오류:</h4>
+                  <ul className="text-sm text-red-700 space-y-1">
+                    {validationErrors.map((error, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-red-500 mr-1">•</span>
+                        <span>
+                          <strong>{error.field === 'username' ? '사용자명' : error.field === 'password' ? '비밀번호' : error.field}:</strong> {' '}
+                          {error.message === 'Username can only contain letters, numbers and underscores' ? 
+                            '사용자명은 영문, 숫자, 언더스코어만 사용 가능합니다' :
+                           error.message === 'Too small: expected string to have >=3 characters' && error.field === 'username' ?
+                            '사용자명은 최소 3자 이상이어야 합니다' :
+                           error.message === 'Too small: expected string to have >=6 characters' && error.field === 'password' ?
+                            '비밀번호는 최소 6자 이상이어야 합니다' :
+                           error.message}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-sm text-blue-700">
                   💡 <strong>관리자 권한으로 자동 생성됩니다</strong><br/>
