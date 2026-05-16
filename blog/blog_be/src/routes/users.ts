@@ -7,7 +7,7 @@ const userService = new UserService();
 
 // Helper function to format Zod validation errors
 function formatZodError(error: ZodError): { field: string; message: string }[] {
-  return error.errors.map(err => ({
+  return error.issues.map((err: any) => ({
     field: err.path.join('.'),
     message: err.message
   }));
