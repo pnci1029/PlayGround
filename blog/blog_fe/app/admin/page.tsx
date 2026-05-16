@@ -1,11 +1,11 @@
 import AdminDashboard from '@/components/admin/AdminDashboard';
-import AuthCheck from '@/components/auth/AuthCheck';
+import AdminAuthCheck from '@/components/auth/AdminAuthCheck';
 
 export default function AdminPage() {
   return (
-    <AuthCheck>
+    <AdminAuthCheck>
       <AdminDashboard />
-    </AuthCheck>
+    </AdminAuthCheck>
   );
 }
 

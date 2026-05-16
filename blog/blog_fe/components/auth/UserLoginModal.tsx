@@ -19,27 +19,7 @@ export default function UserLoginModal({ onClose, onLogin }: UserLoginModalProps
     setError('');
 
     try {
-      // 기존 관리자 계정 확인 먼저
-      const adminResponse = await fetch('/api/auth/check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (adminResponse.ok) {
-        // 기존 관리자 로그인 성공
-        const adminUser = {
-          username: username,
-          role: 'admin',
-          display_name: 'Administrator'
-        };
-        onLogin(adminUser, 'admin-token');
-        return;
-      }
-
-      // 일반 사용자 로그인 시도
+      // 일반 사용자 로그인만 지원
       const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
