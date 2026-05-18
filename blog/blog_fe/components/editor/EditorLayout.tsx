@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TiptapEditor from './TiptapEditor';
 import MarkdownPreview from './MarkdownPreview';
 import { EditorState, PostMetadata } from '@/types';
@@ -34,6 +34,23 @@ export default function EditorLayout({
   });
 
   const [tagInput, setTagInput] = useState('');
+  const [categories, setCategories] = useState<{id: string, name: string, slug: string}[]>([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/categories/active');
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const handleContentChange = (content: string) => {
     setEditorState(prev => ({
@@ -60,10 +77,61 @@ export default function EditorLayout({
     }));
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave(editorState.content, metadata);
-      setEditorState(prev => ({ ...prev, hasUnsavedChanges: false }));
+  const handleSave = async () => {
+    if (!metadata.title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+
+    if (!editorState.content.trim()) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+
+    setEditorState(prev => ({ ...prev, isLoading: true }));
+
+    try {
+      const token = localStorage.getItem('user_token');
+      if (!token) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const postData = {
+        title: metadata.title,
+        content: editorState.content,
+        category: metadata.category,
+        tags: metadata.tags,
+        excerpt: metadata.excerpt,
+        status: metadata.isPublished ? 'published' : 'draft'
+      };
+
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(postData)
+      });
+
+      if (response.ok) {
+        const savedPost = await response.json();
+        alert('포스트가 저장되었습니다!');
+        setEditorState(prev => ({ ...prev, hasUnsavedChanges: false }));
+        
+        if (onSave) {
+          onSave(editorState.content, metadata);
+        }
+      } else {
+        const error = await response.json();
+        alert(error.message || '저장에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('저장 중 오류가 발생했습니다.');
+    } finally {
+      setEditorState(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -106,9 +174,10 @@ export default function EditorLayout({
               
               <button 
                 onClick={handleSave}
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors"
+                disabled={editorState.isLoading}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                저장
+                {editorState.isLoading ? '저장 중...' : '저장'}
               </button>
             </div>
           </div>
@@ -140,13 +209,18 @@ export default function EditorLayout({
                   <label className="block text-sm font-medium text-text-secondary mb-2">
                     카테고리
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={metadata.category}
                     onChange={(e) => setMetadata(prev => ({ ...prev, category: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="개발, 독서, ..."
-                  />
+                  >
+                    <option value="">카테고리 선택</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 <div>
