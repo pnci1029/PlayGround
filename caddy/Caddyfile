@@ -197,6 +197,17 @@ blog.chhong.kr {
 	respond "Blog Frontend at Vercel" 404
 }
 
+# Stock Screener 서브도메인
+stocks.chhong.kr {
+	# SSL 인증서 자동 발급
+	
+	# 모든 요청을 stock_screener 서비스로 전달
+	reverse_proxy stock_screener:8005 {
+		fail_duration 10s
+		max_fails 3
+	}
+}
+
 # 메인 도메인 - 프론트엔드는 Vercel, API는 백엔드
 chhong.kr {
 	# SSL 인증서 자동 발급
