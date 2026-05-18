@@ -1,0 +1,9 @@
+stocks.db
+stocks.db-journal
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.png
+*.log
+.DS_Store

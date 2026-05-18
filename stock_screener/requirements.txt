@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+yfinance
+finance-datareader
+apscheduler
+pandas
+aiofiles
+psycopg2-binary
