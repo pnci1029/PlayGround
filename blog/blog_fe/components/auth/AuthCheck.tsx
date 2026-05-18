@@ -8,7 +8,7 @@ interface AuthCheckProps {
 }
 
 export default function AuthCheck({ children, fallback }: AuthCheckProps) {
-  console.log('🔥 AuthCheck 컴포넌트 렌더링 - 배포 테스트 5');
+  console.log('🔥 AuthCheck 컴포넌트 렌더링 - 배포 테스트 6');
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
