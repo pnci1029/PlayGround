@@ -136,15 +136,15 @@ export default function EditorLayout({
   };
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-surface-elevated">
+      <div className="border-b border-gray-200 bg-gray-50-elevated">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <h1 className="text-lg font-semibold">새 포스트 작성</h1>
               {editorState.hasUnsavedChanges && (
-                <span className="text-sm text-text-muted">저장되지 않은 변경사항</span>
+                <span className="text-sm text-gray-muted">저장되지 않은 변경사항</span>
               )}
             </div>
             
@@ -154,8 +154,8 @@ export default function EditorLayout({
                   onClick={() => setEditorState(prev => ({ ...prev, mode: 'visual' }))}
                   className={`px-3 py-1 text-sm rounded ${
                     editorState.mode === 'visual' 
-                      ? 'bg-white shadow-sm text-text-primary' 
-                      : 'text-text-muted'
+                      ? 'bg-white shadow-sm text-gray-primary' 
+                      : 'text-gray-muted'
                   }`}
                 >
                   편집
@@ -164,8 +164,8 @@ export default function EditorLayout({
                   onClick={() => setEditorState(prev => ({ ...prev, mode: 'preview' }))}
                   className={`px-3 py-1 text-sm rounded ${
                     editorState.mode === 'preview' 
-                      ? 'bg-white shadow-sm text-text-primary' 
-                      : 'text-text-muted'
+                      ? 'bg-white shadow-sm text-gray-primary' 
+                      : 'text-gray-muted'
                   }`}
                 >
                   미리보기
@@ -175,7 +175,7 @@ export default function EditorLayout({
               <button 
                 onClick={handleSave}
                 disabled={editorState.isLoading}
-                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {editorState.isLoading ? '저장 중...' : '저장'}
               </button>
@@ -188,31 +188,31 @@ export default function EditorLayout({
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Metadata Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-surface-elevated rounded-lg p-6 sticky top-8">
+            <div className="bg-gray-50-elevated rounded-lg p-6 sticky top-8">
               <h2 className="text-lg font-semibold mb-4">포스트 정보</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                  <label className="block text-sm font-medium text-gray-secondary mb-2">
                     제목
                   </label>
                   <input
                     type="text"
                     value={metadata.title}
                     onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="포스트 제목"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                  <label className="block text-sm font-medium text-gray-secondary mb-2">
                     카테고리
                   </label>
                   <select
                     value={metadata.category}
                     onChange={(e) => setMetadata(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">카테고리 선택</option>
                     {categories.map((category) => (
@@ -224,7 +224,7 @@ export default function EditorLayout({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                  <label className="block text-sm font-medium text-gray-secondary mb-2">
                     태그
                   </label>
                   <div className="flex gap-2 mb-2">
@@ -233,7 +233,7 @@ export default function EditorLayout({
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="태그 입력"
                     />
                     <button
@@ -247,12 +247,12 @@ export default function EditorLayout({
                     {metadata.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-2 py-1 bg-primary-soft text-primary text-sm rounded-full"
+                        className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-600 text-sm rounded-full"
                       >
                         {tag}
                         <button
                           onClick={() => removeTag(tag)}
-                          className="ml-1 text-primary hover:text-red-500"
+                          className="ml-1 text-blue-600 hover:text-red-500"
                         >
                           ×
                         </button>
@@ -262,13 +262,13 @@ export default function EditorLayout({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                  <label className="block text-sm font-medium text-gray-secondary mb-2">
                     요약
                   </label>
                   <textarea
                     value={metadata.excerpt}
                     onChange={(e) => setMetadata(prev => ({ ...prev, excerpt: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     rows={4}
                     placeholder="포스트에 대한 간단한 설명..."
                   />
@@ -298,7 +298,7 @@ export default function EditorLayout({
                 onContentChange={handleContentChange}
               />
             ) : (
-              <div className="border border-gray-200 rounded-lg p-6 bg-surface min-h-[600px]">
+              <div className="border border-gray-200 rounded-lg p-6 bg-gray-50 min-h-[600px]">
                 <MarkdownPreview content={editorState.content} />
               </div>
             )}

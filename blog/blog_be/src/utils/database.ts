@@ -43,7 +43,10 @@ async function createTables() {
       name VARCHAR(255) NOT NULL UNIQUE,
       slug VARCHAR(255) NOT NULL UNIQUE,
       description TEXT,
-      created_at TIMESTAMP DEFAULT NOW()
+      color VARCHAR(7) DEFAULT '#3B82F6',
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
     )
     `,
     `
