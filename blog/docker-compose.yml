@@ -1,0 +1,33 @@
+services:
+  # Blog 백엔드 서비스 (Node.js + TypeScript + Fastify)
+  blog:
+    build:
+      context: ..
+      dockerfile: ./blog/blog_be/Dockerfile
+    image: blog-backend:latest
+    container_name: blog
+    ports:
+      - "8003:8003"  # HTTP API
+      - "8013:8013"  # WebSocket
+    env_file:
+      - ../.env
+    environment:
+      - NODE_ENV=production
+      - PORT=8003
+      - WS_PORT=8013
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_SCHEMA=blog
+      - BLOG_ADMIN_USERNAME=${BLOG_ADMIN_USERNAME}
+      - BLOG_ADMIN_PASSWORD=${BLOG_ADMIN_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+networks:
+  playground_network:
+    external: true
+    name: playground_playground_network
