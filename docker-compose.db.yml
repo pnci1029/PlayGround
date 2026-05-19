@@ -1,0 +1,52 @@
+services:
+  # PostgreSQL 데이터베이스 (공용)
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-playground}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - playground_network
+
+  # Caddy 리버스 프록시 (공용)
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - /salehero/nginx/html:/usr/share/nginx/html:ro
+      - ./404-page:/usr/share/caddy/404:ro
+    networks:
+      - playground_network
+      - salehero_network
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  playground_network:
+    driver: bridge
+  salehero_network:
+    external: true
+    name: app_salehero-network
