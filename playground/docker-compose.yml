@@ -1,0 +1,33 @@
+services:
+  # 백엔드 서비스 (Node.js)
+  backend:
+    build:
+      context: ..
+      dockerfile: ./playground/be/Dockerfile
+    image: playground-backend:latest
+    container_name: playground
+    ports:
+      - "8000:8000"   # HTTP API
+      - "8010:8010"   # WebSocket
+    env_file:
+      - ../.env
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=24h
+      - PORT=8000
+      - WS_PORT=8010
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+networks:
+  playground_network:
+    external: true
+    name: playground_playground_network

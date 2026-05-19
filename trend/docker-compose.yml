@@ -1,0 +1,31 @@
+services:
+  # Trend 백엔드 서비스 (Node.js + TypeScript)
+  trend:
+    build:
+      context: ..
+      dockerfile: ./trend/trend_be/Dockerfile
+    image: trend-backend:latest
+    container_name: trend
+    ports:
+      - "8002:8002"  # HTTP API
+      - "8012:8012"  # WebSocket
+    env_file:
+      - ../.env
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - WS_PORT=8012
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-playground}
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_SCHEMA=trend
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+networks:
+  playground_network:
+    external: true
+    name: playground_playground_network
