@@ -9,6 +9,20 @@ be/.env*
 fe/.env*
 ```
 
+### 🔴 FATAL: Database Password Configuration
+**ALL DATABASE PASSWORDS MUST BE: `vheh1177!@#`**
+
+#### Environment Files That MUST Use This Password:
+- `.env` (main) → `POSTGRES_PASSWORD=vheh1177!@#`
+- `blog/blog_be/.env` → `DB_PASSWORD=vheh1177!@#` + `DATABASE_URL=postgresql://postgres:vheh1177!%40%23@postgres:5432/playground?sslmode=disable`
+- `playground/be/.env` → `DB_PASSWORD=vheh1177!@#`
+- MoodBite uses environment variables → `DB_PASSWORD=vheh1177!@#`
+
+#### PostgreSQL Database Password:
+```sql
+ALTER USER postgres PASSWORD 'vheh1177!@#';
+```
+
 ### 필수 환경 변수
 
 #### Backend (.env)
