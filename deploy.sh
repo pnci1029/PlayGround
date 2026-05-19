@@ -29,7 +29,7 @@ docker network create playground_playground_network 2>/dev/null || echo "네트�
 if [[ "$BLOG_CHANGED" == "true" ]]; then
     echo "📝 블로그 변경 감지 - 블로그 재배포"
     cd blog
-    docker compose down --remove-orphans
+    docker compose down
     docker compose build --no-cache
     docker compose up -d
     cd ..
@@ -39,7 +39,7 @@ fi
 if [[ "$MOODBITE_CHANGED" == "true" ]]; then
     echo "🍎 MoodBite 변경 감지 - MoodBite 재배포"
     cd moodbite
-    docker compose down --remove-orphans
+    docker compose down
     docker compose build --no-cache
     docker compose up -d
     cd ..
@@ -49,7 +49,7 @@ fi
 if [[ "$PLAYGROUND_CHANGED" == "true" ]]; then
     echo "🎮 Playground 변경 감지 - Playground 재배포"
     cd playground
-    docker compose down --remove-orphans
+    docker compose down
     docker compose build --no-cache
     docker compose up -d
     cd ..
@@ -59,7 +59,7 @@ fi
 if [[ "$TREND_CHANGED" == "true" ]]; then
     echo "📈 Trend 변경 감지 - Trend 재배포"
     cd trend
-    docker compose down --remove-orphans
+    docker compose down
     docker compose build --no-cache
     docker compose up -d
     cd ..
@@ -69,7 +69,7 @@ fi
 if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
     echo "📊 Stock Screener 변경 감지 - Stock Screener 재배포"
     cd stock_screener
-    docker compose down --remove-orphans
+    docker compose down
     docker compose build --no-cache
     docker compose up -d
     cd ..
@@ -85,7 +85,7 @@ if [[ "$DOCKER_CHANGED" == "true" ]]; then
         if [ -d "$project" ] && [ -f "$project/docker-compose.yml" ]; then
             echo "🔄 $project 재배포 중..."
             cd $project
-            docker compose down --remove-orphans
+            docker compose down
             docker compose build --no-cache
             docker compose up -d
             cd ..
