@@ -2,8 +2,8 @@ services:
   # Trend 백엔드 서비스 (Node.js + TypeScript)
   trend:
     build:
-      context: ..
-      dockerfile: ./trend/trend_be/Dockerfile
+      context: ./trend_be
+      dockerfile: Dockerfile
     image: trend-backend:latest
     container_name: trend
     ports:

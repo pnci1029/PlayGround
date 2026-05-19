@@ -2,8 +2,8 @@ services:
   # Stock Screener 서비스 (FastAPI + Python)
   stock_screener:
     build:
-      context: ..
-      dockerfile: ./stock_screener/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     image: stock-screener:latest
     container_name: stock_screener
     ports:
