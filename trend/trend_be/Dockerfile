@@ -3,15 +3,15 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 패키지 파일 복사 및 의존성 설치 (캐싱 최적화)
-COPY trend/trend_be/package*.json ./
+COPY package*.json ./
 RUN npm ci --silent
 
 # 소스 코드 복사
-COPY trend/trend_be/src ./src
-COPY trend/trend_be/tsconfig.json ./
+COPY src ./src
+COPY tsconfig.json ./
 
 # 최상단 migrations 폴더 복사
-COPY migrations ./migrations
+COPY ../../migrations ./migrations
 
 # TypeScript 빌드
 RUN npm run build
