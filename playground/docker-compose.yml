@@ -10,7 +10,7 @@ services:
       - "8000:8000"   # HTTP API
       - "8010:8010"   # WebSocket
     env_file:
-      - ../.env
+      - /root/playground/.env
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0

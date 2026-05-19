@@ -10,7 +10,7 @@ services:
       - "8003:8003"  # HTTP API
       - "8013:8013"  # WebSocket
     env_file:
-      - ../.env
+      - /root/playground/.env
     environment:
       - NODE_ENV=production
       - PORT=8003
