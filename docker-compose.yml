@@ -142,7 +142,7 @@ services:
     networks:
       - playground_network
 
-  # Stock Screener 서비스 (FastAPI + Python)
+  # Stock Screener Backend 서비스 (FastAPI + Python)
   stock_screener:
     build:
       context: .
@@ -167,6 +167,24 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Stock Screener Frontend 서비스 (Next.js + TypeScript)
+  stock_screener_fe:
+    build:
+      context: ./stock_screener_fe
+      dockerfile: Dockerfile
+    image: stock-screener-fe:latest
+    container_name: stock_screener_fe
+    ports:
+      - "3005:3005"  # HTTP Frontend
+    environment:
+      - NODE_ENV=production
+      - PORT=3005
+    depends_on:
+      - stock_screener
     restart: unless-stopped
     networks:
       - playground_network

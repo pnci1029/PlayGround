@@ -143,9 +143,15 @@ jobs:
             moodbite/MoodBite_BE/ \
             trend/trend_be/ \
             blog/blog_be/ \
+            blog/docker-compose.yml \
+            playground/docker-compose.yml \
+            moodbite/docker-compose.yml \
+            trend/docker-compose.yml \
+            stock_screener/docker-compose.yml \
             stock_screener/ \
             migrations/ \
             docker-compose.yml \
+            docker-compose.db.yml \
             docker-compose.blog.yml \
             caddy/ \
             deploy.sh \
