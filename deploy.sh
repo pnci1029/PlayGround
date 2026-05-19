@@ -43,7 +43,8 @@ if [[ "$BLOG_CHANGED" == "true" ]]; then
         exit 1
     fi
     cd blog
-    docker compose -p blog_service down
+    docker stop blog 2>/dev/null || true
+    docker rm blog 2>/dev/null || true
     docker compose -p blog_service build
     docker compose -p blog_service up -d
     cd ..
@@ -53,7 +54,8 @@ fi
 if [[ "$MOODBITE_CHANGED" == "true" ]]; then
     echo "🍎 MoodBite 변경 감지 - MoodBite 재배포"
     cd moodbite
-    docker compose -p moodbite_service down
+    docker stop moodbite 2>/dev/null || true
+    docker rm moodbite 2>/dev/null || true
     docker compose -p moodbite_service build
     docker compose -p moodbite_service up -d
     cd ..
@@ -63,7 +65,8 @@ fi
 if [[ "$PLAYGROUND_CHANGED" == "true" ]]; then
     echo "🎮 Playground 변경 감지 - Playground 재배포"
     cd playground
-    docker compose -p playground_service down
+    docker stop playground 2>/dev/null || true
+    docker rm playground 2>/dev/null || true
     docker compose -p playground_service build
     docker compose -p playground_service up -d
     cd ..
@@ -73,7 +76,8 @@ fi
 if [[ "$TREND_CHANGED" == "true" ]]; then
     echo "📈 Trend 변경 감지 - Trend 재배포"
     cd trend
-    docker compose -p trend_service down
+    docker stop trend 2>/dev/null || true
+    docker rm trend 2>/dev/null || true
     docker compose -p trend_service build
     docker compose -p trend_service up -d
     cd ..
@@ -83,7 +87,8 @@ fi
 if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
     echo "📊 Stock Screener 변경 감지 - Stock Screener 재배포"
     cd stock_screener
-    docker compose -p stock_screener_service down
+    docker stop stock_screener 2>/dev/null || true
+    docker rm stock_screener 2>/dev/null || true
     docker compose -p stock_screener_service build
     docker compose -p stock_screener_service up -d
     cd ..
