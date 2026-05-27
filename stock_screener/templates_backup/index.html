@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>StockScreen — 주식 스크리너</title>
+<link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+
+<!-- ── top bar ── -->
+<div class="topbar">
+  <div class="logo">StockScreen</div>
+  <div class="topbar-sep"></div>
+  <button class="mkt-btn active" onclick="setMkt('ALL',this)">전체</button>
+  <button class="mkt-btn"        onclick="setMkt('US',this)">US</button>
+  <button class="mkt-btn"        onclick="setMkt('KR',this)">KR</button>
+  <div class="topbar-sep"></div>
+  <button class="tab-btn" id="stratTab" onclick="toggleStratPanel()">투자전략</button>
+  <div class="spacer"></div>
+  <button class="dca-open-btn wl-open-btn" onclick="openWatchlist()">관심종목</button>
+  <button class="dca-open-btn" onclick="openBacktest()">백테스트</button>
+  <button class="dca-open-btn" onclick="openDCA()">DCA 계산기</button>
+  <div class="status-dot" id="sdot"></div>
+  <div class="status-txt" id="stxt">연결 중…</div>
+  <button class="refresh-btn" onclick="doRefresh()">↻ 새로고침</button>
+</div>
+
+<!-- ── filter bar ── -->
+<div class="filterbar" id="filterbar">
+  <div class="filter-label">FILTER</div>
+  <div id="condList" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"></div>
+  <button class="logic-toggle and" id="logicBtn" onclick="toggleLogic()">AND</button>
+  <button class="add-cond" onclick="addCond()">+ 조건 추가</button>
+  <button class="run-btn" onclick="runScreen()">스크린</button>
+  <button class="reset-btn" onclick="resetAll()">초기화</button>
+  <div class="spacer"></div>
+  <div class="result-count" id="resultCount"></div>
+</div>
+
+<!-- ── strategy panel ── -->
+<div class="strategy-panel" id="stratPanel">
+  <div class="strat-inner">
+
+    <div class="kost-section">
+      <div class="kost-title">코스톨라니 달걀모형</div>
+      <svg width="300" height="200" viewBox="0 0 300 200">
+        <ellipse cx="150" cy="100" rx="120" ry="78" fill="none" stroke="#30363d" stroke-width="1.5"/>
+        <!-- Phases A–F -->
+        <g data-id="kost_A" onclick="applyStrategy('kost_A')" style="cursor:pointer">
+          <circle cx="48" cy="145" r="20" fill="#0d1117" stroke="#22c55e" stroke-width="1.5" class="phase-circle" id="pc-kost_A"/>
+          <text x="48" y="141" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700" font-family="monospace">A</text>
+          <text x="48" y="154" text-anchor="middle" fill="#22c55e" font-size="7.5">매집</text>
+        </g>
+        <g data-id="kost_B" onclick="applyStrategy('kost_B')" style="cursor:pointer">
+          <circle cx="48" cy="58"  r="20" fill="#0d1117" stroke="#3fb950" stroke-width="1.5" class="phase-circle" id="pc-kost_B"/>
+          <text x="48" y="54"  text-anchor="middle" fill="#3fb950" font-size="13" font-weight="700" font-family="monospace">B</text>
+          <text x="48" y="67"  text-anchor="middle" fill="#3fb950" font-size="7.5">상승</text>
+        </g>
+        <g data-id="kost_C" onclick="applyStrategy('kost_C')" style="cursor:pointer">
+          <circle cx="150" cy="18" r="20" fill="#0d1117" stroke="#f85149" stroke-width="1.5" class="phase-circle" id="pc-kost_C"/>
+          <text x="150" y="14" text-anchor="middle" fill="#f85149" font-size="13" font-weight="700" font-family="monospace">C</text>
+          <text x="150" y="27" text-anchor="middle" fill="#f85149" font-size="7.5">과열</text>
+        </g>
+        <g data-id="kost_D" onclick="applyStrategy('kost_D')" style="cursor:pointer">
+          <circle cx="252" cy="58"  r="20" fill="#0d1117" stroke="#d29922" stroke-width="1.5" class="phase-circle" id="pc-kost_D"/>
+          <text x="252" y="54"  text-anchor="middle" fill="#d29922" font-size="13" font-weight="700" font-family="monospace">D</text>
+          <text x="252" y="67"  text-anchor="middle" fill="#d29922" font-size="7.5">분산</text>
+        </g>
+        <g data-id="kost_E" onclick="applyStrategy('kost_E')" style="cursor:pointer">
+          <circle cx="252" cy="145" r="20" fill="#0d1117" stroke="#f85149" stroke-width="1.5" class="phase-circle" id="pc-kost_E"/>
+          <text x="252" y="141" text-anchor="middle" fill="#f85149" font-size="13" font-weight="700" font-family="monospace">E</text>
+          <text x="252" y="154" text-anchor="middle" fill="#f85149" font-size="7.5">하락</text>
+        </g>
+        <g data-id="kost_F" onclick="applyStrategy('kost_F')" style="cursor:pointer">
+          <circle cx="150" cy="183" r="20" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5" class="phase-circle" id="pc-kost_F"/>
+          <text x="150" y="179" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="700" font-family="monospace">F</text>
+          <text x="150" y="192" text-anchor="middle" fill="#58a6ff" font-size="7.5">공포</text>
+        </g>
+        <!-- Arrow guides -->
+        <path d="M68 55 Q100 22 130 19"   fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M170 19 Q200 22 232 55"  fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M265 78 Q274 100 265 125" fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M232 148 Q200 178 170 183" fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M130 183 Q100 178 68 148" fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <path d="M35 125 Q26 100 35 78"   fill="none" stroke="#30363d" stroke-width="1.2" marker-end="url(#arr)"/>
+        <text x="150" y="88"  text-anchor="middle" fill="#21262d" font-size="18" font-weight="900" font-family="monospace">BULL</text>
+        <text x="150" y="122" text-anchor="middle" fill="#21262d" font-size="18" font-weight="900" font-family="monospace">BEAR</text>
+        <defs>
+          <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#30363d"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="classic-section">
+      <div class="classic-title">전통 투자전략</div>
+      <div class="classic-cards" id="classicCards"></div>
+      <div class="classic-title" style="margin-top:12px">전설적 투자자 전략</div>
+      <div class="classic-cards" id="legendaryCards"></div>
+      <div id="stratInfo" style="font-size:11px;color:var(--muted);line-height:1.5;max-width:600px;margin-top:8px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── stock table ── -->
+<div class="table-wrap" id="tableWrap">
+  <table>
+    <thead>
+      <tr>
+        <th data-col="ticker"      onclick="sortBy('ticker')">티커 <span class="sort-arr" id="arr-ticker"></span></th>
+        <th data-col="name"        onclick="sortBy('name')">종목명 <span class="sort-arr" id="arr-name"></span></th>
+        <th data-col="price"       onclick="sortBy('price')">가격 <span class="sort-arr" id="arr-price"></span></th>
+        <th data-col="change_pct"  onclick="sortBy('change_pct')">등락률 <span class="sort-arr" id="arr-change_pct"></span></th>
+        <th data-col="market_cap"  onclick="sortBy('market_cap')">시총 <span class="sort-arr" id="arr-market_cap"></span></th>
+        <th data-col="per"         onclick="sortBy('per')">PER <span class="sort-arr" id="arr-per"></span></th>
+        <th data-col="pbr"         onclick="sortBy('pbr')">PBR <span class="sort-arr" id="arr-pbr"></span></th>
+        <th data-col="roe"         onclick="sortBy('roe')">ROE% <span class="sort-arr" id="arr-roe"></span></th>
+        <th data-col="div_yield"   onclick="sortBy('div_yield')">배당% <span class="sort-arr" id="arr-div_yield"></span></th>
+        <th data-col="week52_high" onclick="sortBy('week52_high')">52W H <span class="sort-arr" id="arr-week52_high"></span></th>
+        <th data-col="week52_low"  onclick="sortBy('week52_low')">52W L <span class="sort-arr" id="arr-week52_low"></span></th>
+        <th>52W 위치</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr><td colspan="12">
+        <div class="state-box">
+          <p>데이터 로딩 중…<br>최초 실행 시 1~2분 소요됩니다.</p>
+        </div>
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── DCA modal ── -->
+<div class="dca-overlay" id="dcaOverlay" onclick="closeDCAOutside(event)">
+  <div class="dca-modal">
+    <div class="dca-header">
+      <h2>DCA 적립식 투자 시뮬레이터</h2>
+      <button class="dca-close" onclick="closeDCA()">×</button>
+    </div>
+    <div class="dca-form">
+      <div class="dca-field"><label>티커</label><input class="dca-input" id="dcaTicker" placeholder="AAPL / 005930" value="AAPL"></div>
+      <div class="dca-field"><label>시작일</label><input class="dca-input" id="dcaStart" type="date" value="2020-01-01"></div>
+      <div class="dca-field"><label>회당 금액</label><input class="dca-input" id="dcaAmount" type="number" value="100"></div>
+      <div class="dca-field">
+        <label>시장</label>
+        <select class="dca-select" id="dcaMarket">
+          <option value="US">US (USD)</option>
+          <option value="KR">KR (KRW)</option>
+        </select>
+      </div>
+      <div class="dca-field">
+        <label>주기</label>
+        <select class="dca-select" id="dcaFreq">
+          <option value="monthly">월간</option>
+          <option value="weekly">주간</option>
+        </select>
+      </div>
+      <button class="dca-run-btn" onclick="runDCA()">시뮬레이션 실행</button>
+    </div>
+    <div class="dca-loading" id="dcaLoading">계산 중…</div>
+    <div class="dca-error"   id="dcaError"></div>
+    <div class="dca-result"  id="dcaResult">
+      <div class="dca-stats" id="dcaStats"></div>
+      <div class="dca-chart-title">포트폴리오 가치 추이 (최근 36기간)</div>
+      <div style="position:relative"><canvas id="dcaCanvas" width="660" height="160" style="width:100%;height:160px"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Watchlist modal ── -->
+<div class="wl-overlay" id="wlOverlay" onclick="closeWlOutside(event)">
+  <div class="wl-modal">
+    <div class="wl-modal-header">
+      <h2>관심종목 그룹</h2>
+      <button class="wl-close" onclick="closeWatchlist()">×</button>
+    </div>
+    <div class="wl-layout">
+      <!-- Left: group list -->
+      <div class="wl-sidebar">
+        <button class="wl-new-group-btn" onclick="wlCreateGroup()">+ 새 그룹</button>
+        <div class="wl-group-list" id="wlGroupList"></div>
+      </div>
+      <!-- Right: detail pane -->
+      <div class="wl-detail" id="wlDetailPane">
+        <div class="wl-empty">
+          <p>관심종목 그룹을 만들어보세요</p>
+          <button class="wl-new-btn" onclick="wlCreateGroup()">+ 새 그룹 만들기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Backtest modal ── -->
+<div class="bt-overlay" id="btOverlay" onclick="closeBtOutside(event)">
+  <div class="bt-modal">
+    <div class="bt-header">
+      <h2>전략 백테스트</h2>
+      <button class="bt-close" onclick="closeBacktest()">×</button>
+    </div>
+    <div class="bt-form">
+      <div class="bt-field">
+        <label>투자 전략</label>
+        <select class="bt-select" id="btStratSel"></select>
+      </div>
+      <div class="bt-field">
+        <label>시작일</label>
+        <input class="bt-input" id="btStart" type="date">
+      </div>
+      <div class="bt-field">
+        <label>종료일</label>
+        <input class="bt-input" id="btEnd" type="date">
+      </div>
+      <div class="bt-field">
+        <label>시장</label>
+        <select class="bt-select" id="btMarket">
+          <option value="ALL">전체</option>
+          <option value="US">US</option>
+          <option value="KR">KR</option>
+        </select>
+      </div>
+      <button class="bt-run-btn" onclick="runBacktest()" style="grid-column:span 4">
+        백테스트 실행 ▶
+      </button>
+    </div>
+    <div class="bt-loading" id="btLoading">
+      분석 중… 종목 수에 따라 30~90초 소요됩니다.
+    </div>
+    <div class="bt-error" id="btError"></div>
+    <div class="bt-result" id="btResult">
+      <div id="btResultBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- JS modules: load order matters -->
+<script src="/static/js/state.js"></script>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/table.js"></script>
+<script src="/static/js/filter.js"></script>
+<script src="/static/js/strategy.js"></script>
+<script src="/static/js/dca.js"></script>
+<script src="/static/js/backtest.js"></script>
+<script src="/static/js/watchlist.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>
