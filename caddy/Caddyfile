@@ -241,6 +241,27 @@ chhong.kr {
 	respond "PlayGround - Frontend at Vercel" 404
 }
 
+# WeddingFit 서브도메인 (백엔드만)
+wedding.chhong.kr {
+	# SSL 인증서 자동 발급
+	
+	# API 요청
+	handle /api/* {
+		reverse_proxy weddingfit_backend:8777 {
+			fail_duration 10s
+			max_fails 3
+		}
+	}
+
+	# Health check
+	handle /health {
+		reverse_proxy weddingfit_backend:8777
+	}
+	
+	# 프론트엔드는 Vercel에서 처리
+	respond "WeddingFit - Frontend at Vercel" 404
+}
+
 # 404 전용 서브도메인
 404.chhong.kr {
 	# SSL 인증서 자동 발급
