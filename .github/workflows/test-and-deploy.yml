@@ -206,6 +206,7 @@ jobs:
            TREND_CHANGED='${{ steps.changes.outputs.trend_backend }}' \
            STOCK_SCREENER_CHANGED='${{ steps.changes.outputs.stock_screener }}' \
            DOCKER_CHANGED='${{ steps.changes.outputs.docker_config }}' \
+           CADDY_CHANGED='${{ steps.changes.outputs.caddy_config }}' \
            ./deploy.sh"
 
     - name: Post-deployment health check

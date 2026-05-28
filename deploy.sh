@@ -12,6 +12,7 @@ PLAYGROUND_CHANGED=${PLAYGROUND_CHANGED:-"false"}
 TREND_CHANGED=${TREND_CHANGED:-"false"}
 STOCK_SCREENER_CHANGED=${STOCK_SCREENER_CHANGED:-"false"}
 DOCKER_CHANGED=${DOCKER_CHANGED:-"false"}
+CADDY_CHANGED=${CADDY_CHANGED:-"false"}
 
 # DB 및 공용 서비스가 실행 중인지 확인
 echo "🔍 DB 상태 확인..."
@@ -30,6 +31,11 @@ if ! docker ps | grep -q caddy; then
     docker compose -f docker-compose.db.yml up -d caddy
 else
     echo "✅ Caddy 서비스 이미 실행 중"
+    if [[ "$CADDY_CHANGED" == "true" ]]; then
+        echo "🔄 Caddy 설정 변경 감지 - 리로드..."
+        docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+        echo "✅ Caddy 리로드 완료"
+    fi
 fi
 
 # 네트워크 생성 확인
