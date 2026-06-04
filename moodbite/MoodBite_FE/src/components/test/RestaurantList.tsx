@@ -23,10 +23,10 @@ export const RestaurantList: React.FC<RestaurantListProps> = ({ restaurants }) =
 
   const getPriceLevelText = (priceLevel: number): string => {
     switch (priceLevel) {
-      case 1: return '뢰사니';
+      case 1: return '저렴';
       case 2: return '보통';
-      case 3: return '비싸';
-      case 4: return '매우 비싸';
+      case 3: return '비쌈';
+      case 4: return '매우 비쌈';
       default: return '보통';
     }
   };
