@@ -1,13 +1,7 @@
 import {useState} from 'react';
-import {MealTime, Scores, TestStep, TestResultPostDTO} from '../../../types/test';
+import {MealTime, Scores, TestStep} from '../../../types/test';
 
-interface Args {
-    onComplete: (testResult: TestResultPostDTO, aiRecommendation?: string) => void;
-}
-
-export function useTestNavigation(
-    {onComplete}: Args
-) {
+export function useTestNavigation() {
 
     const [testStep, setTestStep] = useState(TestStep.STEP1_TIREDNESS);
 
