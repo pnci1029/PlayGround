@@ -10,7 +10,12 @@ export const executePromise = async <T>(f: () => Promise<AxiosResponse<T>>) => {
     try {
         return await f();
     } catch (error: any) {
-        throw new Error(JSON.stringify(error?.response?.data));
+        const data = error?.response?.data;
+        const message =
+            (data && (data.message || (typeof data === 'string' ? data : JSON.stringify(data)))) ||
+            error?.message ||
+            '네트워크 오류가 발생했습니다.';
+        throw new Error(message);
     }
 };
 
