@@ -1,8 +1,11 @@
+@import './variables';
+
 .testSection {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
   padding: 0 16px;
+  font-family: var(--font-primary);
   opacity: 0;
   animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: 0.2s;
@@ -49,8 +52,8 @@
   // 접근성 향상을 위한 포커스 스타일
   &:focus {
     outline: none;
-    border-color: #4ECDC4;
-    box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .mealTimeContent {
@@ -96,7 +99,7 @@
     top: 0;
     height: 100%;
     width: 5px;
-    background: linear-gradient(to bottom, #4ECDC4, #2bb5ac);
+    background: linear-gradient(to bottom, #14b8a6, #0d9488);
     opacity: 0;
     transition: opacity 0.3s ease;
     border-radius: 5px 0 0 5px;
@@ -110,7 +113,7 @@
     transform: translateY(-50%) scale(0);
     width: 24px;
     height: 24px;
-    background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
     border-radius: 50%;
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -148,11 +151,11 @@
   }
 
   &.selected {
-    background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
     color: white;
-    border-color: #2bb5ac;
+    border-color: #0d9488;
     font-weight: 600;
-    box-shadow: 0 8px 20px rgba(43, 181, 172, 0.3);
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
     transform: translateY(-3px);
 
     &::before {
@@ -183,7 +186,7 @@
 
     &:hover {
       background: linear-gradient(135deg, #45c1b8, #26a59c);
-      box-shadow: 0 10px 24px rgba(43, 181, 172, 0.35);
+      box-shadow: 0 10px 24px rgba(13, 148, 136, 0.35);
       transform: translateY(-4px);
     }
   }
@@ -221,8 +224,8 @@
   // 접근성 향상을 위한 포커스 스타일
   &:focus {
     outline: none;
-    border-color: #4ECDC4;
-    box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
   }
   
   .optionEmoji {
@@ -275,11 +278,11 @@
   }
 
   &.selected {
-    background: linear-gradient(135deg, #4ECDC4, #2bb5ac);
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
     color: white;
-    border-color: #2bb5ac;
+    border-color: #0d9488;
     font-weight: 600;
-    box-shadow: 0 8px 20px rgba(43, 181, 172, 0.3);
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3);
     transform: translateY(-3px);
     
     .optionLabel {
@@ -299,7 +302,7 @@
 
     &:hover {
       background: linear-gradient(135deg, #45c1b8, #26a59c);
-      box-shadow: 0 10px 24px rgba(43, 181, 172, 0.35);
+      box-shadow: 0 10px 24px rgba(13, 148, 136, 0.35);
       transform: translateY(-4px);
     }
   }

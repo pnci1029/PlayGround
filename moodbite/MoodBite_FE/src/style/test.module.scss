@@ -26,6 +26,7 @@
   position: fixed;
   top: 0;
   width: 100%;
+  box-sizing: border-box;
   padding: var(--space-5) var(--space-6);
   @include glass-effect(0.95, 20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -33,18 +34,24 @@
   z-index: var(--z-fixed);
   animation: slideDown 0.6s var(--transition-slow) forwards;
 
+  @include mobile {
+    padding: var(--space-4) var(--space-5);
+  }
+
   .headerContent {
     display: flex;
     align-items: center;
+    gap: var(--space-2);
     max-width: 1200px;
     margin: 0 auto;
   }
 
   .backButton {
+    flex-shrink: 0;
     background: none;
     border: none;
     padding: var(--space-3);
-    margin-right: var(--space-3);
+    margin-right: var(--space-1);
     border-radius: var(--radius-md);
     color: var(--color-neutral-700);
     transition: all var(--transition-base);
@@ -61,6 +68,11 @@
   }
 
   .pageTitle {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-family: var(--font-primary);
     font-size: var(--text-xl);
     font-weight: 700;
@@ -69,29 +81,45 @@
     animation: fadeInSlideLeft 0.6s var(--transition-slow) forwards;
     animation-delay: 0.2s;
     letter-spacing: -0.02em;
+
+    @include mobile {
+      font-size: var(--text-lg);
+    }
   }
 }
 
 .mainContent {
   position: absolute;
-  top: 88px;
+  top: 92px;
   left: 0;
   right: 0;
-  bottom: 140px;
-  padding: var(--space-8) var(--space-6);
+  bottom: 150px;
+  padding: var(--space-6) var(--space-6) var(--space-8);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  
+
+  /* 내용이 영역보다 짧으면 가운데 정렬, 길면 위부터 스크롤(상단 잘림 방지) */
+  &::before {
+    content: '';
+    margin-top: auto;
+  }
+
+  &::after {
+    content: '';
+    margin-bottom: auto;
+  }
+
   @include mobile {
-    bottom: 160px;
-    padding: var(--space-6) var(--space-5);
-    top: 80px;
+    top: 84px;
+    bottom: 150px;
+    padding: var(--space-5) var(--space-4) var(--space-6);
   }
 }
 
@@ -117,12 +145,14 @@
 
 /* 진행률 (단계 카운터 + 바) */
 .stepCounter {
-  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
   font-family: var(--font-primary);
   font-size: var(--text-sm);
   font-weight: 700;
   color: var(--color-primary-600);
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .progressTrack {
@@ -149,11 +179,11 @@
 @keyframes stepFadeIn {
   from {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
