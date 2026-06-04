@@ -59,6 +59,10 @@ if [[ "$MOODBITE_CHANGED" == "true" ]]; then
     echo "🍎 MoodBite 변경 감지 - MoodBite 재배포"
     cd moodbite
     docker compose -p moodbite_service build
+    # 고정 container_name(moodbite)이 다른 compose 프로젝트로 떠 있으면
+    # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
+    docker compose -p moodbite_service down --remove-orphans 2>/dev/null || true
+    docker rm -f moodbite 2>/dev/null || true
     docker compose -p moodbite_service up -d --force-recreate
     cd ..
     echo "✅ MoodBite 재배포 완료"

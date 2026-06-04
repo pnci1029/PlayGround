@@ -38,5 +38,5 @@ class LocationController(
 
     @GetMapping("/health")
     @Operation(summary = "위치 API 상태 확인", description = "주변 맛집 API 서버 상태/배포 확인용")
-    fun health(): String = "Location API is running!"
+    fun health(): String = "Location API is running!!"
 }
