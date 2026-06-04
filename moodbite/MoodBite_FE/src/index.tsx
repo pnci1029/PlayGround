@@ -3,8 +3,6 @@ import {createRoot} from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import {Provider} from 'react-redux';
-import {store} from "./slice";
 import {Main} from "./components/common/Main";
 import App from "./App";
 import { TestResultPage } from "./components/test/TestResultPage";
@@ -14,16 +12,14 @@ const root = createRoot(container);
 
 root.render(
     <React.StrictMode>
-        <Provider store={store}>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<App/>}>
-                        <Route path="" element={<Main/>} />
-                        <Route path="test/result" element={<TestResultPage/>} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </Provider>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<App/>}>
+                    <Route path="" element={<Main/>} />
+                    <Route path="test/result" element={<TestResultPage/>} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     </React.StrictMode>
 );
 
