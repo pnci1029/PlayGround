@@ -114,3 +114,82 @@
     transform: translateY(0);
   }
 }
+
+/* 진행률 (단계 카운터 + 바) */
+.stepCounter {
+  margin-left: auto;
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-primary-600);
+  letter-spacing: 0.02em;
+}
+
+.progressTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 0 2px 2px 0;
+  transition: width var(--transition-base);
+}
+
+/* 단계 전환 애니메이션 */
+.stepWrapper {
+  animation: stepFadeIn 0.35s var(--transition-base);
+}
+
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 제출 후 분석 로딩 화면 */
+.analyzing {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  text-align: center;
+  background: var(--gradient-background);
+}
+
+.analyzingSpinner {
+  color: var(--color-primary-600);
+  animation: spin 1s linear infinite;
+}
+
+.analyzingTitle {
+  font-family: var(--font-primary);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.analyzingSub {
+  font-size: var(--text-sm);
+  color: var(--color-neutral-500);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
