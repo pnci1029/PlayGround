@@ -1,7 +1,6 @@
 package com.example.moodbite.api.location
 
 import io.swagger.v3.oas.annotations.Operation
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,7 +16,6 @@ data class NearbyRestaurantsRequest(
 
 @RestController
 @RequestMapping("/api/location")
-@CrossOrigin(origins = ["*"], allowedHeaders = ["*"], allowCredentials = "false")
 class LocationController(
     private val locationService: LocationService
 ) {
