@@ -9,11 +9,14 @@ interface Args {
     isFirstStep: boolean;
     isLastStep: boolean;
     canProceed: boolean;
+    isSubmitting?: boolean;
 }
 
 export function NavigationButtons(
-    {canProceed, onPrev, onNext, isFirstStep, isLastStep, currentStep}:Args
+    {canProceed, onPrev, onNext, isFirstStep, isLastStep, currentStep, isSubmitting = false}:Args
 ) {
+
+    const nextLabel = isSubmitting ? '처리 중...' : (isLastStep ? '완료' : '다음');
 
     return (
         <div className={style.buttonContainer}>
@@ -21,6 +24,7 @@ export function NavigationButtons(
                 <button
                     className={style.prevButton}
                     onClick={onPrev}
+                    disabled={isSubmitting}
                 >
                     이전
                 </button>
@@ -28,9 +32,9 @@ export function NavigationButtons(
             <button
                 className={style.nextButton}
                 onClick={onNext}
-                disabled={!canProceed}
+                disabled={!canProceed || isSubmitting}
             >
-                {isLastStep ? '완료' : '다음'}
+                {nextLabel}
             </button>
         </div>
     );
