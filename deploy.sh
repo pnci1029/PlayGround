@@ -58,12 +58,16 @@ fi
 if [[ "$MOODBITE_CHANGED" == "true" ]]; then
     echo "🍎 MoodBite 변경 감지 - MoodBite 재배포"
     cd moodbite
-    docker compose -p moodbite_service build
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리(여기 moodbite/)의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    # (이게 없으면 DB_PASSWORD 가 빈 값이 되어 컨테이너가 DB 인증 실패로 죽는다)
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p moodbite_service build
     # 고정 container_name(moodbite)이 다른 compose 프로젝트로 떠 있으면
     # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
-    docker compose -p moodbite_service down --remove-orphans 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p moodbite_service down --remove-orphans 2>/dev/null || true
     docker rm -f moodbite 2>/dev/null || true
-    docker compose -p moodbite_service up -d --force-recreate
+    docker compose $COMPOSE_ENV -p moodbite_service up -d --force-recreate
     cd ..
     echo "✅ MoodBite 재배포 완료"
 fi

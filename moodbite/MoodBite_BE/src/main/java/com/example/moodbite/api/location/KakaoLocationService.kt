@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import kotlin.math.*
 
@@ -32,18 +33,23 @@ class KakaoLocationService(
         val keyword = mapFoodCategoryToKeyword(foodCategory)
         
         return try {
+            // kakaoApiConfig.url 은 전체 URL(https://dapi.kakao.com/...) 이므로
+            // path() 로 넣으면 '//' 가 '/' 로 뭉개져 호스트가 사라진다. fromHttpUrl 로 조립한다.
+            val uri = UriComponentsBuilder
+                .fromHttpUrl(kakaoApiConfig.url)
+                .queryParam("query", "$keyword 맛집")
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("radius", radius)
+                .queryParam("category_group_code", "FD6") // 음식점 카테고리
+                .queryParam("size", 15)
+                .queryParam("sort", "distance")
+                .build()
+                .encode()
+                .toUri()
+
             val response = webClient.get()
-                .uri { uriBuilder ->
-                    uriBuilder.path(kakaoApiConfig.url)
-                        .queryParam("query", "$keyword 맛집")
-                        .queryParam("x", longitude)
-                        .queryParam("y", latitude)
-                        .queryParam("radius", radius)
-                        .queryParam("category_group_code", "FD6") // 음식점 카테고리
-                        .queryParam("size", 15)
-                        .queryParam("sort", "distance")
-                        .build()
-                }
+                .uri(uri)
                 .header(HttpHeaders.AUTHORIZATION, "KakaoAK ${kakaoApiConfig.key}")
                 .retrieve()
                 .bodyToMono(String::class.java)
