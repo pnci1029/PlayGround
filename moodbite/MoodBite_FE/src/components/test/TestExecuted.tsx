@@ -190,14 +190,6 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                                 <NoRecommendations onRetry={onRetryTest || onBack} />
                             ) : (
                                 <div className={style.foodRecommendations}>
-                                    {/* 추천 이유 */}
-                                    {foodRecommendation && foodRecommendation.reason && (
-                                        <div className={style.reasonCard}>
-                                            <h3 className={style.reasonTitle}>추천 이유</h3>
-                                            <p className={style.reasonText}>{foodRecommendation?.reason}</p>
-                                        </div>
-                                    )}
-
                                     {/* 메인 추천 음식 */}
                                     {foodRecommendation && foodRecommendation.primaryFood && (
                                         <div className={style.primaryFoodCard}>
@@ -211,6 +203,14 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                                             <div className={style.primaryFoodName}>
                                                 {foodRecommendation?.primaryFood}
                                             </div>
+                                        </div>
+                                    )}
+
+                                    {/* 추천 이유 */}
+                                    {foodRecommendation && foodRecommendation.reason && (
+                                        <div className={style.reasonCard}>
+                                            <h3 className={style.reasonTitle}>추천 이유</h3>
+                                            <p className={style.reasonText}>{foodRecommendation?.reason}</p>
                                         </div>
                                     )}
 
