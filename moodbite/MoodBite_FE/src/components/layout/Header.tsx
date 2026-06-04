@@ -11,7 +11,7 @@ export function Header({ isMenuOpen, onMenuToggle }: HeaderProps) {
     return (
         <header className={style.header}>
             <div className={style.headerContent}>
-                <h1 className={style.logo}>오늘의 한끼</h1>
+                <h1 className={style.logo}>MoodBite</h1>
                 <button
                     className={style.menuButton}
                     onClick={onMenuToggle}

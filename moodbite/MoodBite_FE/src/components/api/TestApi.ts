@@ -1,4 +1,4 @@
-import {TestResultPostDTO, LocationBasedTestResultRequestDTO} from "../../types/test";
+import {TestResultPostDTO} from "../../types/test";
 import {MainApi} from "./MainApi";
 
 export class TestApi {
@@ -6,7 +6,4 @@ export class TestApi {
 
     static submitTestResult = (dto: TestResultPostDTO) => () =>
         MainApi.api.post(`${TestApi.url}`, dto);
-
-    static submitLocationBasedTestResult = (dto: LocationBasedTestResultRequestDTO) => () =>
-        MainApi.api.post(`${TestApi.url}/location-based`, dto);
 }

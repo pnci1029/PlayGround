@@ -13,19 +13,18 @@ import {useTestSubmit} from "./hooks/useTestSubmit";
 
 interface TestProps {
     onBack: () => void;
-    onNext: (testResult: TestResultPostDTO, aiRecommendation?: string) => void;
 }
 
-export function Test({onBack, onNext}: TestProps) {
+export function Test({onBack}: TestProps) {
     const { sliderLabels } = useTestFunctions();
-    const { submitTestResult } = useTestSubmit()
+    const { submitTestResult, isSubmitting, error } = useTestSubmit()
     const {
         testStep,
         handlePrevScore,
         handleNextScore,
         isFirstStep,
         isLastStep
-    } = useTestNavigation({ onComplete: onNext });
+    } = useTestNavigation();
 
     const {
         scores,
@@ -58,7 +57,6 @@ export function Test({onBack, onNext}: TestProps) {
                 // submitTestResult에서 자동으로 결과 페이지로 네비게이션됨
             } catch (error) {
                 console.error('Error submitting test result:', error);
-                // 오류 발생 시에만 onNext 호출
             }
         } else {
             handleNextScore(testStep, scores, selectedMealTime);
@@ -135,6 +133,12 @@ export function Test({onBack, onNext}: TestProps) {
                     />
                 )}
 
+                {error && (
+                    <p role="alert" style={{ color: '#ff6b6b', textAlign: 'center', margin: '12px 0' }}>
+                        {error}
+                    </p>
+                )}
+
                 <NavigationButtons
                     currentStep={testStep}
                     onPrev={() => handlePrevScore(testStep)}
@@ -142,6 +146,7 @@ export function Test({onBack, onNext}: TestProps) {
                     isFirstStep={isFirstStep}
                     isLastStep={isLastStep}
                     canProceed={canProceedToNext()}
+                    isSubmitting={isSubmitting}
                 />
             </main>
         </div>
