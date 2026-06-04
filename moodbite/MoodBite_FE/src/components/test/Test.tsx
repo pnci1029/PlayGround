@@ -10,6 +10,7 @@ import {useTestScores} from "./hooks/useTestScores";
 import {HeaderWithBack} from "../common/HeaderWithBack";
 import {DiningQuestion} from "./DiningQuestion";
 import {useTestSubmit} from "./hooks/useTestSubmit";
+import {AnalyzingScreen} from "./AnalyzingScreen";
 
 interface TestProps {
     onBack: () => void;
@@ -22,6 +23,8 @@ export function Test({onBack}: TestProps) {
         testStep,
         handlePrevScore,
         handleNextScore,
+        currentIndex,
+        totalSteps,
         isFirstStep,
         isLastStep
     } = useTestNavigation();
@@ -59,16 +62,36 @@ export function Test({onBack}: TestProps) {
                 console.error('Error submitting test result:', error);
             }
         } else {
-            handleNextScore(testStep, scores, selectedMealTime);
+            handleNextScore();
         }
     };
+
+    // 단일 선택(식사시간) 단계는 선택 즉시 다음으로 자동 진행
+    const handleMealTimeSelect = (time: typeof selectedMealTime) => {
+        setSelectedMealTime(time!);
+        setTimeout(() => handleNextScore(), 280);
+    };
+
+    // 분석(추천 API 호출) 중에는 전용 로딩 화면을 보여준다
+    if (isSubmitting) {
+        return (
+            <div className={style.container}>
+                <AnalyzingScreen />
+            </div>
+        );
+    }
 
 
     return (
         <div className={style.container}>
-            <HeaderWithBack onBack={onBack} title="오늘 뭐먹을까?" />
+            <HeaderWithBack
+                onBack={onBack}
+                title="오늘 뭐먹을까?"
+                progress={{ current: currentIndex + 1, total: totalSteps }}
+            />
 
             <main className={style.mainContent}>
+                <div key={testStep} className={style.stepWrapper}>
                 {testStep === TestStep.STEP1_TIREDNESS && (
                     <SliderQuestion
                         title="얼마나 피곤하신가요?"
@@ -112,7 +135,7 @@ export function Test({onBack}: TestProps) {
                 {testStep === TestStep.STEP5_MEAL_TIME && (
                     <MealTimeQuestion
                         selectedTime={selectedMealTime}
-                        onTimeSelect={setSelectedMealTime}
+                        onTimeSelect={handleMealTimeSelect}
                     />
                 )}
 
@@ -132,6 +155,7 @@ export function Test({onBack}: TestProps) {
                         onOptionSelect={setDining}
                     />
                 )}
+                </div>
 
                 {error && (
                     <p role="alert" style={{ color: '#ff6b6b', textAlign: 'center', margin: '12px 0' }}>
@@ -141,7 +165,7 @@ export function Test({onBack}: TestProps) {
 
                 <NavigationButtons
                     currentStep={testStep}
-                    onPrev={() => handlePrevScore(testStep)}
+                    onPrev={handlePrevScore}
                     onNext={handleNext}
                     isFirstStep={isFirstStep}
                     isLastStep={isLastStep}
