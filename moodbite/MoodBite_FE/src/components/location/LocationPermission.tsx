@@ -63,7 +63,9 @@ export function LocationPermission({ onLocationGranted, onLocationDenied, primar
                 <div className={style.content}>
                     <h3 className={style.title}>주변 맛집 추천</h3>
                     <p className={style.description}>
-                        {primaryFood ? `${primaryFood}을(를) 파는` : '추천된 음식을 파는'} 근처 맛집을 찾아드릴게요!
+                        {primaryFood
+                            ? `${primaryFood}을(를) 파는 근처 맛집을 찾아드릴게요!`
+                            : '내 주변 맛집을 찾아드릴게요!'}
                     </p>
                     
                     {error && (

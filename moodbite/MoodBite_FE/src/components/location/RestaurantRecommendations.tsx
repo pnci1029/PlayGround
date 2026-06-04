@@ -4,19 +4,22 @@ import style from '../../style/location/restaurantRecommendations.module.scss';
 import { MainApi } from '../api/MainApi';
 
 interface Restaurant {
-    place_name: string;
-    distance: string;
-    road_address_name: string;
-    phone: string;
-    place_url: string;
-    category_name: string;
-    x: string;
-    y: string;
+    name: string;
+    category: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    rating: number;
+    distance: number; // 미터 단위
+    priceLevel: number;
+    phone: string | null;
+    isOpen: boolean;
+    placeId: string | null;
 }
 
 interface RestaurantRecommendationsProps {
     location: GeolocationPosition;
-    primaryFood: string;
+    primaryFood?: string;
     onClose: () => void;
 }
 
@@ -37,7 +40,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
                 radius: 2000 // 2km
             });
 
-            setRestaurants(response.documents || []);
+            setRestaurants((response as unknown as Restaurant[]) || []);
         } catch (err) {
             console.error('Error fetching restaurants:', err);
             setError('주변 음식점 정보를 불러올 수 없습니다.');
@@ -51,14 +54,21 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
     }, [fetchNearbyRestaurants]);
 
     const openInMap = (restaurant: Restaurant) => {
-        const kakaoMapUrl = `https://map.kakao.com/link/map/${restaurant.place_name},${restaurant.y},${restaurant.x}`;
+        const kakaoMapUrl = `https://map.kakao.com/link/map/${restaurant.name},${restaurant.latitude},${restaurant.longitude}`;
         window.open(kakaoMapUrl, '_blank');
     };
 
     const openDirections = (restaurant: Restaurant) => {
-        const directionsUrl = `https://map.kakao.com/link/to/${restaurant.place_name},${restaurant.y},${restaurant.x}`;
+        const directionsUrl = `https://map.kakao.com/link/to/${restaurant.name},${restaurant.latitude},${restaurant.longitude}`;
         window.open(directionsUrl, '_blank');
     };
+
+    const openDetail = (restaurant: Restaurant) => {
+        if (!restaurant.placeId) return;
+        window.open(`https://place.map.kakao.com/${restaurant.placeId}`, '_blank');
+    };
+
+    const titleFood = primaryFood ? `${primaryFood} ` : '';
 
     if (isLoading) {
         return (
@@ -69,7 +79,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
                     </div>
                     <h3 className={style.loadingTitle}>맛집을 찾고 있어요</h3>
                     <p className={style.loadingDescription}>
-                        {primaryFood}을(를) 파는 근처 음식점을 검색 중입니다...
+                        {primaryFood ? `${primaryFood}을(를) 파는 ` : ''}근처 음식점을 검색 중입니다...
                     </p>
                 </div>
             </section>
@@ -101,7 +111,7 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
                 <div className={style.titleContainer}>
                     <MapPin size={24} className={style.headerIcon} />
                     <div>
-                        <h3 className={style.title}>주변 {primaryFood} 맛집</h3>
+                        <h3 className={style.title}>주변 {titleFood}맛집</h3>
                         <p className={style.subtitle}>
                             {restaurants.length}곳의 음식점을 찾았어요
                         </p>
@@ -118,19 +128,16 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
                     <p className={style.noResultsDescription}>
                         검색 범위를 넓혀서 다시 찾아볼까요?
                     </p>
-                    <button className={style.expandSearchButton} onClick={() => {
-                        // 검색 범위를 5km로 확장하여 재검색
-                        fetchNearbyRestaurants();
-                    }}>
-                        검색 범위 확장하기
+                    <button className={style.expandSearchButton} onClick={fetchNearbyRestaurants}>
+                        다시 검색하기
                     </button>
                 </div>
             ) : (
                 <div className={style.restaurantsList}>
                     {restaurants.slice(0, 5).map((restaurant, index) => (
-                        <div key={index} className={style.restaurantCard}>
+                        <div key={restaurant.placeId ?? index} className={style.restaurantCard}>
                             <div className={style.restaurantHeader}>
-                                <h4 className={style.restaurantName}>{restaurant.place_name}</h4>
+                                <h4 className={style.restaurantName}>{restaurant.name}</h4>
                                 <div className={style.distance}>
                                     <Navigation size={14} />
                                     <span>{restaurant.distance}m</span>
@@ -140,40 +147,40 @@ export function RestaurantRecommendations({ location, primaryFood, onClose }: Re
                             <div className={style.restaurantInfo}>
                                 <div className={style.address}>
                                     <MapPin size={14} />
-                                    <span>{restaurant.road_address_name || restaurant.place_name}</span>
+                                    <span>{restaurant.address || restaurant.name}</span>
                                 </div>
-                                
+
                                 {restaurant.phone && (
                                     <div className={style.phone}>
                                         <Phone size={14} />
                                         <span>{restaurant.phone}</span>
                                     </div>
                                 )}
-                                
+
                                 <div className={style.category}>
-                                    <span>{restaurant.category_name}</span>
+                                    <span>{restaurant.category}</span>
                                 </div>
                             </div>
 
                             <div className={style.restaurantActions}>
-                                <button 
+                                <button
                                     className={style.mapButton}
                                     onClick={() => openInMap(restaurant)}
                                 >
                                     <MapPin size={16} />
                                     지도보기
                                 </button>
-                                <button 
+                                <button
                                     className={style.directionsButton}
                                     onClick={() => openDirections(restaurant)}
                                 >
                                     <Navigation size={16} />
                                     길찾기
                                 </button>
-                                {restaurant.place_url && (
-                                    <button 
+                                {restaurant.placeId && (
+                                    <button
                                         className={style.detailButton}
-                                        onClick={() => window.open(restaurant.place_url, '_blank')}
+                                        onClick={() => openDetail(restaurant)}
                                     >
                                         <ExternalLink size={16} />
                                         상세보기
