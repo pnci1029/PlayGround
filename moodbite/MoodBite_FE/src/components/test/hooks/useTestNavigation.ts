@@ -1,58 +1,42 @@
 import {useState} from 'react';
-import {MealTime, Scores, TestStep} from '../../../types/test';
+import {TestStep} from '../../../types/test';
+
+// 검사 단계 진행 순서 (진행률 계산과 이전/다음 이동의 단일 기준)
+const STEP_ORDER: TestStep[] = [
+    TestStep.STEP1_TIREDNESS,
+    TestStep.STEP2_ANGER,
+    TestStep.STEP3_STRESS_LEVEL,
+    TestStep.STEP4_APPETITE_DEGREE,
+    TestStep.STEP5_MEAL_TIME,
+    TestStep.STEP6_BUDGET,
+    TestStep.STEP10_DINING_WITH,
+];
 
 export function useTestNavigation() {
 
     const [testStep, setTestStep] = useState(TestStep.STEP1_TIREDNESS);
 
-    const handlePrevScore = (currentStep: TestStep) => {
-        switch (currentStep) {
-            case TestStep.STEP2_ANGER:
-                return setTestStep(TestStep.STEP1_TIREDNESS);
-            case TestStep.STEP3_STRESS_LEVEL:
-                return setTestStep(TestStep.STEP2_ANGER);
-            case TestStep.STEP4_APPETITE_DEGREE:
-                return setTestStep(TestStep.STEP3_STRESS_LEVEL);
-            case TestStep.STEP5_MEAL_TIME:
-                return setTestStep(TestStep.STEP4_APPETITE_DEGREE);
-            case TestStep.STEP6_BUDGET:
-                return setTestStep(TestStep.STEP5_MEAL_TIME);
-            case TestStep.STEP10_DINING_WITH:
-                return setTestStep(TestStep.STEP6_BUDGET);
+    const currentIndex = STEP_ORDER.indexOf(testStep);
+
+    const handlePrevScore = () => {
+        if (currentIndex > 0) {
+            setTestStep(STEP_ORDER[currentIndex - 1]);
         }
     };
 
-    const handleNextScore = (
-        currentStep: TestStep,
-        scores: Scores,
-        selectedMealTime: MealTime | null,
-        dining: any = 'FRIENDS'
-    ) => {
-        switch (currentStep) {
-            case TestStep.STEP1_TIREDNESS:
-                return setTestStep(TestStep.STEP2_ANGER);
-            case TestStep.STEP2_ANGER:
-                return setTestStep(TestStep.STEP3_STRESS_LEVEL);
-            case TestStep.STEP3_STRESS_LEVEL:
-                return setTestStep(TestStep.STEP4_APPETITE_DEGREE);
-            case TestStep.STEP4_APPETITE_DEGREE:
-                return setTestStep(TestStep.STEP5_MEAL_TIME);
-            case TestStep.STEP5_MEAL_TIME:
-                return setTestStep(TestStep.STEP6_BUDGET);
-            case TestStep.STEP6_BUDGET:
-                return setTestStep(TestStep.STEP10_DINING_WITH);
-            case TestStep.STEP10_DINING_WITH:
-                // 이 단계에서는 Test 컴포넌트에서 직접 처리
-                return;
+    const handleNextScore = () => {
+        if (currentIndex < STEP_ORDER.length - 1) {
+            setTestStep(STEP_ORDER[currentIndex + 1]);
         }
     };
-
 
     return {
         testStep,
         handlePrevScore,
         handleNextScore,
-        isFirstStep: testStep === TestStep.STEP1_TIREDNESS,
-        isLastStep: testStep === TestStep.STEP10_DINING_WITH,
+        currentIndex,
+        totalSteps: STEP_ORDER.length,
+        isFirstStep: currentIndex === 0,
+        isLastStep: currentIndex === STEP_ORDER.length - 1,
     };
 };
