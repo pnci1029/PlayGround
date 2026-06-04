@@ -2,6 +2,7 @@ package com.example.moodbite.api.location
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,4 +35,8 @@ class LocationController(
             foodCategory = request.foodName
         )
     }
+
+    @GetMapping("/health")
+    @Operation(summary = "위치 API 상태 확인", description = "주변 맛집 API 서버 상태/배포 확인용")
+    fun health(): String = "Location API is running!"
 }

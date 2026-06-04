@@ -45,7 +45,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 2
+        fetch-depth: 0
 
     # 🔑 .gitignore된 실제 파일들을 복원
     - name: Restore gitignored files
@@ -163,16 +163,23 @@ jobs:
       id: changes
       run: |
         echo "Detecting changes..."
-        
-        # HEAD~1이 존재하는지 확인
-        if git rev-parse HEAD~1 >/dev/null 2>&1; then
-          echo "Using git diff with HEAD~1"
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+
+        # 푸시 '전체 범위'를 비교한다.
+        # (기존엔 HEAD~1..HEAD 로 마지막 커밋 1개만 봐서,
+        #  여러 커밋 푸시 시 마지막이 아닌 커밋의 BE 변경을 놓쳤음)
+        BEFORE='${{ github.event.before }}'
+        AFTER='${{ github.sha }}'
+
+        if [ -n "$BEFORE" ] \
+           && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+           && git rev-parse --quiet --verify "$BEFORE^{commit}" >/dev/null 2>&1; then
+          echo "Using git diff $BEFORE..$AFTER (full push range)"
+          CHANGED_FILES=$(git diff --name-only "$BEFORE" "$AFTER")
         else
-          echo "HEAD~1 not found, using all files in current commit"
+          echo "before SHA unavailable (first push/force-push) — using last commit"
           CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
         fi
-        
+
         echo "Changed files:"
         echo "$CHANGED_FILES"
         
