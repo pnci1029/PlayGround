@@ -5,9 +5,10 @@ interface Args {
     onBack: () => void;
     title: string;
     progress?: { current: number; total: number };
+    accentColor?: string;
 }
 export function HeaderWithBack(
-    {onBack, title, progress}:Args
+    {onBack, title, progress, accentColor}:Args
 ) {
     const percent = progress ? Math.round((progress.current / progress.total) * 100) : 0;
 
@@ -22,7 +23,10 @@ export function HeaderWithBack(
                 </button>
                 <h1 className={style.pageTitle}>{title}</h1>
                 {progress && (
-                    <span className={style.stepCounter}>
+                    <span
+                        className={style.stepCounter}
+                        style={accentColor ? { color: accentColor } : undefined}
+                    >
                         {progress.current} / {progress.total}
                     </span>
                 )}
@@ -31,7 +35,10 @@ export function HeaderWithBack(
                 <div className={style.progressTrack}>
                     <div
                         className={style.progressFill}
-                        style={{ width: `${percent}%` }}
+                        style={{
+                            width: `${percent}%`,
+                            ...(accentColor ? { background: accentColor } : {}),
+                        }}
                     />
                 </div>
             )}

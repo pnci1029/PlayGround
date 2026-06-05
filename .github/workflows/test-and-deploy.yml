@@ -148,7 +148,7 @@ jobs:
             moodbite/docker-compose.yml \
             trend/docker-compose.yml \
             stock_screener/docker-compose.yml \
-            stock_screener/ \
+            stock_screener/stock_screener_be/ \
             migrations/ \
             docker-compose.yml \
             docker-compose.db.yml \

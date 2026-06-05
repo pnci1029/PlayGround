@@ -25,7 +25,7 @@
 pip install fastapi uvicorn yfinance FinanceDataReader pandas
 
 # 서버 실행 (포트 8005)
-cd stock_screener
+cd stock_screener_be
 python main.py
 ```
 
