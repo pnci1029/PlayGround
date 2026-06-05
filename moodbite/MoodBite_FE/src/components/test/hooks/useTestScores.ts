@@ -1,38 +1,25 @@
 import {useState} from "react";
 import {DiningOption, MealTime} from "../../../types/test";
+import {MoodId} from "../moods";
 
 export function useTestScores() {
-    const [tiredScore, setTiredScore] = useState(50);
-    const [angerScore, setAngerScore] = useState(50);
-    const [stressScore, setStressScore] = useState(50);
-    const [appetiteScore, setAppetiteScore] = useState(50);
-    const [budgetScore, setBudgetScore] = useState(10000);
-    const [selectedMealTime, setSelectedMealTime] = useState<MealTime>('MORNING');
-    const [dining, setDining] = useState<DiningOption>('FRIENDS');
+    // 기분(감정 카드) + 강도
+    const [mood, setMood] = useState<MoodId | null>(null);
+    const [intensity, setIntensity] = useState<number>(1.0);
+
+    // 카드 선택값 (선택 전 null → 명시적 선택 강제)
+    const [tired, setTired] = useState<number | null>(null);       // 컨디션
+    const [appetite, setAppetite] = useState<number | null>(null); // 배고픔
+    const [budget, setBudget] = useState<number | null>(null);     // 예산
+    const [selectedMealTime, setSelectedMealTime] = useState<MealTime | null>(null);
+    const [dining, setDining] = useState<DiningOption | null>(null);
 
     return {
-        scores: {
-            tired: tiredScore,
-            anger: angerScore,
-            stress: stressScore,
-            appetite: appetiteScore,
-            budget: budgetScore,
-        },
-        setters: {
-            setTiredScore,
-            setAngerScore,
-            setStressScore,
-            setAppetiteScore,
-            setBudgetScore,
-            setDining
-        },
-        dining:{
-            dining,
-            setDining
-        },
-        mealTime: {
-            selectedMealTime,
-            setSelectedMealTime
-        }
+        mood: { mood, setMood, intensity, setIntensity },
+        condition: { tired, setTired },
+        hunger: { appetite, setAppetite },
+        budgetStep: { budget, setBudget },
+        mealTime: { selectedMealTime, setSelectedMealTime },
+        dining: { dining, setDining },
     };
 };

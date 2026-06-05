@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, MapPin, Clock, Users, Utensils } from 'lucide-react';
+import { ArrowLeft, RefreshCw, MapPin } from 'lucide-react';
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
 import NoRecommendations from '../ui/NoRecommendations';
 import { LocationPermission } from '../location/LocationPermission';
 import { RestaurantRecommendations } from '../location/RestaurantRecommendations';
+import { foodEmoji } from './foodVisuals';
 
 interface FoodRecommendation {
     primaryFood: string | null;
@@ -19,95 +20,83 @@ interface TestExecutedProps {
     onRetryTest?: () => void;
 }
 
+const DINING_TEXT: Record<string, string> = {
+    ALONE: '혼자', FRIENDS: '친구들과', FAMILY: '가족과',
+    DATE: '연인과', COWORKERS: '동료들과', ETC: '기타',
+};
+const MEALTIME_TEXT: Record<string, string> = {
+    MORNING: '아침', LUNCH: '점심', DINNER: '저녁', MIDNIGHT_SNACK: '야식',
+};
+
 export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest }: TestExecutedProps) {
-    const [isLoading, setIsLoading] = useState(false);
     const [recommendation, setRecommendation] = useState(aiRecommendation || '');
     const [showLocationPermission, setShowLocationPermission] = useState(false);
     const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(null);
     const [showRestaurants, setShowRestaurants] = useState(false);
 
     useEffect(() => {
-        setIsLoading(false);
         setRecommendation(aiRecommendation || '');
-        // 추천이 완료되면 자동으로 위치 권한 요청 표시
-        if (aiRecommendation && !isLoading) {
-            setTimeout(() => {
-                setShowLocationPermission(true);
-            }, 1500);
+        if (aiRecommendation) {
+            const timer = setTimeout(() => setShowLocationPermission(true), 1500);
+            return () => clearTimeout(timer);
         }
-    }, [aiRecommendation, isLoading]);
+    }, [aiRecommendation]);
 
     const handleLocationGranted = (location: GeolocationPosition) => {
         setUserLocation(location);
         setShowLocationPermission(false);
         setShowRestaurants(true);
     };
-
-    const handleLocationDenied = () => {
-        setShowLocationPermission(false);
-    };
-
+    const handleLocationDenied = () => setShowLocationPermission(false);
     const handleCloseRestaurants = () => {
         setShowRestaurants(false);
         setUserLocation(null);
     };
 
-    const getDiningText = (dining: string) => {
-        const diningTexts: Record<string, string> = {
-            'ALONE': '혼자',
-            'FRIENDS': '친구들과',
-            'FAMILY': '가족과',
-            'DATE': '연인과',
-            'COWORKERS': '동료들과',
-            'ETC': '기타'
-        };
-        return diningTexts[dining] || dining;
-    };
-
-    const getMealTimeText = (mealTime: string) => {
-        const mealTimeTexts: Record<string, string> = {
-            'MORNING': '아침',
-            'LUNCH': '점심',
-            'DINNER': '저녁',
-            'MIDNIGHT_SNACK': '야식'
-        };
-        return mealTimeTexts[mealTime] || mealTime;
-    };
-
-    const getScoreColor = (score: number, isReverse = false) => {
-        if (isReverse) {
-            if (score >= 70) return '#ff6b6b';
-            if (score >= 40) return '#feca57';
-            return '#4ECDC4';
-        } else {
-            if (score >= 70) return '#4ECDC4';
-            if (score >= 40) return '#feca57';
-            return '#ff6b6b';
-        }
-    };
-
     const parseRecommendation = (text: string): FoodRecommendation | null => {
         if (!text) return null;
-        
         try {
-            // JSON 형태로 파싱 시도
             const parsed = JSON.parse(text);
             return {
                 primaryFood: parsed.primaryFood,
                 alternativefoods: parsed.alternativefoods || [],
-                reason: parsed.reason || '추천 이유가 없습니다.'
+                reason: parsed.reason || '',
             };
-        } catch (error) {
-            // JSON이 아닌 경우 기존 텍스트 방식으로 처리 (호환성을 위해)
-            return {
-                primaryFood: null,
-                alternativefoods: [],
-                reason: text
-            };
+        } catch {
+            return { primaryFood: null, alternativefoods: [], reason: text };
         }
     };
 
-    const foodRecommendation = parseRecommendation(recommendation);
+    const food = parseRecommendation(recommendation);
+    const primaryFood = food?.primaryFood ?? '';
+    const reason = food?.reason ?? '';
+    const alternatives = food?.alternativefoods ?? [];
+
+    const isEmpty =
+        !recommendation || !food ||
+        (!food.primaryFood && food.alternativefoods.length === 0 &&
+            (!food.reason ||
+                food.reason.includes('추천을 찾지 못했습니다') ||
+                food.reason.includes('적합한 추천을 찾지 못했습니다')));
+
+    // 기분/상황 칩
+    const s = testResult.scores;
+    const chips: Array<{ emoji: string; label: string }> = [];
+    if (s.tired >= 65) chips.push({ emoji: '😩', label: '지친 하루' });
+    else if (s.tired <= 30) chips.push({ emoji: '💪', label: '쌩쌩' });
+    if (s.stress >= 65) chips.push({ emoji: '🤯', label: '스트레스' });
+    if (s.anger >= 65) chips.push({ emoji: '😤', label: '예민' });
+    if (s.appetite >= 70) chips.push({ emoji: '🤤', label: '배고픔' });
+    else if (s.appetite <= 30) chips.push({ emoji: '🤏', label: '입맛 없음' });
+    chips.push({ emoji: '👥', label: DINING_TEXT[testResult.dining] || testResult.dining });
+    if (testResult.mealTime) chips.push({ emoji: '🕐', label: MEALTIME_TEXT[testResult.mealTime] || testResult.mealTime });
+
+    const heroTie = (() => {
+        if (s.stress >= 65 || s.anger >= 65) return '스트레스엔 이런 게 땡기죠 🌶️';
+        if (s.tired >= 65) return '지친 하루, 이걸로 충전해요 🔋';
+        if (s.appetite <= 30) return '입맛 없을 땐 부담 없이 🍃';
+        return '지금 당신에게 딱 맞는 한 끼 ✨';
+    })();
 
     return (
         <div className={style.container}>
@@ -119,142 +108,68 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
             </header>
 
             <main className={style.mainContent}>
-                {/* 분석 결과 요약 */}
-                <section className={style.analysisSection}>
-                    <h2 className={style.sectionTitle}>상태 분석</h2>
-                    <div className={style.analysisGrid}>
-                        <div className={style.analysisItem}>
-                            <div className={style.scoreLabel}>피로도</div>
-                            <div 
-                                className={style.scoreValue}
-                                style={{ color: getScoreColor(testResult.scores.tired, true) }}
-                            >
-                                {testResult.scores.tired}%
-                            </div>
+                {isEmpty ? (
+                    <NoRecommendations onRetry={onRetryTest || onBack} />
+                ) : (
+                    <>
+                        {/* 기분/상황 칩 */}
+                        <div className={style.chipsRow}>
+                            {chips.map((c, i) => (
+                                <span key={i} className={style.chip}>
+                                    <span aria-hidden="true">{c.emoji}</span>{c.label}
+                                </span>
+                            ))}
                         </div>
-                        <div className={style.analysisItem}>
-                            <div className={style.scoreLabel}>스트레스</div>
-                            <div 
-                                className={style.scoreValue}
-                                style={{ color: getScoreColor(testResult.scores.stress, true) }}
-                            >
-                                {testResult.scores.stress}%
-                            </div>
-                        </div>
-                        <div className={style.analysisItem}>
-                            <div className={style.scoreLabel}>식욕</div>
-                            <div 
-                                className={style.scoreValue}
-                                style={{ color: getScoreColor(testResult.scores.appetite) }}
-                            >
-                                {testResult.scores.appetite}%
-                            </div>
-                        </div>
-                        <div className={style.analysisItem}>
-                            <div className={style.scoreLabel}>예산</div>
-                            <div className={style.scoreValue}>
-                                {testResult.scores.budget.toLocaleString()}원
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className={style.contextInfo}>
-                        <div className={style.contextItem}>
-                            <Users size={16} />
-                            <span>{getDiningText(testResult.dining)}</span>
-                        </div>
-                        <div className={style.contextItem}>
-                            <Clock size={16} />
-                            <span>{testResult.mealTime ? getMealTimeText(testResult.mealTime) : '시간 미설정'}</span>
-                        </div>
-                    </div>
-                </section>
 
-                {/* 추천 결과 */}
-                <section className={style.recommendationSection}>
-                    <h2 className={style.sectionTitle}>추천 결과</h2>
-                    
-                    {isLoading ? (
-                        <div className={style.loadingContainer}>
-                            <RefreshCw className={style.spinner} size={32} />
-                            <p>당신의 상태를 분석하여 최적의 음식을 추천하고 있습니다...</p>
-                        </div>
-                    ) : (
-                        <>
-                            {!recommendation || !foodRecommendation || 
-                             (!foodRecommendation.primaryFood && 
-                              foodRecommendation.alternativefoods.length === 0 && 
-                              (!foodRecommendation.reason || 
-                               foodRecommendation.reason.includes('추천을 찾지 못했습니다') || 
-                               foodRecommendation.reason.includes('적합한 추천을 찾지 못했습니다'))) ? (
-                                <NoRecommendations onRetry={onRetryTest || onBack} />
-                            ) : (
-                                <div className={style.foodRecommendations}>
-                                    {/* 메인 추천 음식 */}
-                                    {foodRecommendation && foodRecommendation.primaryFood && (
-                                        <div className={style.primaryFoodCard}>
-                                            <div className={style.primaryHeader}>
-                                                <Utensils size={24} className={style.primaryIcon} />
-                                                <div>
-                                                    <h3 className={style.primaryTitle}>오늘의 추천</h3>
-                                                    <p className={style.primarySubtitle}>당신의 상태에 가장 적합한 음식</p>
-                                                </div>
-                                            </div>
-                                            <div className={style.primaryFoodName}>
-                                                {foodRecommendation?.primaryFood}
-                                            </div>
-                                        </div>
-                                    )}
+                        {/* 메인 추천 (음식 hero) */}
+                        {primaryFood && (
+                            <div className={style.heroCard}>
+                                <div className={style.heroEmoji} aria-hidden="true">{foodEmoji(primaryFood)}</div>
+                                <div className={style.heroLabel}>오늘의 추천</div>
+                                <div className={style.heroName}>{primaryFood}</div>
+                                <div className={style.heroTie}>{heroTie}</div>
+                            </div>
+                        )}
 
-                                    {/* 추천 이유 */}
-                                    {foodRecommendation && foodRecommendation.reason && (
-                                        <div className={style.reasonCard}>
-                                            <h3 className={style.reasonTitle}>추천 이유</h3>
-                                            <p className={style.reasonText}>{foodRecommendation?.reason}</p>
-                                        </div>
-                                    )}
+                        {/* 추천 이유 */}
+                        {reason && (
+                            <div className={style.reasonCard}>
+                                <h3 className={style.reasonTitle}>왜 이 음식이냐면</h3>
+                                <p className={style.reasonText}>{reason}</p>
+                            </div>
+                        )}
 
-                                    {/* 대안 음식들 */}
-                                    {foodRecommendation && foodRecommendation.alternativefoods && foodRecommendation.alternativefoods.length > 0 && (
-                                        <div className={style.alternativesSection}>
-                                            <h3 className={style.alternativesTitle}>다른 추천 음식</h3>
-                                            <div className={style.alternativesList}>
-                                                {foodRecommendation.alternativefoods.map((food, index) => (
-                                                    <div key={index} className={style.alternativeCard}>
-                                                        <div className={style.alternativeNumber}>{index + 1}</div>
-                                                        <div className={style.alternativeName}>{food}</div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                        {/* 대안 음식 */}
+                        {alternatives.length > 0 && (
+                            <div className={style.alternativesSection}>
+                                <h3 className={style.alternativesTitle}>다른 추천</h3>
+                                <div className={style.altGrid}>
+                                    {alternatives.map((f, i) => (
+                                        <div key={i} className={style.altCardNew}>
+                                            <span className={style.altEmoji} aria-hidden="true">{foodEmoji(f)}</span>
+                                            <span className={style.altName}>{f}</span>
                                         </div>
-                                    )}
-
-                                    {/* 호환성을 위한 텍스트 표시 (JSON이 아닌 경우) */}
-                                    {foodRecommendation && !foodRecommendation.primaryFood && foodRecommendation.alternativefoods.length === 0 && foodRecommendation.reason === recommendation && (
-                                        <div className={style.fullTextRecommendation}>
-                                            <pre className={style.recommendationText}>{recommendation}</pre>
-                                        </div>
-                                    )}
+                                    ))}
                                 </div>
-                            )}
-                        </>
-                    )}
-                </section>
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {/* 위치 권한 요청 */}
-                {showLocationPermission && !showRestaurants && foodRecommendation?.primaryFood && (
+                {showLocationPermission && !showRestaurants && primaryFood && (
                     <LocationPermission
-                        primaryFood={foodRecommendation.primaryFood}
+                        primaryFood={primaryFood}
                         onLocationGranted={handleLocationGranted}
                         onLocationDenied={handleLocationDenied}
                     />
                 )}
 
                 {/* 음식점 추천 */}
-                {showRestaurants && userLocation && foodRecommendation?.primaryFood && (
+                {showRestaurants && userLocation && primaryFood && (
                     <RestaurantRecommendations
                         location={userLocation}
-                        primaryFood={foodRecommendation.primaryFood}
+                        primaryFood={primaryFood}
                         onClose={handleCloseRestaurants}
                     />
                 )}
@@ -263,12 +178,11 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                 <section className={style.actionSection}>
                     <button className={style.retryButton} onClick={onRetryTest || onBack}>
                         <RefreshCw size={18} />
-                        다시 추천받기
+                        다른 추천 받기
                     </button>
-                    
-                    {/* 수동 맛집 찾기 버튼 (위치 권한을 건너뛰었거나 아직 요청하지 않은 경우) */}
-                    {!showLocationPermission && !showRestaurants && foodRecommendation?.primaryFood && (
-                        <button 
+
+                    {!showLocationPermission && !showRestaurants && primaryFood && (
+                        <button
                             className={style.findRestaurantsButton}
                             onClick={() => setShowLocationPermission(true)}
                         >
