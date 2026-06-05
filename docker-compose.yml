@@ -146,7 +146,7 @@ services:
   stock_screener:
     build:
       context: .
-      dockerfile: ./stock_screener/Dockerfile
+      dockerfile: ./stock_screener/stock_screener_be/Dockerfile
     image: stock-screener:latest
     container_name: stock_screener
     ports:
@@ -174,7 +174,7 @@ services:
   # Stock Screener Frontend 서비스 (Next.js + TypeScript)
   stock_screener_fe:
     build:
-      context: ./stock_screener_fe
+      context: ./stock_screener/stock_screener_fe
       dockerfile: Dockerfile
     image: stock-screener-fe:latest
     container_name: stock_screener_fe
