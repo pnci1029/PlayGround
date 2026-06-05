@@ -1,8 +1,6 @@
 import React from 'react';
 import style from "../../style/test.module.scss";
-import {TestResultPostDTO, TestStep} from "../../types/test";
-import {useTestFunctions} from "./hooks/useTestFunctions";
-import {SliderQuestion} from "./SliderQuestion";
+import {TestResultPostDTO, TestStep, MealTime, DiningOption} from "../../types/test";
 import {MealTimeQuestion} from "./MealTimeQuestion";
 import {NavigationButtons} from "./NavigationButtons";
 import {useTestNavigation} from "./hooks/useTestNavigation";
@@ -11,14 +9,17 @@ import {HeaderWithBack} from "../common/HeaderWithBack";
 import {DiningQuestion} from "./DiningQuestion";
 import {useTestSubmit} from "./hooks/useTestSubmit";
 import {AnalyzingScreen} from "./AnalyzingScreen";
+import {MoodPicker} from "./MoodPicker";
+import {ChoiceQuestion} from "./ChoiceQuestion";
+import {CONDITION_CHOICES, HUNGER_CHOICES, BUDGET_CHOICES} from "./testChoices";
+import {MoodId, MOOD_BY_ID, moodToScores} from "./moods";
 
 interface TestProps {
     onBack: () => void;
 }
 
 export function Test({onBack}: TestProps) {
-    const { sliderLabels } = useTestFunctions();
-    const { submitTestResult, isSubmitting, error } = useTestSubmit()
+    const { submitTestResult, isSubmitting, error } = useTestSubmit();
     const {
         testStep,
         handlePrevScore,
@@ -30,49 +31,69 @@ export function Test({onBack}: TestProps) {
     } = useTestNavigation();
 
     const {
-        scores,
-        setters,
-        dining:{dining, setDining},
-        mealTime: { selectedMealTime, setSelectedMealTime }
+        mood: { mood, setMood, intensity, setIntensity },
+        condition: { tired, setTired },
+        hunger: { appetite, setAppetite },
+        budgetStep: { budget, setBudget },
+        mealTime: { selectedMealTime, setSelectedMealTime },
+        dining: { dining, setDining },
     } = useTestScores();
 
-    const getCurrentLabels = (step: TestStep) => {
-        return sliderLabels[step] || { min: "0", mid: "50", max: "100" };
-    };
+    // 단일 선택 단계: 탭하면 잠깐 표시 후 자동으로 다음으로
+    const advance = () => setTimeout(() => handleNextScore(), 280);
+
+    const handleMoodSelect = (id: MoodId) => setMood(id);          // 강도 선택 대기 (자동진행 X)
+    const handleIntensitySelect = (v: number) => { setIntensity(v); advance(); };
+    const handleCondition = (v: number) => { setTired(v); advance(); };
+    const handleHunger = (v: number) => { setAppetite(v); advance(); };
+    const handleBudget = (v: number) => { setBudget(v); advance(); };
+    const handleMealTime = (t: MealTime) => { setSelectedMealTime(t); advance(); };
+    const handleDining = (d: DiningOption) => setDining(d);        // 마지막 단계 (자동진행 X)
 
     const canProceedToNext = () => {
-        if (testStep === TestStep.STEP10_DINING_WITH) {
-            return selectedMealTime !== null;
+        switch (testStep) {
+            case TestStep.MOOD: return mood !== null;
+            case TestStep.CONDITION: return tired !== null;
+            case TestStep.HUNGER: return appetite !== null;
+            case TestStep.MEAL_TIME: return selectedMealTime !== null;
+            case TestStep.BUDGET: return budget !== null;
+            case TestStep.DINING: return dining !== null;
+            default: return false;
         }
-        return true;
     };
 
     const handleNext = async () => {
-        if (isLastStep) {
-            const dto: TestResultPostDTO = {
-                scores: scores,
-                dining: dining,
-                mealTime: selectedMealTime
-            };
-            
-            try {
-                await submitTestResult(dto);
-                // submitTestResult에서 자동으로 결과 페이지로 네비게이션됨
-            } catch (error) {
-                console.error('Error submitting test result:', error);
-            }
-        } else {
+        if (!isLastStep) {
             handleNextScore();
+            return;
+        }
+        // 마지막 단계: 모든 값이 채워졌을 때만 제출
+        if (mood === null || tired === null || appetite === null ||
+            budget === null || selectedMealTime === null || dining === null) {
+            return;
+        }
+        const emotion = moodToScores(mood, intensity);
+        const dto: TestResultPostDTO = {
+            scores: {
+                tired,
+                anger: emotion.anger,
+                stress: emotion.stress,
+                appetite,
+                budget,
+            },
+            dining,
+            mealTime: selectedMealTime,
+        };
+        try {
+            await submitTestResult(dto);
+        } catch (e) {
+            console.error('Error submitting test result:', e);
         }
     };
 
-    // 단일 선택(식사시간) 단계는 선택 즉시 다음으로 자동 진행
-    const handleMealTimeSelect = (time: typeof selectedMealTime) => {
-        setSelectedMealTime(time!);
-        setTimeout(() => handleNextScore(), 280);
-    };
+    const accentColor = mood ? MOOD_BY_ID[mood].color : undefined;
 
-    // 분석(추천 API 호출) 중에는 전용 로딩 화면을 보여준다
+    // 분석(추천 API 호출) 중에는 전용 로딩 화면
     if (isSubmitting) {
         return (
             <div className={style.container}>
@@ -81,80 +102,66 @@ export function Test({onBack}: TestProps) {
         );
     }
 
-
     return (
         <div className={style.container}>
             <HeaderWithBack
                 onBack={onBack}
                 title="오늘 뭐먹을까?"
                 progress={{ current: currentIndex + 1, total: totalSteps }}
+                accentColor={accentColor}
             />
 
             <main className={style.mainContent}>
                 <div key={testStep} className={style.stepWrapper}>
-                {testStep === TestStep.STEP1_TIREDNESS && (
-                    <SliderQuestion
-                        title="얼마나 피곤하신가요?"
-                        value={scores.tired}
-                        onChange={setters.setTiredScore}
-                        testStep={testStep}
-                        labels={getCurrentLabels(testStep)}
-                    />
-                )}
+                    {testStep === TestStep.MOOD && (
+                        <MoodPicker
+                            selectedMood={mood}
+                            intensity={intensity}
+                            onMoodSelect={handleMoodSelect}
+                            onIntensitySelect={handleIntensitySelect}
+                        />
+                    )}
 
-                {testStep === TestStep.STEP2_ANGER && (
-                    <SliderQuestion
-                        title="지금 예민한 상태인가요?"
-                        value={scores.anger}
-                        onChange={setters.setAngerScore}
-                        testStep={testStep}
-                        labels={getCurrentLabels(testStep)}
-                    />
-                )}
+                    {testStep === TestStep.CONDITION && (
+                        <ChoiceQuestion
+                            title="오늘 컨디션은요?"
+                            options={CONDITION_CHOICES}
+                            selected={tired}
+                            onSelect={handleCondition}
+                        />
+                    )}
 
-                {testStep === TestStep.STEP3_STRESS_LEVEL && (
-                    <SliderQuestion
-                        title="스트레스 정도를 평가해주세요."
-                        value={scores.stress}
-                        onChange={setters.setStressScore}
-                        testStep={testStep}
-                        labels={getCurrentLabels(testStep)}
-                    />
-                )}
+                    {testStep === TestStep.HUNGER && (
+                        <ChoiceQuestion
+                            title="얼마나 배고프세요?"
+                            options={HUNGER_CHOICES}
+                            selected={appetite}
+                            onSelect={handleHunger}
+                        />
+                    )}
 
-                {testStep === TestStep.STEP4_APPETITE_DEGREE && (
-                    <SliderQuestion
-                        title="얼마나 배고프신가요?"
-                        value={scores.appetite}
-                        onChange={setters.setAppetiteScore}
-                        testStep={testStep}
-                        labels={getCurrentLabels(testStep)}
-                    />
-                )}
+                    {testStep === TestStep.MEAL_TIME && (
+                        <MealTimeQuestion
+                            selectedTime={selectedMealTime}
+                            onTimeSelect={handleMealTime}
+                        />
+                    )}
 
-                {testStep === TestStep.STEP5_MEAL_TIME && (
-                    <MealTimeQuestion
-                        selectedTime={selectedMealTime}
-                        onTimeSelect={handleMealTimeSelect}
-                    />
-                )}
+                    {testStep === TestStep.BUDGET && (
+                        <ChoiceQuestion
+                            title="예산은 어느 정도?"
+                            options={BUDGET_CHOICES}
+                            selected={budget}
+                            onSelect={handleBudget}
+                        />
+                    )}
 
-                {testStep === TestStep.STEP6_BUDGET && (
-                    <SliderQuestion
-                        title="식사 예산은 어느정도인가요?"
-                        value={scores.budget}
-                        onChange={setters.setBudgetScore}
-                        testStep={testStep}
-                        labels={getCurrentLabels(testStep)}
-                    />
-                )}
-
-                {testStep === TestStep.STEP10_DINING_WITH && (
-                    <DiningQuestion
-                        selectedOption={dining}
-                        onOptionSelect={setDining}
-                    />
-                )}
+                    {testStep === TestStep.DINING && (
+                        <DiningQuestion
+                            selectedOption={dining}
+                            onOptionSelect={handleDining}
+                        />
+                    )}
                 </div>
 
                 {error && (

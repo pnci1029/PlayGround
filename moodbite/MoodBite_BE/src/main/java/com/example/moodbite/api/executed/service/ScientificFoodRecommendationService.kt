@@ -110,7 +110,8 @@ class ScientificFoodRecommendationService {
      * 스트레스 시 코르티솔 증가로 고칼로리, 달콤한 음식과 컴포트 푸드 선호 증가
      */
     private fun calculateStressCortisolScore(food: FoodRecommendation, scores: ScoresDTO, request: TestResultRequestDTO): Double {
-        val combinedStress = (scores.stress + scores.anger) / 20.0 // Normalize to 0-5 scale
+        // 입력은 0~100. 두 값 평균을 0~5 스케일로 정규화 (임계값 4.0/3.0/2.0 기준)
+        val combinedStress = (scores.stress + scores.anger) / 40.0
 
         return when {
             combinedStress >= 4.0 -> {
@@ -184,7 +185,7 @@ class ScientificFoodRecommendationService {
      */
     private fun calculateBudgetOptimizationScore(food: FoodRecommendation, budget: Int, scores: ScoresDTO): Double {
         val avgPrice = (food.minPrice + food.maxPrice) / 2.0
-        val stressLevel = (scores.stress + scores.anger) / 20.0 // Normalize to 0-5
+        val stressLevel = (scores.stress + scores.anger) / 40.0 // 0~100 입력 평균을 0~5로 정규화 (>=3 체크)
 
         return when {
             budget <= 5000 -> {
@@ -270,7 +271,7 @@ class ScientificFoodRecommendationService {
      * 피로도에 따른 미토콘드리아 기능, 혈당 조절, 에너지 대사 최적화
      */
     private fun calculateFatigueEnergyScore(food: FoodRecommendation, tired: Int, mealTime: String?): Double {
-        val fatigueLevel = tired / 10.0 // Normalize to 0-1 scale
+        val fatigueLevel = tired / 100.0 // 0~100 입력을 0~1로 정규화 (임계값 0.8/0.6/0.3)
 
         return when {
             fatigueLevel >= 0.8 -> {
@@ -321,7 +322,7 @@ class ScientificFoodRecommendationService {
      * 렙틴/그렐린 균형과 식욕 조절 최적화
      */
     private fun calculateAppetiteHormoneScore(food: FoodRecommendation, appetite: Int, mealTime: String?): Double {
-        val appetiteLevel = appetite / 10.0 // Normalize to 0-1 scale
+        val appetiteLevel = appetite / 100.0 // 0~100 입력을 0~1로 정규화 (임계값 0.2/0.9 등)
 
         return when {
             appetiteLevel <= 0.2 -> {
@@ -370,7 +371,7 @@ class ScientificFoodRecommendationService {
      * 장내 미생물이 기분, 인지기능, 스트레스 반응에 미치는 영향
      */
     private fun calculateGutBrainMicrobiomeScore(food: FoodRecommendation, stress: Int, tired: Int): Double {
-        val stressFatigueIndex = (stress + tired) / 20.0 // Normalize to 0-1
+        val stressFatigueIndex = (stress + tired) / 200.0 // 0~100 입력 평균을 0~1로 정규화
 
         val probioticsBonus = if (food.healthBenefits.contains("프로바이오틱스") ||
                                 food.healthBenefits.contains("유산균") ||
@@ -402,7 +403,7 @@ class ScientificFoodRecommendationService {
      * 만성 염증과 스트레스 완화를 위한 항염 음식 효과
      */
     private fun calculateAntiInflammatoryScore(food: FoodRecommendation, stress: Int): Double {
-        val stressLevel = stress / 10.0 // Normalize to 0-1
+        val stressLevel = stress / 100.0 // 0~100 입력을 0~1로 정규화
 
         val omega3Bonus = if (food.healthBenefits.contains("오메가3") ||
                             food.ingredients.contains("연어") ||

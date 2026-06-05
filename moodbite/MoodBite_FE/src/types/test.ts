@@ -1,19 +1,10 @@
 export enum TestStep {
-  STEP1_TIREDNESS = "STEP1_TIREDNESS",
-  STEP2_ANGER = "STEP2_ANGER",
-  STEP3_STRESS_LEVEL = "STEP3_STRESS_LEVEL",
-  STEP4_APPETITE_DEGREE = "STEP4_APPETITE_DEGREE",
-  STEP5_MEAL_TIME = 'STEP5_MEAL_TIME',
-  STEP6_BUDGET = "STEP6_BUDGET",
-  // STEP7_ALLERGY = "STEP7_ALLERGY",
-
-  // 상황
-  STEP10_DINING_WITH = "STEP10_DINING_WITH",
-
-  // 선호도
-  // STEP20_CUISINE_TYPE = "STEP20_CUISINE_TYPE", // 선호 음식
-  // STEP21_LAST_EATEN = "STEP21_LAST_EATEN", // 최근 먹은 음식 ( 이거 제외)
-
+  MOOD = "MOOD",            // 기분(감정 카드) → stress, anger
+  CONDITION = "CONDITION",  // 컨디션 → tired
+  HUNGER = "HUNGER",        // 배고픔 → appetite
+  MEAL_TIME = "MEAL_TIME",  // 식사 시간 → mealTime
+  BUDGET = "BUDGET",        // 예산 → budget
+  DINING = "DINING",        // 동반자 → dining
 }
 
 export type MealTime = 'MORNING' | 'LUNCH' | 'DINNER' | 'MIDNIGHT_SNACK';
