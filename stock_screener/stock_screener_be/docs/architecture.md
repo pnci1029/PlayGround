@@ -16,7 +16,7 @@
 ## 디렉터리 구조
 
 ```
-stock_screener/
+stock_screener_be/
 │
 ├── main.py                    # 진입점 — uvicorn 실행
 │
