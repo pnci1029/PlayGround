@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://stocks-api.chhong.kr/api/$1"
+    }
+  ]
+}
