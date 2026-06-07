@@ -90,14 +90,14 @@ if [[ "$TREND_CHANGED" == "true" ]]; then
     echo "✅ Trend 재배포 완료"
 fi
 
-# if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
-#     echo "📊 Stock Screener 변경 감지 - Stock Screener 재배포"
-#     cd stock_screener
-#     docker compose -p stock_screener_service build
-#     docker compose -p stock_screener_service up -d --force-recreate
-#     cd ..
-#     echo "✅ Stock Screener 재배포 완료"
-# fi
+if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
+    echo "📊 Stock Screener 변경 감지 - Stock Screener 재배포"
+    cd stock_screener
+    docker compose -p stock_screener_service build
+    docker compose -p stock_screener_service up -d --force-recreate
+    cd ..
+    echo "✅ Stock Screener 재배포 완료"
+fi
 
 # Docker 설정 전체 변경 시 모든 백엔드 재배포 (DB 제외)
 if [[ "$DOCKER_CHANGED" == "true" ]]; then

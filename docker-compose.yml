@@ -171,23 +171,8 @@ services:
     networks:
       - playground_network
 
-  # Stock Screener Frontend 서비스 (Next.js + TypeScript)
-  stock_screener_fe:
-    build:
-      context: ./stock_screener/stock_screener_fe
-      dockerfile: Dockerfile
-    image: stock-screener-fe:latest
-    container_name: stock_screener_fe
-    ports:
-      - "3005:3005"  # HTTP Frontend
-    environment:
-      - NODE_ENV=production
-      - PORT=3005
-    depends_on:
-      - stock_screener
-    restart: unless-stopped
-    networks:
-      - playground_network
+  # Stock Screener 프론트엔드는 Vercel에 배포됨 (stocks.chhong.kr)
+  # → Docker 컨테이너로 띄우지 않음. stock_screener/stock_screener_fe/vercel.json 참고
 
   # Caddy 리버스 프록시
   caddy:
