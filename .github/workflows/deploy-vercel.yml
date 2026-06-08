@@ -6,6 +6,7 @@ on:
     paths:
       - 'moodbite/MoodBite_FE/**'
       - 'playground/fe/**'
+      - 'stock_screener/stock_screener_fe/**'
 
 jobs:
   deploy-moodbite:
@@ -39,3 +40,19 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID_PLAYGROUND }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_PLAYGROUND }}
         working-directory: ./playground/fe
+
+  deploy-stock:
+    if: contains(github.event.head_commit.modified, 'stock_screener/stock_screener_fe')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Deploy Stock Screener to Vercel
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN_STOCK }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID_STOCK }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_STOCK }}
+        working-directory: ./stock_screener/stock_screener_fe
