@@ -4,7 +4,7 @@ from datetime import datetime
 
 import yfinance as yf
 
-from app.config import SP500_TICKERS
+from app.config import SP500_TICKERS, DB_SCHEMA
 from app.db import get_db
 from app.fetcher.common import safe_float, upsert
 
@@ -49,10 +49,17 @@ def fetch_us() -> None:
         except Exception as e:
             log.warning("US %s error: %s", ticker, e)
 
-    conn.execute(
-        "INSERT OR REPLACE INTO last_refresh(id,market,finished_at) VALUES(1,'US',?)",
-        (now,)
-    )
+    with conn.cursor() as cur:
+        cur.execute(
+            f"""
+            INSERT INTO {DB_SCHEMA}.last_refresh(id, market, finished_at)
+            VALUES (1, 'US', %s)
+            ON CONFLICT(id) DO UPDATE SET
+                market = EXCLUDED.market,
+                finished_at = EXCLUDED.finished_at
+            """,
+            (now,)
+        )
     conn.commit()
     conn.close()
     log.info("US done: %d/%d", ok, len(SP500_TICKERS))

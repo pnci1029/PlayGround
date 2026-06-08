@@ -1,7 +1,6 @@
 import asyncio
 
 from fastapi import APIRouter, BackgroundTasks
-from fastapi.responses import FileResponse
 
 from app.db import get_db
 
@@ -12,7 +11,8 @@ _refresh_running = False
 
 @router.get("/")
 def serve_index():
-    return FileResponse("templates/index.html")
+    # 프론트엔드는 Vercel(stock_screener_fe)로 분리됨 - 이 백엔드는 API 전용.
+    return {"service": "StockScreen API", "status": "ok", "docs": "/docs"}
 
 
 @router.get("/api/refresh")
