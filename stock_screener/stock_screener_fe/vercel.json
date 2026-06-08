@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://stocks-api.chhong.kr/api/$1"
+      "destination": "https://stock-api.chhong.kr/api/$1"
     }
   ]
 }

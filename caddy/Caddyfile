@@ -198,7 +198,7 @@ blog.chhong.kr {
 }
 
 # Stock Screener API 서브도메인 (Contabo)
-stocks-api.chhong.kr {
+stock-api.chhong.kr {
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# 모든 요청을 stock_screener 백엔드로 전달
@@ -209,7 +209,7 @@ stocks-api.chhong.kr {
 }
 
 # Stock Screener 서브도메인 - 프론트엔드는 Vercel, API는 백엔드
-stocks.chhong.kr {
+stock.chhong.kr {
 	# SSL 인증서 자동 발급
 
 	# API 요청
