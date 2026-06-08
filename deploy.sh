@@ -32,9 +32,14 @@ if ! docker ps | grep -q caddy; then
 else
     echo "✅ Caddy 서비스 이미 실행 중"
     if [[ "$CADDY_CHANGED" == "true" ]]; then
-        echo "🔄 Caddy 설정 변경 감지 - 리로드..."
-        docker exec caddy caddy reload --config /etc/caddy/Caddyfile
-        echo "✅ Caddy 리로드 완료"
+        echo "🔄 Caddy 설정 변경 감지 - 컨테이너 재생성..."
+        # Caddyfile 은 단일 파일 바인드마운트(./caddy/Caddyfile:/etc/caddy/Caddyfile)라,
+        # 배포 시 tar 가 파일을 통째로 교체하면 inode 가 바뀌어 컨테이너는 옛 파일(옛 inode)을
+        # 계속 본다. 그래서 `caddy reload` 는 "config is unchanged" 만 찍고 새 설정이 안 먹는다.
+        # 마운트를 현재 호스트 파일로 다시 묶으려면 컨테이너를 recreate 해야 한다.
+        # (인증서는 caddy_data 볼륨에 남아 재발급 없이 유지됨)
+        docker compose -f docker-compose.db.yml up -d --force-recreate caddy
+        echo "✅ Caddy 재생성 완료"
     fi
 fi
 
