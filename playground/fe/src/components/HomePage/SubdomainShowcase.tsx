@@ -34,9 +34,9 @@ const services: SubdomainService[] = [
     )
   },
   {
-    title: '주식 스크리너',
+    title: '주식',
     description: '',
-    url: 'https://stocks.chhong.kr',
+    url: 'https://stock.chhong.kr',
     badge: 'BETA',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
