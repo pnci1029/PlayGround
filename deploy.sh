@@ -49,8 +49,16 @@ if [[ "$BLOG_CHANGED" == "true" ]]; then
         exit 1
     fi
     cd blog
-    docker compose -p blog_service build
-    docker compose -p blog_service up -d --force-recreate
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    # (이게 없으면 DB_PASSWORD 가 빈 값이 되어 컨테이너가 DB 인증 실패로 죽는다)
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p blog_service build
+    # 고정 container_name(blog)이 다른 compose 프로젝트로 떠 있으면
+    # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
+    docker compose $COMPOSE_ENV -p blog_service down --remove-orphans 2>/dev/null || true
+    docker rm -f blog 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p blog_service up -d --force-recreate
     cd ..
     echo "✅ 블로그 재배포 완료"
 fi
@@ -75,8 +83,16 @@ fi
 if [[ "$PLAYGROUND_CHANGED" == "true" ]]; then
     echo "🎮 Playground 변경 감지 - Playground 재배포"
     cd playground
-    docker compose -p playground_service build
-    docker compose -p playground_service up -d --force-recreate
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    # (이게 없으면 DB_PASSWORD 가 빈 값이 되어 컨테이너가 DB 인증 실패로 죽는다)
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p playground_service build
+    # 고정 container_name(playground)이 다른 compose 프로젝트로 떠 있으면
+    # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
+    docker compose $COMPOSE_ENV -p playground_service down --remove-orphans 2>/dev/null || true
+    docker rm -f playground 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p playground_service up -d --force-recreate
     cd ..
     echo "✅ Playground 재배포 완료"
 fi
@@ -84,8 +100,16 @@ fi
 if [[ "$TREND_CHANGED" == "true" ]]; then
     echo "📈 Trend 변경 감지 - Trend 재배포"
     cd trend
-    docker compose -p trend_service build
-    docker compose -p trend_service up -d --force-recreate
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    # (이게 없으면 DB_PASSWORD 가 빈 값이 되어 컨테이너가 DB 인증 실패로 죽는다)
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p trend_service build
+    # 고정 container_name(trend)이 다른 compose 프로젝트로 떠 있으면
+    # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
+    docker compose $COMPOSE_ENV -p trend_service down --remove-orphans 2>/dev/null || true
+    docker rm -f trend 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p trend_service up -d --force-recreate
     cd ..
     echo "✅ Trend 재배포 완료"
 fi
@@ -93,8 +117,16 @@ fi
 if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
     echo "📊 Stock Screener 변경 감지 - Stock Screener 재배포"
     cd stock_screener
-    docker compose -p stock_screener_service build
-    docker compose -p stock_screener_service up -d --force-recreate
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    # (이게 없으면 DB_PASSWORD 가 빈 값이 되어 컨테이너가 DB 인증 실패로 죽는다)
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p stock_screener_service build
+    # 고정 container_name(stock_screener)이 다른 compose 프로젝트로 떠 있으면
+    # 이름 충돌로 up이 실패한다. 같은 프로젝트면 down, 아니면 이름으로 강제 제거.
+    docker compose $COMPOSE_ENV -p stock_screener_service down --remove-orphans 2>/dev/null || true
+    docker rm -f stock_screener 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p stock_screener_service up -d --force-recreate
     cd ..
     echo "✅ Stock Screener 재배포 완료"
 fi
@@ -104,13 +136,18 @@ if [[ "$DOCKER_CHANGED" == "true" ]]; then
     echo "🔄 Docker 설정 변경 감지 - 모든 백엔드 서비스 재배포"
 
     # 각 프로젝트별로 재배포
+    # (개별 서비스 블록과 동일하게: 루트 .env 를 보간 소스로 명시하고,
+    #  다른 compose 프로젝트가 점유한 고정 container_name 을 이름으로 강제 제거한다.
+    #  모든 서비스는 dir 이름 == container_name 이라 docker rm -f $project 로 충분)
     for project in playground moodbite trend blog stock_screener; do
         if [ -d "$project" ] && [ -f "$project/docker-compose.yml" ]; then
             echo "🔄 $project 재배포 중..."
             cd $project
-            docker compose -p ${project}_service down
-            docker compose -p ${project}_service build
-            docker compose -p ${project}_service up -d
+            COMPOSE_ENV="--env-file ../.env"
+            docker compose $COMPOSE_ENV -p ${project}_service down --remove-orphans 2>/dev/null || true
+            docker rm -f $project 2>/dev/null || true
+            docker compose $COMPOSE_ENV -p ${project}_service build
+            docker compose $COMPOSE_ENV -p ${project}_service up -d --force-recreate
             cd ..
         fi
     done
