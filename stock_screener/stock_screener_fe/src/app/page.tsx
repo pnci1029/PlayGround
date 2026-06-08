@@ -8,6 +8,8 @@ export default function Home() {
   const [stocks, setStocks] = useState<any[]>([]);
 
   useEffect(() => {
+    console.log('[stock_screener_fe] 배포 테스트 콘솔 - 페이지 마운트');
+
     // 헬스체크
     apiGet('/health')
       .then(() => setStatus('연결됨'))
