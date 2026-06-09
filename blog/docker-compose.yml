@@ -20,6 +20,9 @@ services:
       - DB_NAME=${POSTGRES_DB:-playground}
       - DB_USER=${POSTGRES_USER:-postgres}
       - DB_PASSWORD=${POSTGRES_PASSWORD}
+      # 이미지에 구워진 /app/.env 의 옛 DATABASE_URL 을 덮어쓴다(compose env > dotenv).
+      # 루트 .env 의 POSTGRES_PASSWORD 에서 파생 → 단일 소스 유지.
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-playground}?sslmode=disable
       - DB_SCHEMA=blog
       - BLOG_ADMIN_USERNAME=${BLOG_ADMIN_USERNAME}
       - BLOG_ADMIN_PASSWORD=${BLOG_ADMIN_PASSWORD}
