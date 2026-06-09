@@ -50,21 +50,10 @@ jobs:
     # 🔑 .gitignore된 실제 파일들을 복원
     - name: Restore gitignored files
       run: |
-        # PlayGround BE .env 복원
-        if [ ! -z '${{ secrets.PLAYGROUND_BE_ENV_FILE }}' ]; then
-          echo '${{ secrets.PLAYGROUND_BE_ENV_FILE }}' | base64 -d > playground/be/.env
-        fi
-        
-        # PlayGround FE .env.local 복원
-        if [ ! -z '${{ secrets.PLAYGROUND_FE_ENV_LOCAL_FILE }}' ]; then
-          echo '${{ secrets.PLAYGROUND_FE_ENV_LOCAL_FILE }}' | base64 -d > playground/fe/.env.local
-        fi
-        
-        # PlayGround FE .env.production 복원
-        if [ ! -z '${{ secrets.PLAYGROUND_FE_ENV_PROD_FILE }}' ]; then
-          echo '${{ secrets.PLAYGROUND_FE_ENV_PROD_FILE }}' | base64 -d > playground/fe/.env.production
-        fi
-        
+        # (제거됨) playground/be/.env — 컨테이너는 루트 /root/playground/.env 만 읽으므로 개별 .env 복원 불필요
+
+        # (제거됨) playground/fe/* — 프론트엔드는 Vercel 배포라 Contabo 배포엔 불필요
+
         # 공통 .env.production 복원 (최상위)
         if [ ! -z '${{ secrets.ENV_PRODUCTION_FILE }}' ]; then
           echo '${{ secrets.ENV_PRODUCTION_FILE }}' | base64 -d > .env.production
@@ -79,12 +68,8 @@ jobs:
           echo '${{ secrets.MIGRATION_PLAYGROUND_SQL }}' | base64 -d > migrations/playground.sql
         fi
         
-        # PlayGround FE config.ts 복원
-        if [ ! -z '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' ]; then
-          mkdir -p playground/fe/src/lib
-          echo '${{ secrets.PLAYGROUND_FE_CONFIG_FILE }}' | base64 -d > playground/fe/src/lib/config.ts
-        fi
-        
+        # (제거됨) playground/fe/src/lib/config.ts — 프론트는 Vercel + git 추적 코드라 시크릿 복원 불필요
+
         # 메인 .env 복원
         if [ ! -z '${{ secrets.MAIN_ENV_FILE }}' ]; then
           echo '${{ secrets.MAIN_ENV_FILE }}' | base64 -d > .env
@@ -102,17 +87,9 @@ jobs:
           echo '${{ secrets.MOODBITE_FOODS_JSON_FILE }}' | base64 -d | gunzip > moodbite/MoodBite_BE/src/main/resources/data/foods.json
         fi
         
-        # Blog BE .env 복원
-        if [ ! -z '${{ secrets.BLOG_BE_ENV_FILE }}' ]; then
-          mkdir -p blog/blog_be
-          echo '${{ secrets.BLOG_BE_ENV_FILE }}' | base64 -d > blog/blog_be/.env
-        fi
-        
-        # Blog BE config.ts 복원
-        if [ ! -z '${{ secrets.BLOG_BE_CONFIG_FILE }}' ]; then
-          mkdir -p blog/blog_be/src/utils
-          echo '${{ secrets.BLOG_BE_CONFIG_FILE }}' | base64 -d > blog/blog_be/src/utils/config.ts
-        fi
+        # (제거됨) blog/blog_be/.env — 컨테이너는 루트 /root/playground/.env 만 읽으므로 개별 .env 복원 불필요
+
+        # (제거됨) blog/blog_be/src/utils/config.ts — git 추적 코드. 시크릿이 git 코드를 덮어쓰던 잔재라 제거(이제 git이 소스)
 
     - name: Setup SSH
       run: |

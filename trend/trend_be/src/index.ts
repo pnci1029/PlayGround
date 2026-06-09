@@ -103,6 +103,7 @@ async function startWebSocketServer() {
 
 // 서버 시작
 async function startServers() {
+  console.log('🔑 Trend BE — DB 비밀번호 로테이션 재배포 (2026-06)')
   console.log('🎯 Trend Backend 시작 중...')
   console.log(`📍 HTTP API: http://localhost:${PORT}`)
   console.log(`🔌 WebSocket: ws://localhost:${WS_PORT}/ws`)
