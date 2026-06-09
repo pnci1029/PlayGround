@@ -10,17 +10,19 @@ fe/.env*
 ```
 
 ### 🔴 FATAL: Database Password Configuration
-**ALL DATABASE PASSWORDS MUST BE: `vheh1177!@#`**
+**모든 DB 비밀번호는 동일한 값(`<POSTGRES_PASSWORD>`)으로 맞춰야 한다.**
+> ⚠️ 실제 값은 절대 이 문서(또는 어떤 커밋되는 파일)에도 적지 말 것.
+> 실제 값은 각 `.env`(gitignore) / GitHub Secrets / 서버에만 존재해야 한다.
 
-#### Environment Files That MUST Use This Password:
-- `.env` (main) → `POSTGRES_PASSWORD=vheh1177!@#`
-- `blog/blog_be/.env` → `DB_PASSWORD=vheh1177!@#` + `DATABASE_URL=postgresql://postgres:vheh1177!%40%23@postgres:5432/playground?sslmode=disable`
-- `playground/be/.env` → `DB_PASSWORD=vheh1177!@#`
-- MoodBite uses environment variables → `DB_PASSWORD=vheh1177!@#`
+#### 이 비밀번호를 사용하는 환경 파일 (값은 placeholder로 표기):
+- `.env` (main) → `POSTGRES_PASSWORD=<POSTGRES_PASSWORD>`
+- `blog/blog_be/.env` → `DB_PASSWORD=<POSTGRES_PASSWORD>` + `DATABASE_URL=postgresql://postgres:<URL_ENCODED_PASSWORD>@postgres:5432/playground?sslmode=disable`
+- `playground/be/.env` → `DB_PASSWORD=<POSTGRES_PASSWORD>`
+- MoodBite → 환경변수 `DB_PASSWORD=<POSTGRES_PASSWORD>`
 
 #### PostgreSQL Database Password:
 ```sql
-ALTER USER postgres PASSWORD 'vheh1177!@#';
+ALTER USER postgres PASSWORD '<POSTGRES_PASSWORD>';
 ```
 
 ### 필수 환경 변수
