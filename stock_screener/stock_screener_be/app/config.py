@@ -3,10 +3,14 @@ Application-wide constants and configuration.
 """
 import os
 
-# 로컬 개발 시 .env 자동 로드 (도커에서는 env_file로 주입되므로 무해)
+# 로컬 개발 시 .env 자동 로드.
+# 환경변수는 루트 playground/.env 한 곳에서 통합 관리한다.
+# (도커에서는 docker-compose의 env_file로 주입되므로 아래 로드는 무해하게 스킵됨)
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    _here = os.path.dirname(os.path.abspath(__file__))
+    # app → stock_screener_be → stock_screener → playground(.env)
+    load_dotenv(os.path.join(_here, "..", "..", "..", ".env"))
 except ImportError:
     pass
 
