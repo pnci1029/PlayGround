@@ -144,7 +144,9 @@ if [[ "$DOCKER_CHANGED" == "true" ]]; then
     # (개별 서비스 블록과 동일하게: 루트 .env 를 보간 소스로 명시하고,
     #  다른 compose 프로젝트가 점유한 고정 container_name 을 이름으로 강제 제거한다.
     #  모든 서비스는 dir 이름 == container_name 이라 docker rm -f $project 로 충분)
-    for project in playground moodbite trend blog stock_screener; do
+    # trend 제외: trend Dockerfile의 COPY ../../migrations 가 빌드 컨텍스트 밖이라
+    # 빌드 실패 → set -e 로 전체 배포가 멈춤. trend는 현재 배포 대상 아님.
+    for project in playground moodbite blog stock_screener; do
         if [ -d "$project" ] && [ -f "$project/docker-compose.yml" ]; then
             echo "🔄 $project 재배포 중..."
             cd $project
