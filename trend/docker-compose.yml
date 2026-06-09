@@ -11,6 +11,9 @@ services:
       - "8012:8012"  # WebSocket
     env_file:
       - /root/playground/.env
+    # migrations 폴더를 런타임에 제공 (Dockerfile COPY 대신). trend.sql 자동 마이그레이션용.
+    volumes:
+      - /root/playground/migrations:/app/migrations:ro
     environment:
       - NODE_ENV=production
       - PORT=8002

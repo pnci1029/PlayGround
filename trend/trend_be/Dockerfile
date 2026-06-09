@@ -10,8 +10,9 @@ RUN npm ci --silent
 COPY src ./src
 COPY tsconfig.json ./
 
-# 최상단 migrations 폴더 복사
-COPY ../../migrations ./migrations
+# migrations 는 빌드 컨텍스트(./trend_be) 밖이라 COPY 불가 → 빌드 실패함.
+# 런타임에 compose 볼륨으로 /app/migrations 마운트해서 trend.sql 을 제공한다.
+# COPY ../../migrations ./migrations
 
 # TypeScript 빌드
 RUN npm run build
