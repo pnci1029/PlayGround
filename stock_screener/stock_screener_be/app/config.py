@@ -30,6 +30,10 @@ KIS_APP_SECRET = os.getenv("KIS_APP_SECRET")
 KIS_ACCOUNT_NO = os.getenv("KIS_ACCOUNT_NO")       # 계좌 8자리 (시세조회엔 불필요, 추후용)
 KIS_ACCOUNT_PROD = os.getenv("KIS_ACCOUNT_PROD", "01")  # 상품코드 2자리
 
+# KR 종목 유니버스 크기. 0이면 아래 KR_TICKERS(하드코딩) 사용,
+# 1 이상이면 FDR 상장목록에서 시가총액 상위 N개를 동적으로 사용.
+KR_UNIVERSE_SIZE = int(os.getenv("KR_UNIVERSE_SIZE", "100"))
+
 SP500_TICKERS = [
     "AAPL","MSFT","NVDA","AMZN","GOOGL","META","TSLA","BRK-B","JPM","V",
     "UNH","XOM","LLY","AVGO","MA","HD","PG","JNJ","MRK","COST",
