@@ -56,6 +56,7 @@ fastify.get('/subdomain-info', getSubdomainInfo)
 
 // 서버 시작
 const start = async () => {
+  console.log('🔑 PlayGround BE — DB 비밀번호 로테이션 재배포 (2026-06)')
   try {
     // PostgreSQL 연결 테스트
     await testConnection()

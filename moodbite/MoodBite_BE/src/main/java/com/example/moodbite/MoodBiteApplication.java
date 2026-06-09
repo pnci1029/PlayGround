@@ -10,6 +10,7 @@ public class MoodBiteApplication {
         System.out.println("🍽️ MoodBite Application 개별 배포 테스트 시작! v1.2");
         System.out.println("🚀 grep 패턴 수정 후 재테스트!");
         System.out.println("✅ 이제 MoodBite만 재시작되길 기대!");
+        System.out.println("🔑 DB 비밀번호 로테이션 재배포 (2026-06)");
         SpringApplication.run(MoodBiteApplication.class, args);
     }
 

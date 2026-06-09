@@ -12,6 +12,7 @@ const fastify = Fastify({
 });
 
 async function start() {
+  console.log('🔑 Blog BE — DB 비밀번호 로테이션 재배포 (2026-06)');
   try {
     // Register plugins
     await fastify.register(cors, {
