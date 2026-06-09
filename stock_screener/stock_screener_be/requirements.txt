@@ -6,3 +6,5 @@ apscheduler
 pandas
 aiofiles
 psycopg2-binary
+requests
+python-dotenv
