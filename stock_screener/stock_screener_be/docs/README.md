@@ -13,6 +13,7 @@
 | [api.md](./api.md) | 전체 API 엔드포인트 레퍼런스 |
 | [frontend.md](./frontend.md) | JS 모듈 구조 · CSS 시스템 · 컴포넌트 패턴 |
 | [data.md](./data.md) | DB 스키마 · 데이터 소스 · 필드 정의 |
+| [kis.md](./kis.md) | **KIS 한국투자증권 OpenAPI 연동** · 자동 갱신 스케줄러 |
 | [features.md](./features.md) | 현재 기능 목록 · 완성도 현황 |
 | [roadmap.md](./roadmap.md) | 개발 예정 기능 · 우선순위 |
 
@@ -39,6 +40,7 @@ python main.py
 |------|------|
 | 버전 | v0.3.0 (beta) |
 | 스택 | FastAPI · PostgreSQL · Vanilla JS |
-| 데이터 | yfinance · FinanceDataReader |
-| 커버리지 | US 30종목 · KR 30종목 (확장 예정) |
+| 데이터 | KIS(KR 시세) · yfinance(US) · FinanceDataReader(종목명) |
+| 커버리지 | US 30종목 · KR 시총 상위 100종목(동적) |
+| 갱신 | 장중 자동: KR 30초 / US 10분 (apscheduler) |
 | 목표 플랫폼 | 모바일 우선 · PC 반응형 |
