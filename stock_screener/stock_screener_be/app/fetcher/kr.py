@@ -92,7 +92,7 @@ def fetch_kr_fundamentals() -> None:
                 updated_at=now,
             ))
             ok += 1
-            time.sleep(0.05)  # KIS 초당 한도 여유
+            time.sleep(0.12)  # KIS 초당 한도(~20/s) 여유 있게 ~8/s. 초과분은 client가 백오프 재시도
         except Exception as e:
             log.warning("KR fund %s: %s", code, e)
     conn = get_db()

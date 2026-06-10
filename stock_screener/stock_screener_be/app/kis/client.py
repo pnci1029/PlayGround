@@ -23,6 +23,9 @@ _DOMAINS = {
     "paper": "https://openapivts.koreainvestment.com:29443",
 }
 
+# 초당 한도(EGW00201) 초과 시 백오프 재시도 횟수
+_RATE_LIMIT_RETRIES = 4
+
 
 class KISError(Exception):
     """KIS API가 rt_cd != '0' 으로 응답했을 때."""
@@ -114,13 +117,27 @@ class KISClient:
         }
         if extra_headers:
             headers.update(extra_headers)
-        resp = requests.get(f"{self.base}{path}", headers=headers, params=params, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-        # rt_cd: "0" 성공. 시세 일부 응답엔 rt_cd가 없을 수 있어 None도 허용.
-        if data.get("rt_cd") not in (None, "0"):
-            raise KISError(data.get("msg_cd"), data.get("msg1"), data)
-        return data
+
+        # KIS 초당 한도 초과(EGW00201)는 HTTP 500 + rt_cd=1 로 온다 → 백오프 재시도.
+        delay = 0.2
+        for attempt in range(_RATE_LIMIT_RETRIES + 1):
+            resp = requests.get(f"{self.base}{path}", headers=headers, params=params, timeout=10)
+            if resp.status_code == 500 and "EGW00201" in resp.text:
+                if attempt < _RATE_LIMIT_RETRIES:
+                    time.sleep(delay)
+                    delay = min(delay * 2, 2.0)
+                    continue
+            resp.raise_for_status()
+            data = resp.json()
+            # rt_cd: "0" 성공. 시세 일부 응답엔 rt_cd가 없을 수 있어 None도 허용.
+            if data.get("rt_cd") not in (None, "0"):
+                if data.get("msg_cd") == "EGW00201" and attempt < _RATE_LIMIT_RETRIES:
+                    time.sleep(delay)
+                    delay = min(delay * 2, 2.0)
+                    continue
+                raise KISError(data.get("msg_cd"), data.get("msg1"), data)
+            return data
+        raise KISError("EGW00201", "초당 한도 재시도 소진")
 
 
 # 모듈 싱글톤
