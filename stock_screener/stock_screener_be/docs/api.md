@@ -224,3 +224,22 @@ HTML 페이지 반환 (SPA 진입점).
 - `lite` — yfinance 과거 데이터 없을 때 현재 info 기준 지표 사용
 
 **처리 시간**: 종목 수 × 네트워크 지연. US+KR 60종목 기준 약 30~120초.
+
+---
+
+## GET /api/candles/{ticker}
+
+종목 캔들(OHLCV) 조회 — **일/주/월/연봉**. 차트용 과거 데이터.
+
+| 파라미터 | 값 | 기본 | 설명 |
+|----------|-----|------|------|
+| `market` | `KR`\|`US` | `KR` | 시장 |
+| `tf` | `D`\|`W`\|`M`\|`Y` | `D` | 일/주/월/연 |
+| `count` | 정수 | tf별 기본 | 캔들 개수 |
+
+```json
+{ "ticker":"005930","market":"KR","tf":"M",
+  "candles":[{"date":"2026-04-30","open":319500,"high":370000,"low":292500,"close":302500,"volume":253477582}] }
+```
+
+과거→최신 순. KR=FinanceDataReader, US=yfinance (KIS 레이트리밋과 무관). 상세: [chart.md](./chart.md).
