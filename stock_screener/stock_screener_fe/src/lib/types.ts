@@ -21,6 +21,22 @@ export interface Stock {
   week52_low: number | null;
 }
 
+export interface Candle {
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  volume: number | null;
+}
+
+export interface CandlesResult {
+  ticker: string;
+  market: Market;
+  tf: string;
+  candles: Candle[];
+}
+
 export interface Condition {
   field: string;
   op: Op;

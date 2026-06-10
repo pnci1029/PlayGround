@@ -9,6 +9,7 @@ import type {
   WatchGroup,
   StrategyFitResult,
   ReturnsResult,
+  CandlesResult,
 } from "./types";
 
 async function getJSON<T>(url: string): Promise<T> {
@@ -64,6 +65,18 @@ export function apiRefresh(): Promise<unknown> {
 
 export function apiStatus(): Promise<StatusResult> {
   return getJSON<StatusResult>("/api/status");
+}
+
+// ── 차트 캔들 ─────────────────────────────────────────────────────────
+export function apiCandles(
+  ticker: string,
+  market: string,
+  tf: string,
+  count?: number,
+): Promise<CandlesResult> {
+  const qs = new URLSearchParams({ market, tf });
+  if (count) qs.set("count", String(count));
+  return getJSON<CandlesResult>(`/api/candles/${encodeURIComponent(ticker)}?${qs}`);
 }
 
 export function apiStrategies(): Promise<Strategy[]> {
