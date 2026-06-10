@@ -64,12 +64,17 @@ curl "https://<API>/api/candles/AAPL?market=US&tf=W"
 
 - **스크리너 표에서 종목 행을 클릭** → 캔들 차트 **모달**이 열림.
 - 모달 상단 **[일][주][월][연]** 토글로 timeframe 전환.
-- 차트는 새 라이브러리 없이 **캔버스에 직접 렌더**(기존 DcaModal 패턴) — 캔들스틱 + 거래량 막대.
+- 차트 라이브러리: **lightweight-charts (v5, TradingView)** — 인터랙티브:
+  - 🖱️ 마우스 휠 **줌**, 드래그 **패닝**, **크로스헤어**(날짜+OHLC)
+  - 📱 모바일 **핀치 줌 / 드래그** (픽셀 확대가 아니라 데이터 줌 → 세부 날짜·캔들이 선명하게)
+  - 줌 인하면 시간축 라벨이 자동으로 촘촘해짐
+- 캔들스틱 + 거래량(하단 오버레이).
 - 관련 파일:
-  - `src/components/ChartModal.tsx` — 모달 + 캔들 렌더
+  - `src/components/ChartModal.tsx` — 모달 + lightweight-charts 렌더 (`createChart` → `addSeries(CandlestickSeries/HistogramSeries)`)
   - `src/lib/api.ts` → `apiCandles(ticker, market, tf, count?)`
   - `src/components/StockTable.tsx` → 행 `onRowClick`
   - `src/app/page.tsx` → `chartStock` 상태로 모달 제어
+- 의존성: `lightweight-charts` (package.json). 차트 컨테이너는 `touch-action: none`(브라우저 페이지줌 대신 차트가 제스처를 받게).
 
 ```ts
 const res = await apiCandles(ticker, market, tf); // GET /api/candles/...
