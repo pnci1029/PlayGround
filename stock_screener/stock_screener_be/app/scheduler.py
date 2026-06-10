@@ -1,19 +1,21 @@
 """
 주기적 시세 갱신 스케줄러 (apscheduler).
 
-- KR(KIS):     장중(평일 09:00~15:30 KST) 30초 주기
-- US(yfinance): 장중(평일 09:30~16:00 ET) 10분 주기 — yfinance 과호출/차단 방지
-장외·주말에는 각 job이 알아서 건너뛴다(스킵).
+- KR 전 종목 가격(FDR):   장중(평일 09:00~15:30 KST) **10분** 주기
+- KR 전 종목 펀더멘털(KIS): **하루 1회** 평일 15:40 KST (장 마감 후)
+- US(yfinance):           장중(평일 09:30~16:00 ET) 10분 주기
 
-max_instances=1 + coalesce=True 로 이전 수집이 안 끝났으면 겹쳐 돌지 않게 한다.
+장외·주말엔 interval job이 알아서 스킵한다.
+실시간(체결 즉시)은 "고른 종목"만 KIS WebSocket으로 별도 구현 예정.
 """
 import logging
 from datetime import datetime, time as dtime
 from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
-from app.fetcher.kr import fetch_kr
+from app.fetcher.kr import fetch_kr_universe, fetch_kr_fundamentals
 from app.fetcher.us import fetch_us
 
 log = logging.getLogger("scheduler")
@@ -21,7 +23,7 @@ log = logging.getLogger("scheduler")
 _KST = ZoneInfo("Asia/Seoul")
 _ET = ZoneInfo("America/New_York")
 
-KR_INTERVAL_SEC = 30
+KR_INTERVAL_MIN = 10
 US_INTERVAL_MIN = 10
 
 
@@ -32,13 +34,21 @@ def _is_open(tz: ZoneInfo, start: dtime, end: dtime) -> bool:
     return start <= now.time() <= end
 
 
-def _kr_job() -> None:
+def _kr_universe_job() -> None:
     if not _is_open(_KST, dtime(9, 0), dtime(15, 30)):
         return
     try:
-        fetch_kr()
+        fetch_kr_universe()
     except Exception as e:
-        log.warning("KR 주기 수집 실패: %s", e)
+        log.warning("KR 전종목 주기 수집 실패: %s", e)
+
+
+def _kr_fund_job() -> None:
+    # 마감 후 1회. (장중 안 바뀌는 EPS/BPS 기반이라 하루 1회면 충분)
+    try:
+        fetch_kr_fundamentals()
+    except Exception as e:
+        log.warning("KR 펀더멘털 수집 실패: %s", e)
 
 
 def _us_job() -> None:
@@ -58,14 +68,16 @@ def start_scheduler() -> BackgroundScheduler:
     if _scheduler is not None:
         return _scheduler
     sched = BackgroundScheduler(timezone="UTC")
-    sched.add_job(_kr_job, "interval", seconds=KR_INTERVAL_SEC,
-                  id="kr_poll", max_instances=1, coalesce=True)
+    sched.add_job(_kr_universe_job, "interval", minutes=KR_INTERVAL_MIN,
+                  id="kr_universe", max_instances=1, coalesce=True)
     sched.add_job(_us_job, "interval", minutes=US_INTERVAL_MIN,
                   id="us_poll", max_instances=1, coalesce=True)
+    sched.add_job(_kr_fund_job, CronTrigger(day_of_week="mon-fri", hour=15, minute=40, timezone=_KST),
+                  id="kr_fund", max_instances=1, coalesce=True)
     sched.start()
     _scheduler = sched
-    log.info("시세 스케줄러 시작: KR %ds(장중) / US %dm(장중)",
-             KR_INTERVAL_SEC, US_INTERVAL_MIN)
+    log.info("시세 스케줄러 시작: KR가격 %dm / US %dm / KR펀더멘털 평일 15:40 KST",
+             KR_INTERVAL_MIN, US_INTERVAL_MIN)
     return sched
 
 
