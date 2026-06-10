@@ -60,11 +60,20 @@ curl "https://<API>/api/candles/005930?tf=Y"
 curl "https://<API>/api/candles/AAPL?market=US&tf=W"
 ```
 
-프론트(예시):
+## 프론트엔드 사용
+
+- **스크리너 표에서 종목 행을 클릭** → 캔들 차트 **모달**이 열림.
+- 모달 상단 **[일][주][월][연]** 토글로 timeframe 전환.
+- 차트는 새 라이브러리 없이 **캔버스에 직접 렌더**(기존 DcaModal 패턴) — 캔들스틱 + 거래량 막대.
+- 관련 파일:
+  - `src/components/ChartModal.tsx` — 모달 + 캔들 렌더
+  - `src/lib/api.ts` → `apiCandles(ticker, market, tf, count?)`
+  - `src/components/StockTable.tsx` → 행 `onRowClick`
+  - `src/app/page.tsx` → `chartStock` 상태로 모달 제어
+
 ```ts
-const res = await fetch(`/api/candles/${ticker}?market=${market}&tf=${tf}`);
-const { candles } = await res.json();
-// candles → 차트 라이브러리(lightweight-charts / recharts)에 전달
+const res = await apiCandles(ticker, market, tf); // GET /api/candles/...
+// res.candles → 캔버스 렌더 (또는 lightweight-charts 등으로 교체 가능)
 ```
 
 ---
