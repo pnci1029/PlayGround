@@ -40,7 +40,7 @@ python main.py
 |------|------|
 | 버전 | v0.3.0 (beta) |
 | 스택 | FastAPI · PostgreSQL · Vanilla JS |
-| 데이터 | KIS(KR 시세) · yfinance(US) · FinanceDataReader(종목명) |
-| 커버리지 | US 30종목 · KR 시총 상위 100종목(동적) |
-| 갱신 | 장중 자동: KR 30초 / US 10분 (apscheduler) |
+| 데이터 | FDR(KR 가격) · KIS(KR 펀더멘털) · yfinance(US) |
+| 커버리지 | US 30종목 · KR 전 종목 ~2,600 (KOSPI+KOSDAQ 보통주) |
+| 갱신 | KR 가격 10분 / KR 펀더멘털 하루1회 / US 10분 (apscheduler) |
 | 목표 플랫폼 | 모바일 우선 · PC 반응형 |

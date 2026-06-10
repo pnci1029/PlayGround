@@ -14,8 +14,9 @@
 |------|------|
 | `app/kis/client.py` | KIS 클라이언트 — 접근토큰 발급/파일캐싱(24h)/REST GET 래퍼. 실전/모의 도메인 자동 선택 |
 | `app/kis/quote.py` | 시세 조회 — `domestic_price()`(국내), `overseas_price()`(미국) |
-| `app/fetcher/kr.py` | KR 수집 — KIS 시세 + FDR 종목명 → `stocks` 테이블 upsert. 유니버스 동적 구성 |
-| `app/scheduler.py` | 장중 주기 갱신 (apscheduler) |
+| `app/fetcher/kr.py` | KR 수집 — `fetch_kr_universe()`(FDR 전종목 가격), `fetch_kr_fundamentals()`(KIS 전종목 PER/PBR/EPS/ROE) |
+| `app/fetcher/common.py` | `upsert_price`/`upsert_fundamentals` — 소스별 소유 컬럼만 갱신하는 배치 upsert |
+| `app/scheduler.py` | 주기 갱신 (apscheduler) |
 | `kis_test.py` | 연동 점검 스크립트 (`python kis_test.py`) |
 
 ---
@@ -81,19 +82,23 @@ KIS `inquire-price.output` → `stocks` 컬럼:
 
 `app/scheduler.py` — apscheduler `BackgroundScheduler`:
 
-| Job | 주기 | 장중 조건 | 비고 |
-|-----|------|----------|------|
-| `kr_poll` | 30초 | 평일 09:00~15:30 KST | KIS, 100종목 ~10-20s 소요 |
-| `us_poll` | 10분 | 평일 09:30~16:00 ET | yfinance 과호출/차단 방지 |
+| Job | 주기 | 조건 | 소스 | 비고 |
+|-----|------|------|------|------|
+| `kr_universe` | 10분 | 평일 09:00~15:30 KST | FDR | 전 종목 가격/시총/거래량 |
+| `kr_fund` | 하루 1회 (평일 15:40 KST) | 마감 후 | KIS | 전 종목 PER/PBR/EPS/ROE sweep |
+| `us_poll` | 10분 | 평일 09:30~16:00 ET | yfinance | 30종목 |
 
-- 장외·주말엔 job이 즉시 스킵.
+- 장외·주말엔 interval job이 즉시 스킵.
 - `max_instances=1` + `coalesce=True` → 이전 수집이 안 끝났으면 겹쳐 돌지 않음.
-- 주기 변경은 `KR_INTERVAL_SEC` / `US_INTERVAL_MIN` 상수.
+- 주기 변경은 `KR_INTERVAL_MIN` / `US_INTERVAL_MIN` 상수, 펀더멘털 시각은 `CronTrigger`.
 
-### 왜 전체 테이블은 폴링인가 (10초/WebSocket 아님)
-- KIS REST는 **초당 ~20콜** 한도. 기본 시세는 종목당 1콜 → 100종목 = 최소 5초. 10초 폴링은 한도 풀가동이라 에러 위험.
-- **30초**가 한도 여유 + 충분한 신선도의 스윗스팟.
-- 진짜 실시간(체결 즉시)은 폴링이 아니라 WebSocket으로 풀어야 함 (아래).
+### 왜 전 종목은 10분 폴링(실시간 아님)인가
+- KIS REST는 **초당 ~20콜** 한도. 종목당 1콜이라 전 종목(~2,600) 실시간은 불가.
+- 가격은 FDR 전 시장 1콜로 10분마다, 펀더멘털은 KIS sweep으로 하루 1회(EPS/BPS는 장중 불변).
+- 전 종목 실시간은 **41종목/연결 한도 + 기관 피드 비용** 때문에 무료론 불가. 실시간은 "고른 종목"만 WebSocket(아래).
+
+### 시작 시 주의
+- `fetch_all()`(서버 시작 1회)에 펀더멘털 sweep 포함 → 재시작마다 전 종목 KIS 호출(~2-3분). 가격(FDR)은 먼저 빨리 채워짐.
 
 ---
 
