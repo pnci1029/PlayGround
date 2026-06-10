@@ -42,6 +42,7 @@ interface Props {
   sortCol: string;
   sortAsc: boolean;
   onSort: (col: string) => void;
+  onRowClick: (s: Stock) => void;
 }
 
 export default function StockTable({
@@ -50,6 +51,7 @@ export default function StockTable({
   sortCol,
   sortAsc,
   onSort,
+  onRowClick,
 }: Props) {
   return (
     <div className="table-wrap" id="tableWrap">
@@ -100,7 +102,12 @@ export default function StockTable({
               const chg = changeMeta(r.change_pct);
               const spark = sparkMeta(r.price, r.week52_low, r.week52_high);
               return (
-                <tr key={`${r.ticker}-${r.market}-${i}`}>
+                <tr
+                  key={`${r.ticker}-${r.market}-${i}`}
+                  onClick={() => onRowClick(r)}
+                  style={{ cursor: "pointer" }}
+                  title="클릭하면 차트"
+                >
                   <td className="ticker-cell">
                     {r.ticker}
                     <span

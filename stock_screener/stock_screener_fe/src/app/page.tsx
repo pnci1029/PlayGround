@@ -16,12 +16,13 @@ import StockTable from "@/components/StockTable";
 import DcaModal from "@/components/DcaModal";
 import BacktestModal from "@/components/BacktestModal";
 import WatchlistModal from "@/components/WatchlistModal";
+import ChartModal from "@/components/ChartModal";
 
 export default function Home() {
   // ── 상태 ────────────────────────────────────────────────────────────
   const [allRows, setAllRows] = useState<Stock[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [curMkt, setCurMkt] = useState<"ALL" | Market>("ALL");
+  const [curMkt, setCurMkt] = useState<"ALL" | Market>("KR");
   const [sortCol, setSortCol] = useState("market_cap");
   const [sortAsc, setSortAsc] = useState(false);
   const [logic, setLogic] = useState<"AND" | "OR">("AND");
@@ -38,6 +39,7 @@ export default function Home() {
   const [btOpen, setBtOpen] = useState(false);
   const [btPreselect, setBtPreselect] = useState<string | null>(null);
   const [wlOpen, setWlOpen] = useState(false);
+  const [chartStock, setChartStock] = useState<Stock | null>(null);
 
   // ── 최신값 참조용 ref (stale closure 방지) ──────────────────────────
   const curMktRef = useRef(curMkt);
@@ -306,6 +308,7 @@ export default function Home() {
         sortCol={sortCol}
         sortAsc={sortAsc}
         onSort={sortBy}
+        onRowClick={setChartStock}
       />
 
       {dcaOpen && <DcaModal onClose={() => setDcaOpen(false)} />}
@@ -321,6 +324,9 @@ export default function Home() {
           onClose={() => setWlOpen(false)}
           allTickers={allTickers}
         />
+      )}
+      {chartStock && (
+        <ChartModal stock={chartStock} onClose={() => setChartStock(null)} />
       )}
     </>
   );
