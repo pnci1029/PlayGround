@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  createChart,
+  CandlestickSeries,
+  HistogramSeries,
+  ColorType,
+  type IChartApi,
+  type ISeriesApi,
+  type Time,
+} from "lightweight-charts";
 import { apiCandles } from "@/lib/api";
 import type { Stock, Candle } from "@/lib/types";
 
@@ -10,107 +19,6 @@ const TFS: { k: string; label: string }[] = [
   { k: "M", label: "월" },
   { k: "Y", label: "연" },
 ];
-
-function fmtP(v: number): string {
-  return v >= 1000 ? Math.round(v).toLocaleString() : v.toFixed(2);
-}
-
-// 캔들스틱 + 거래량을 캔버스에 직접 렌더 (DcaModal 패턴 이식)
-function drawCandles(canvas: HTMLCanvasElement, candles: Candle[]) {
-  const dpr = window.devicePixelRatio || 1;
-  const W = canvas.parentElement?.clientWidth || 660;
-  const H = 340;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + "px";
-  canvas.style.height = H + "px";
-
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, W, H);
-
-  const data = candles
-    .filter(
-      (c) => c.open != null && c.high != null && c.low != null && c.close != null,
-    )
-    .map((c) => ({
-      date: c.date,
-      open: c.open as number,
-      high: c.high as number,
-      low: c.low as number,
-      close: c.close as number,
-      volume: c.volume ?? 0,
-    }));
-  if (data.length < 2) return;
-
-  const PAD = { top: 10, right: 56, bottom: 22, left: 8 };
-  const volH = 46;
-  const cw = W - PAD.left - PAD.right;
-  const priceH = H - PAD.top - PAD.bottom - volH - 8;
-
-  let maxP = Math.max(...data.map((c) => c.high));
-  let minP = Math.min(...data.map((c) => c.low));
-  const padP = (maxP - minP) * 0.05 || maxP * 0.05;
-  maxP += padP;
-  minP -= padP;
-  const maxV = Math.max(...data.map((c) => c.volume || 0), 1);
-
-  const n = data.length;
-  const slot = cw / n;
-  const bw = Math.max(1, slot * 0.6);
-  const toX = (i: number) => PAD.left + slot * i + slot / 2;
-  const toY = (v: number) => PAD.top + priceH - ((v - minP) / (maxP - minP)) * priceH;
-  const volTop = PAD.top + priceH + 8;
-  const toVY = (v: number) => volTop + volH - (v / maxV) * volH;
-
-  // 가격 그리드 + 라벨
-  ctx.strokeStyle = "#21262d";
-  ctx.lineWidth = 1;
-  ctx.fillStyle = "#8b949e";
-  ctx.font = "10px monospace";
-  ctx.textAlign = "left";
-  for (let t = 0; t <= 4; t++) {
-    const y = PAD.top + (priceH * t) / 4;
-    const p = maxP - ((maxP - minP) * t) / 4;
-    ctx.beginPath();
-    ctx.moveTo(PAD.left, y);
-    ctx.lineTo(PAD.left + cw, y);
-    ctx.stroke();
-    ctx.fillText(fmtP(p), PAD.left + cw + 4, y + 3);
-  }
-
-  // 캔들 + 거래량
-  data.forEach((c, i) => {
-    const up = c.close >= c.open;
-    const col = up ? "#3fb950" : "#f85149";
-    const x = toX(i);
-    // 심지
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(x, toY(c.high));
-    ctx.lineTo(x, toY(c.low));
-    ctx.stroke();
-    // 몸통
-    const yo = toY(c.open);
-    const yc = toY(c.close);
-    ctx.fillStyle = col;
-    ctx.fillRect(x - bw / 2, Math.min(yo, yc), bw, Math.max(1, Math.abs(yc - yo)));
-    // 거래량
-    ctx.fillStyle = up ? "rgba(63,185,80,.35)" : "rgba(248,81,73,.35)";
-    const vy = toVY(c.volume || 0);
-    ctx.fillRect(x - bw / 2, vy, bw, volTop + volH - vy);
-  });
-
-  // 날짜 라벨
-  ctx.fillStyle = "#8b949e";
-  ctx.textAlign = "center";
-  const step = Math.max(1, Math.floor(n / 6));
-  data.forEach((c, i) => {
-    if (i % step === 0 || i === n - 1) ctx.fillText(c.date.slice(2), toX(i), H - 6);
-  });
-}
 
 interface Props {
   stock: Stock;
@@ -122,8 +30,55 @@ export default function ChartModal({ stock, onClose }: Props) {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const volSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+
+  // 차트 생성 (모달 마운트 시 1회). 줌/패닝/크로스헤어/터치 핀치 모두 내장.
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const chart = createChart(containerRef.current, {
+      autoSize: true,
+      layout: {
+        background: { type: ColorType.Solid, color: "transparent" },
+        textColor: "#8b949e",
+        fontSize: 11,
+      },
+      grid: { vertLines: { color: "#21262d" }, horzLines: { color: "#21262d" } },
+      rightPriceScale: { borderColor: "#30363d" },
+      timeScale: { borderColor: "#30363d" },
+      crosshair: { mode: 0 }, // 자유 이동 크로스헤어
+    });
+
+    const cs = chart.addSeries(CandlestickSeries, {
+      upColor: "#3fb950",
+      downColor: "#f85149",
+      borderVisible: false,
+      wickUpColor: "#3fb950",
+      wickDownColor: "#f85149",
+    });
+    cs.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.28 } });
+
+    const vs = chart.addSeries(HistogramSeries, {
+      priceScaleId: "", // 오버레이(거래량)
+      priceFormat: { type: "volume" },
+    });
+    vs.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+
+    chartRef.current = chart;
+    candleSeriesRef.current = cs;
+    volSeriesRef.current = vs;
+    return () => {
+      chart.remove();
+      chartRef.current = null;
+      candleSeriesRef.current = null;
+      volSeriesRef.current = null;
+    };
+  }, []);
+
+  // 데이터 로드 (종목/tf 변경 시)
   useEffect(() => {
     let alive = true;
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -151,16 +106,35 @@ export default function ChartModal({ stock, onClose }: Props) {
     };
   }, [stock.ticker, stock.market, tf]);
 
+  // 데이터 → 시리즈 반영
   useEffect(() => {
-    if (candles.length && canvasRef.current) drawCandles(canvasRef.current, candles);
-  }, [candles]);
-
-  useEffect(() => {
-    const h = () => {
-      if (candles.length && canvasRef.current) drawCandles(canvasRef.current, candles);
-    };
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
+    const cs = candleSeriesRef.current;
+    const vs = volSeriesRef.current;
+    const chart = chartRef.current;
+    if (!cs || !vs || !chart) return;
+    const data = candles.filter(
+      (c) => c.open != null && c.high != null && c.low != null && c.close != null,
+    );
+    cs.setData(
+      data.map((c) => ({
+        time: c.date as Time,
+        open: c.open as number,
+        high: c.high as number,
+        low: c.low as number,
+        close: c.close as number,
+      })),
+    );
+    vs.setData(
+      data.map((c) => ({
+        time: c.date as Time,
+        value: c.volume ?? 0,
+        color:
+          (c.close as number) >= (c.open as number)
+            ? "rgba(63,185,80,.4)"
+            : "rgba(248,81,73,.4)",
+      })),
+    );
+    chart.timeScale().fitContent();
   }, [candles]);
 
   return (
@@ -206,9 +180,10 @@ export default function ChartModal({ stock, onClose }: Props) {
         <div className={`dca-loading${loading ? " visible" : ""}`}>불러오는 중…</div>
         <div className={`dca-error${error ? " visible" : ""}`}>{error}</div>
 
-        <div style={{ position: "relative", minHeight: 340 }}>
-          <canvas ref={canvasRef} style={{ width: "100%", height: "340px" }} />
-        </div>
+        <div
+          ref={containerRef}
+          style={{ width: "100%", height: "360px", touchAction: "none" }}
+        />
       </div>
     </div>
   );
