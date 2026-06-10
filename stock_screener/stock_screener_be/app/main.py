@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import init_db
 from app.fetcher import fetch_all
+from app.scheduler import start_scheduler, stop_scheduler
 from app.routers import system, stocks, strategies, dca, backtest, watchlist
 
 logging.basicConfig(level=logging.INFO)
@@ -15,8 +16,10 @@ logging.basicConfig(level=logging.INFO)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    asyncio.create_task(asyncio.to_thread(fetch_all))
+    asyncio.create_task(asyncio.to_thread(fetch_all))  # 시작 시 1회 즉시 수집
+    start_scheduler()                                   # 이후 장중 주기 갱신
     yield
+    stop_scheduler()
 
 
 def create_app() -> FastAPI:
