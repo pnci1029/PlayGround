@@ -14,6 +14,7 @@
 | [frontend.md](./frontend.md) | JS 모듈 구조 · CSS 시스템 · 컴포넌트 패턴 |
 | [data.md](./data.md) | DB 스키마 · 데이터 소스 · 필드 정의 |
 | [kis.md](./kis.md) | **KIS 한국투자증권 OpenAPI 연동** · 자동 갱신 스케줄러 |
+| [chart.md](./chart.md) | **차트(캔들) API** · 일/주/월/연봉 사용법 |
 | [features.md](./features.md) | 현재 기능 목록 · 완성도 현황 |
 | [roadmap.md](./roadmap.md) | 개발 예정 기능 · 우선순위 |
 

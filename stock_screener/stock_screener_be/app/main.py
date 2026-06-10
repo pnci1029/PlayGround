@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db import init_db
 from app.fetcher import fetch_all
 from app.scheduler import start_scheduler, stop_scheduler
-from app.routers import system, stocks, strategies, dca, backtest, watchlist
+from app.routers import system, stocks, strategies, dca, backtest, watchlist, chart
 
 logging.basicConfig(level=logging.INFO)
 
@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
     app.include_router(dca.router)
     app.include_router(backtest.router)
     app.include_router(watchlist.router)
+    app.include_router(chart.router)
     return app
 
 
