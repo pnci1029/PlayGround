@@ -1,4 +1,5 @@
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
   --bg:      #0d1117;
   --surface: #161b22;
   --border:  #30363d;
@@ -18,7 +19,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── top bar ── */
 .topbar {
   display: flex; align-items: center; gap: 10px;
-  padding: 0 16px; height: 48px;
+  padding: var(--safe-top) 16px 0; height: calc(48px + var(--safe-top));
   background: var(--surface); border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
 }
@@ -53,10 +54,29 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .dca-open-btn:hover { border-color: var(--green); color: var(--green); }
 
 /* ── filter bar ── */
+/* ── search bar ── */
+.searchbar {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 8px 16px; display: flex; align-items: center; gap: 8px;
+}
+.search-input {
+  flex: 1; max-width: 420px;
+  padding: 7px 12px; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-size: 13px; outline: none; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--blue); }
+.search-input::placeholder { color: var(--muted); }
+.search-clear {
+  padding: 5px 11px; border-radius: 6px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; line-height: 1;
+}
+.search-clear:hover { border-color: var(--red); color: var(--red); }
+
 .filterbar {
   background: var(--surface); border-bottom: 1px solid var(--border);
   padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  position: sticky; top: 48px; z-index: 90;
+  position: sticky; top: calc(48px + var(--safe-top)); z-index: 90;
 }
 .filter-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
 .cond-row { display: flex; align-items: center; gap: 4px; }
@@ -498,8 +518,8 @@ tr:hover td { background: #1c2128; }
 @media (max-width: 768px) {
   /* Topbar: compress, hide non-essential labels */
   .topbar {
-    padding: 0 10px; gap: 6px; height: 44px; overflow-x: auto;
-    scrollbar-width: none;
+    padding: var(--safe-top) 10px 0; gap: 6px; height: calc(44px + var(--safe-top));
+    overflow-x: auto; scrollbar-width: none;
   }
   .topbar::-webkit-scrollbar { display: none; }
   .logo { font-size: 13px; }
@@ -510,8 +530,12 @@ tr:hover td { background: #1c2128; }
   .tab-btn      { padding: 4px 8px; font-size: 11px; }
   .mkt-btn      { padding: 3px 7px; font-size: 11px; }
 
+  /* Search bar: full-width input */
+  .searchbar { padding: 8px 10px; }
+  .search-input { max-width: none; }
+
   /* Filter bar: stack vertically */
-  .filterbar { flex-direction: column; align-items: flex-start; padding: 8px 10px; top: 44px; }
+  .filterbar { flex-direction: column; align-items: flex-start; padding: 8px 10px; top: calc(44px + var(--safe-top)); }
   .cond-row { width: 100%; }
   .cond-sel { flex: 1; width: auto; min-width: 90px; }
   .run-btn, .reset-btn { width: 48%; }
@@ -562,8 +586,8 @@ tr:hover td { background: #1c2128; }
 }
 
 @media (max-width: 480px) {
-  .topbar { height: 42px; }
-  .filterbar { top: 42px; }
+  .topbar { height: calc(42px + var(--safe-top)); }
+  .filterbar { top: calc(42px + var(--safe-top)); }
   html, body { font-size: 12px; }
 
   /* On very small screens, hide 52W columns from table by default */
