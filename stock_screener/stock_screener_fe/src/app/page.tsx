@@ -40,6 +40,7 @@ export default function Home() {
   const [btPreselect, setBtPreselect] = useState<string | null>(null);
   const [wlOpen, setWlOpen] = useState(false);
   const [chartStock, setChartStock] = useState<Stock | null>(null);
+  const [query, setQuery] = useState("");
 
   // ── 최신값 참조용 ref (stale closure 방지) ──────────────────────────
   const curMktRef = useRef(curMkt);
@@ -202,7 +203,14 @@ export default function Home() {
 
   // ── 정렬된 표시 행 (원본 applySort) ─────────────────────────────────
   const displayRows = useMemo(() => {
-    const rows = [...allRows];
+    const q = query.trim().toLowerCase();
+    const rows = q
+      ? allRows.filter(
+          (r) =>
+            r.ticker.toLowerCase().includes(q) ||
+            (r.name ?? "").toLowerCase().includes(q),
+        )
+      : [...allRows];
     rows.sort((a, b) => {
       const av = a[sortCol as keyof Stock];
       const bv = b[sortCol as keyof Stock];
@@ -215,7 +223,7 @@ export default function Home() {
         : (bv as number) - (av as number);
     });
     return rows;
-  }, [allRows, sortCol, sortAsc]);
+  }, [allRows, sortCol, sortAsc, query]);
 
   // ── 부팅: 전략 로드 + 기본 조건 + 상태 폴링 ─────────────────────────
   const bootRef = useRef(false);
@@ -281,6 +289,25 @@ export default function Home() {
         onOpenBacktest={() => openBacktest()}
         onOpenDCA={() => setDcaOpen(true)}
       />
+
+      <div className="searchbar">
+        <input
+          className="search-input"
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="종목명 또는 티커 검색 (예: 삼성전자, AAPL)"
+        />
+        {query && (
+          <button
+            className="search-clear"
+            onClick={() => setQuery("")}
+            aria-label="검색 지우기"
+          >
+            ×
+          </button>
+        )}
+      </div>
 
       <FilterBar
         conditions={conditions}

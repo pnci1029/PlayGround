@@ -31,6 +31,15 @@ export default function ChartModal({ stock, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // 모달 열려있는 동안 배경(테이블) 스크롤 잠금
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -48,7 +57,7 @@ export default function ChartModal({ stock, onClose }: Props) {
       },
       grid: { vertLines: { color: "#21262d" }, horzLines: { color: "#21262d" } },
       rightPriceScale: { borderColor: "#30363d" },
-      timeScale: { borderColor: "#30363d" },
+      timeScale: { borderColor: "#30363d", fixRightEdge: true, rightOffset: 0 },
       crosshair: { mode: 0 }, // 자유 이동 크로스헤어
     });
 
@@ -138,12 +147,7 @@ export default function ChartModal({ stock, onClose }: Props) {
   }, [candles]);
 
   return (
-    <div
-      className="dca-overlay open"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <div className="dca-overlay open">
       <div className="dca-modal">
         <div className="dca-header">
           <h2>
