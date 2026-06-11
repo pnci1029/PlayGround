@@ -18,6 +18,19 @@ import BacktestModal from "@/components/BacktestModal";
 import WatchlistModal from "@/components/WatchlistModal";
 import ChartModal from "@/components/ChartModal";
 
+// 조건 행 → API 페이로드. 값이 비었거나 숫자가 아닌 행은 버린다.
+function parseConds(rows: CondRow[]) {
+  return rows.reduce<{ field: string; op: CondRow["op"]; value: number }[]>(
+    (acc, c) => {
+      const val = parseFloat(c.value);
+      if (c.field && c.op && !isNaN(val))
+        acc.push({ field: c.field, op: c.op, value: val });
+      return acc;
+    },
+    [],
+  );
+}
+
 export default function Home() {
   // ── 상태 ────────────────────────────────────────────────────────────
   const [allRows, setAllRows] = useState<Stock[]>([]);
@@ -42,104 +55,85 @@ export default function Home() {
   const [chartStock, setChartStock] = useState<Stock | null>(null);
   const [query, setQuery] = useState("");
 
-  // ── 최신값 참조용 ref (stale closure 방지) ──────────────────────────
-  const curMktRef = useRef(curMkt);
-  const sortColRef = useRef(sortCol);
-  const sortAscRef = useRef(sortAsc);
-  const logicRef = useRef(logic);
-  const screeningRef = useRef(screening);
-  const conditionsRef = useRef(conditions);
-  const allRowsRef = useRef(allRows);
+  // 조건 행 id 카운터 (렌더와 무관한 단순 증가값)
   const condIdRef = useRef(0);
 
-  // 매 렌더 후 ref를 최신 상태로 동기화 (이벤트 핸들러에서 최신값 읽기용).
-  // 즉시 읽어야 하는 핸들러는 내부에서 ref를 동기로도 갱신한다.
+  // 폴링(장기 실행 인터벌)에서 최신 allRows 길이만 읽기 위한 ref.
+  // 이벤트 핸들러는 ref가 아니라 상태/인자를 직접 사용한다.
+  const allRowsRef = useRef(allRows);
   useEffect(() => {
-    curMktRef.current = curMkt;
-    sortColRef.current = sortCol;
-    sortAscRef.current = sortAsc;
-    logicRef.current = logic;
-    screeningRef.current = screening;
-    conditionsRef.current = conditions;
     allRowsRef.current = allRows;
-  });
-
-  function setConds(next: CondRow[]) {
-    conditionsRef.current = next;
-    setConditions(next);
-  }
+  }, [allRows]);
 
   // ── 데이터 로드 ────────────────────────────────────────────────────
-  const loadAll = useCallback(async () => {
-    try {
-      const mkt = curMktRef.current === "ALL" ? undefined : curMktRef.current;
-      const rows = await apiStocks({ market: mkt });
-      setAllRows(rows);
-      setScreening(false);
-      setHasLoaded(true);
-    } catch (e) {
-      console.error("loadAll error", e);
-    }
-  }, []);
+  const loadAll = useCallback(
+    async (mkt: "ALL" | Market = curMkt) => {
+      try {
+        const rows = await apiStocks({
+          market: mkt === "ALL" ? undefined : mkt,
+        });
+        setAllRows(rows);
+        setScreening(false);
+        setHasLoaded(true);
+      } catch (e) {
+        console.error("loadAll error", e);
+      }
+    },
+    [curMkt],
+  );
 
-  const getConditions = useCallback(() => {
-    return conditionsRef.current.reduce<
-      { field: string; op: CondRow["op"]; value: number }[]
-    >((acc, c) => {
-      const val = parseFloat(c.value);
-      if (c.field && c.op && !isNaN(val))
-        acc.push({ field: c.field, op: c.op, value: val });
-      return acc;
-    }, []);
-  }, []);
-
-  const runScreen = useCallback(async () => {
-    const conds = getConditions();
-    if (!conds.length) {
-      loadAll();
-      return;
-    }
-    try {
-      const mkt = curMktRef.current === "ALL" ? null : curMktRef.current;
-      const rows = await apiScreen({
-        conditions: conds,
-        logic: logicRef.current,
-        market: mkt,
-        sort: sortColRef.current,
-        order: sortAscRef.current ? "asc" : "desc",
-      });
-      setAllRows(rows);
-      setScreening(true);
-      setHasLoaded(true);
-    } catch (e) {
-      console.error("screen error", e);
-    }
-  }, [getConditions, loadAll]);
+  // 스크리닝 실행. 방금 바꾼 값(시장/조건/로직)은 opts로 넘겨 최신값을 보장한다.
+  const runScreen = useCallback(
+    async (opts?: {
+      conditions?: CondRow[];
+      logic?: "AND" | "OR";
+      market?: "ALL" | Market;
+    }) => {
+      const mkt = opts?.market ?? curMkt;
+      const conds = parseConds(opts?.conditions ?? conditions);
+      if (!conds.length) {
+        loadAll(mkt);
+        return;
+      }
+      try {
+        const rows = await apiScreen({
+          conditions: conds,
+          logic: opts?.logic ?? logic,
+          market: mkt === "ALL" ? null : mkt,
+          sort: sortCol,
+          order: sortAsc ? "asc" : "desc",
+        });
+        setAllRows(rows);
+        setScreening(true);
+        setHasLoaded(true);
+      } catch (e) {
+        console.error("screen error", e);
+      }
+    },
+    [conditions, logic, curMkt, sortCol, sortAsc, loadAll],
+  );
 
   // ── 핸들러 ─────────────────────────────────────────────────────────
   function setMkt(m: "ALL" | Market) {
     setCurMkt(m);
-    curMktRef.current = m;
-    if (screeningRef.current) runScreen();
-    else loadAll();
+    if (screening) runScreen({ market: m });
+    else loadAll(m);
   }
 
   function addCond(field = "per", op: CondRow["op"] = "<", value: string = "") {
-    setConds([
-      ...conditionsRef.current,
-      { id: condIdRef.current++, field, op, value },
-    ]);
+    const id = condIdRef.current++;
+    setConditions((prev) => [...prev, { id, field, op, value }]);
   }
 
   function updateCond(id: number, patch: Partial<Omit<CondRow, "id">>) {
-    setConds(
-      conditionsRef.current.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    setConditions((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...patch } : c)),
     );
   }
 
   function delCond(id: number) {
-    const next = conditionsRef.current.filter((c) => c.id !== id);
-    setConds(next);
+    const next = conditions.filter((c) => c.id !== id);
+    setConditions(next);
     if (next.length === 0) {
       setScreening(false);
       setSelectedStrat(null);
@@ -148,14 +142,11 @@ export default function Home() {
   }
 
   function toggleLogic() {
-    const nl = logicRef.current === "AND" ? "OR" : "AND";
-    logicRef.current = nl;
-    setLogic(nl);
+    setLogic((prev) => (prev === "AND" ? "OR" : "AND"));
   }
 
   function resetAll() {
-    setConds([]);
-    logicRef.current = "AND";
+    setConditions([]);
     setLogic("AND");
     setScreening(false);
     setSelectedStrat(null);
@@ -163,13 +154,9 @@ export default function Home() {
   }
 
   function sortBy(col: string) {
-    if (sortColRef.current === col) {
-      const na = !sortAscRef.current;
-      sortAscRef.current = na;
-      setSortAsc(na);
+    if (sortCol === col) {
+      setSortAsc((a) => !a);
     } else {
-      sortColRef.current = col;
-      sortAscRef.current = false;
       setSortCol(col);
       setSortAsc(false);
     }
@@ -180,7 +167,6 @@ export default function Home() {
     if (!s) return;
     setSelectedStrat(id);
     const nl = s.logic || "AND";
-    logicRef.current = nl;
     setLogic(nl);
     const newConds: CondRow[] = s.conditions.map((c) => ({
       id: condIdRef.current++,
@@ -188,8 +174,8 @@ export default function Home() {
       op: c.op,
       value: String(c.value),
     }));
-    setConds(newConds);
-    runScreen();
+    setConditions(newConds);
+    runScreen({ conditions: newConds, logic: nl });
   }
 
   function openBacktest(id?: string) {
@@ -317,7 +303,7 @@ export default function Home() {
         onDelCond={delCond}
         onUpdateCond={updateCond}
         onToggleLogic={toggleLogic}
-        onRunScreen={runScreen}
+        onRunScreen={() => runScreen()}
         onReset={resetAll}
       />
 
