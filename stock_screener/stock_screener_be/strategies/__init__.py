@@ -159,6 +159,31 @@ STRATEGIES: dict = {
         "logic": "AND",
         "color": "#58a6ff",
     },
+    "dividend_aristocrat": {
+        "name": "고배당 귀족주",
+        "subtitle": "고배당 + 수익성",
+        "description": "높은 배당수익률에 수익성(ROE)과 합리적 PER을 더한 우량 고배당주. 배당만 높고 실적이 부실한 함정 종목을 거른다.",
+        "group": "classic",
+        "conditions": [
+            {"field": "div_yield", "op": ">",  "value": 0.04},
+            {"field": "roe",       "op": ">",  "value": 0.10},
+            {"field": "per",       "op": "<",  "value": 18},
+        ],
+        "logic": "AND",
+        "color": "#2ea043",
+    },
+    "low_per_defensive": {
+        "name": "저PER 고배당 방어주",
+        "subtitle": "하락장 방어형",
+        "description": "낮은 PER과 두둑한 배당으로 하락장에서 버티는 방어적 인컴 종목. 변동성 구간의 현금흐름 확보용.",
+        "group": "classic",
+        "conditions": [
+            {"field": "per",       "op": "<",  "value": 12},
+            {"field": "div_yield", "op": ">",  "value": 0.03},
+        ],
+        "logic": "AND",
+        "color": "#39c5cf",
+    },
 
     # ── 전설적 투자자 전략 ────────────────────────────────────────
     "greenblatt": {
@@ -269,5 +294,57 @@ STRATEGIES: dict = {
         ],
         "logic": "AND",
         "color": "#22c55e",
+    },
+    "klarman_safety": {
+        "name": "세스 클라만 안전마진",
+        "subtitle": "극단적 저평가 + 손실 회피",
+        "description": "바우포스트의 세스 클라만. '안전마진(Margin of Safety)'을 최우선으로, 순자산보다 싸고 PER도 낮은 종목만 매수. 손실 회피형 딥밸류.",
+        "group": "legendary",
+        "investor": "Seth Klarman",
+        "conditions": [
+            {"field": "pbr", "op": "<",  "value": 0.8},
+            {"field": "per", "op": "<",  "value": 12},
+        ],
+        "logic": "AND",
+        "color": "#388bfd",
+    },
+    "graham_netnet": {
+        "name": "그레이엄 넷넷",
+        "subtitle": "순자산 이하 자산주",
+        "description": "벤저민 그레이엄의 Net-Net 전략. PBR 0.66 미만으로, 청산가치보다도 싸게 거래되는 극단적 자산주를 발굴. 가치투자의 원형.",
+        "group": "legendary",
+        "investor": "Benjamin Graham",
+        "conditions": [
+            {"field": "pbr", "op": "<",  "value": 0.66},
+        ],
+        "logic": "AND",
+        "color": "#1f6feb",
+    },
+    "pabrai_dhandho": {
+        "name": "모니시 파브라이 단도투자",
+        "subtitle": "저위험 고수익 우량 저평가",
+        "description": "모니시 파브라이의 Dhandho. '앞면이면 내가 이기고, 뒷면이면 거의 안 잃는다'. 수익성(ROE) 높고 PER·PBR 모두 낮은 저위험 저평가 우량주.",
+        "group": "legendary",
+        "investor": "Mohnish Pabrai",
+        "conditions": [
+            {"field": "per", "op": "<",  "value": 10},
+            {"field": "roe", "op": ">",  "value": 0.15},
+            {"field": "pbr", "op": "<",  "value": 2},
+        ],
+        "logic": "AND",
+        "color": "#db61a2",
+    },
+    "lee_longterm": {
+        "name": "존 리 장기 우량성장",
+        "subtitle": "장기 보유 우량 배당성장",
+        "description": "메리츠의 존 리 철학. '주식은 사서 모아가는 것'. 꾸준한 수익성(ROE)에 배당을 더해 장기 복리로 키우는 우량 성장·배당주.",
+        "group": "legendary",
+        "investor": "John Lee",
+        "conditions": [
+            {"field": "roe",       "op": ">",  "value": 0.15},
+            {"field": "div_yield", "op": ">",  "value": 0.01},
+        ],
+        "logic": "AND",
+        "color": "#56d364",
     },
 }
