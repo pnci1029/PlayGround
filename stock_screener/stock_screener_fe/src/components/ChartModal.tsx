@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createChart,
   CandlestickSeries,
@@ -11,7 +11,8 @@ import {
   type Time,
 } from "lightweight-charts";
 import { apiCandles } from "@/lib/api";
-import type { Stock, Candle } from "@/lib/types";
+import { fmtPrice, fmtCap, changeMeta } from "@/lib/format";
+import type { Stock, Candle, Market } from "@/lib/types";
 
 const TFS: { k: string; label: string }[] = [
   { k: "D", label: "일" },
@@ -25,11 +26,43 @@ interface Props {
   onClose: () => void;
 }
 
+interface Legend {
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  volume: number | null;
+  changePct: number | null; // 직전 봉 종가 대비 등락률
+}
+
+// data[i] 봉의 레전드 정보. 등락률은 직전 봉 종가 기준(첫 봉은 시가 기준).
+function buildLegend(data: Candle[], i: number): Legend | null {
+  const c = data[i];
+  if (!c) return null;
+  const prev = i > 0 ? data[i - 1].close : c.open;
+  const changePct =
+    prev != null && prev !== 0 && c.close != null
+      ? ((c.close - prev) / prev) * 100
+      : null;
+  return {
+    date: c.date,
+    open: c.open,
+    high: c.high,
+    low: c.low,
+    close: c.close,
+    volume: c.volume,
+    changePct,
+  };
+}
+
 export default function ChartModal({ stock, onClose }: Props) {
   const [tf, setTf] = useState("D");
   const [candles, setCandles] = useState<Candle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // 크로스헤어가 가리키는 봉의 레전드. null이면 기본값(최신 봉)을 보여준다.
+  const [hoverLegend, setHoverLegend] = useState<Legend | null>(null);
 
   // 모달 열려있는 동안 배경(테이블) 스크롤 잠금
   useEffect(() => {
@@ -40,10 +73,21 @@ export default function ChartModal({ stock, onClose }: Props) {
     };
   }, []);
 
+  // ESC 키로 닫기 (닫기 버튼 보완). 모바일엔 영향 없음.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  // 크로스헤어 핸들러가 시간으로 봉을 찾기 위한 최신 필터링 데이터 참조
+  const dataRef = useRef<Candle[]>([]);
 
   // 차트 생성 (모달 마운트 시 1회). 줌/패닝/크로스헤어/터치 핀치 모두 내장.
   useEffect(() => {
@@ -76,6 +120,19 @@ export default function ChartModal({ stock, onClose }: Props) {
     });
     vs.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
 
+    // 봉 위 호버/터치-드래그 시 해당 봉 레전드로 갱신. 벗어나면 기본(최신봉)으로.
+    chart.subscribeCrosshairMove((param) => {
+      const d = dataRef.current;
+      if (!d.length) return;
+      if (param.time == null) {
+        setHoverLegend(null);
+        return;
+      }
+      const t = String(param.time);
+      const i = d.findIndex((x) => String(x.date) === t);
+      setHoverLegend(i >= 0 ? buildLegend(d, i) : null);
+    });
+
     chartRef.current = chart;
     candleSeriesRef.current = cs;
     volSeriesRef.current = vs;
@@ -93,6 +150,7 @@ export default function ChartModal({ stock, onClose }: Props) {
     /* eslint-disable react-hooks/set-state-in-effect */
     setLoading(true);
     setError("");
+    setHoverLegend(null); // 이전 종목/기간의 호버 잔상 제거
     /* eslint-enable react-hooks/set-state-in-effect */
     apiCandles(stock.ticker, stock.market, tf)
       .then((res) => {
@@ -115,15 +173,30 @@ export default function ChartModal({ stock, onClose }: Props) {
     };
   }, [stock.ticker, stock.market, tf]);
 
+  // 유효 봉만 추린 데이터 (시리즈/레전드/크로스헤어 공통 소스)
+  const data = useMemo(
+    () =>
+      candles.filter(
+        (c) =>
+          c.open != null && c.high != null && c.low != null && c.close != null,
+      ),
+    [candles],
+  );
+
+  // 기본 레전드 = 최신 봉. 호버 중이면 그 봉이 우선.
+  const defaultLegend = useMemo(
+    () => (data.length ? buildLegend(data, data.length - 1) : null),
+    [data],
+  );
+  const legend = hoverLegend ?? defaultLegend;
+
   // 데이터 → 시리즈 반영
   useEffect(() => {
     const cs = candleSeriesRef.current;
     const vs = volSeriesRef.current;
     const chart = chartRef.current;
     if (!cs || !vs || !chart) return;
-    const data = candles.filter(
-      (c) => c.open != null && c.high != null && c.low != null && c.close != null,
-    );
+    dataRef.current = data;
     cs.setData(
       data.map((c) => ({
         time: c.date as Time,
@@ -144,7 +217,7 @@ export default function ChartModal({ stock, onClose }: Props) {
       })),
     );
     chart.timeScale().fitContent();
-  }, [candles]);
+  }, [data]);
 
   return (
     <div className="dca-overlay open">
@@ -184,11 +257,51 @@ export default function ChartModal({ stock, onClose }: Props) {
         <div className={`dca-loading${loading ? " visible" : ""}`}>불러오는 중…</div>
         <div className={`dca-error${error ? " visible" : ""}`}>{error}</div>
 
+        {legend && <ChartLegend legend={legend} market={stock.market} />}
+
         <div
           ref={containerRef}
           style={{ width: "100%", height: "360px", touchAction: "none" }}
         />
       </div>
+    </div>
+  );
+}
+
+// 차트 상단 OHLC 레전드. PC는 호버, 모바일은 터치-드래그로 갱신되며
+// 기본값은 최신 봉이라 입력 없이도 항상 값이 보인다.
+function ChartLegend({ legend, market }: { legend: Legend; market: Market }) {
+  const chg = changeMeta(legend.changePct);
+  const chgColor =
+    chg?.cls === "up"
+      ? "var(--green)"
+      : chg?.cls === "down"
+        ? "var(--red)"
+        : "var(--muted)";
+  const price = (v: number | null) => fmtPrice(v, market) ?? "—";
+  return (
+    <div className="chart-legend">
+      <span className="cl-date">{legend.date}</span>
+      <span className="cl-item">
+        시 <b>{price(legend.open)}</b>
+      </span>
+      <span className="cl-item">
+        고 <b style={{ color: "var(--green)" }}>{price(legend.high)}</b>
+      </span>
+      <span className="cl-item">
+        저 <b style={{ color: "var(--red)" }}>{price(legend.low)}</b>
+      </span>
+      <span className="cl-item">
+        종 <b style={{ color: chgColor }}>{price(legend.close)}</b>
+      </span>
+      <span className="cl-item">
+        거래량 <b>{fmtCap(legend.volume) ?? "—"}</b>
+      </span>
+      {chg && (
+        <span className="cl-chg" style={{ color: chgColor }}>
+          {chg.text}
+        </span>
+      )}
     </div>
   );
 }
