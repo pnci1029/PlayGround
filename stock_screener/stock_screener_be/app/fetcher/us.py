@@ -42,6 +42,9 @@ def fetch_us() -> None:
                 div_yield=safe_float(info.get("trailingAnnualDividendYield")),
                 week52_high=safe_float(info.get("fiftyTwoWeekHigh")),
                 week52_low=safe_float(info.get("fiftyTwoWeekLow")),
+                debt_ratio=safe_float(info.get("debtToEquity")),      # 부채비율(%)
+                eps_growth=safe_float(info.get("earningsGrowth")),    # 이익성장률(소수)
+                sales_growth=safe_float(info.get("revenueGrowth")),  # 매출성장률(소수)
                 updated_at=now,
             ))
             ok += 1
