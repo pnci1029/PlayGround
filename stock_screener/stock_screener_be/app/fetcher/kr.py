@@ -16,7 +16,7 @@ import FinanceDataReader as fdr
 from app.config import DB_SCHEMA, KR_UNIVERSE_SIZE
 from app.db import get_db
 from app.fetcher.common import safe_float, safe_int, upsert_price, upsert_fundamentals
-from app.kis.quote import domestic_price
+from app.kis.quote import domestic_price, domestic_finance
 
 log = logging.getLogger("fetcher.kr")
 
@@ -82,6 +82,17 @@ def fetch_kr_fundamentals() -> None:
             per = safe_float(q.get("per"))
             pbr = safe_float(q.get("pbr"))
             roe = (pbr / per) if (per and pbr) else None   # PBR/PER = ROE(소수)
+
+            # 재무비율(부채비율/성장률) — 별도 TR. 실패해도 기본 펀더멘털은 유지.
+            fin = {}
+            try:
+                time.sleep(0.08)
+                fin = domestic_finance(code)
+            except Exception as fe:
+                log.debug("KR finance %s: %s", code, fe)
+            sg = safe_float(fin.get("sales_growth"))   # KIS는 % 단위
+            eg = safe_float(fin.get("eps_growth"))      # KIS는 % 단위
+
             rows.append(dict(
                 ticker=code, market="KR",
                 per=per, pbr=pbr, roe=safe_float(roe),
@@ -89,10 +100,13 @@ def fetch_kr_fundamentals() -> None:
                 div_yield=None,  # KIS 기본 시세 미제공
                 week52_high=safe_float(q.get("week52_high")),
                 week52_low=safe_float(q.get("week52_low")),
+                debt_ratio=safe_float(fin.get("debt_ratio")),        # %(소수 변환 안 함)
+                sales_growth=(sg / 100) if sg is not None else None,  # %→소수 (roe와 단위 통일)
+                eps_growth=(eg / 100) if eg is not None else None,
                 updated_at=now,
             ))
             ok += 1
-            time.sleep(0.12)  # KIS 초당 한도(~20/s) 여유 있게 ~8/s. 초과분은 client가 백오프 재시도
+            time.sleep(0.12)  # KIS 초당 한도(~20/s) 여유 있게. 초과분은 client가 백오프 재시도
         except Exception as e:
             log.warning("KR fund %s: %s", code, e)
     conn = get_db()
