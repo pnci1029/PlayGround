@@ -184,6 +184,31 @@ STRATEGIES: dict = {
         "logic": "AND",
         "color": "#39c5cf",
     },
+    "stable_growth": {
+        "name": "안정 성장주",
+        "subtitle": "저부채 + 이익성장",
+        "description": "이익이 꾸준히 성장하면서 부채는 적고 PER이 과하지 않은 종목. 성장성과 재무 안정성을 동시에 충족하는 우량 성장주.",
+        "group": "classic",
+        "conditions": [
+            {"field": "eps_growth", "op": ">",  "value": 0.10},
+            {"field": "debt_ratio", "op": "<",  "value": 100},
+            {"field": "per",        "op": "<",  "value": 25},
+        ],
+        "logic": "AND",
+        "color": "#56d364",
+    },
+    "high_growth": {
+        "name": "고성장주",
+        "subtitle": "매출·이익 동반 성장",
+        "description": "매출과 이익이 모두 빠르게 늘어나는 고성장 종목. 외형(매출)과 수익(이익)이 함께 성장하는 모멘텀 성장주.",
+        "group": "classic",
+        "conditions": [
+            {"field": "sales_growth", "op": ">",  "value": 0.20},
+            {"field": "eps_growth",   "op": ">",  "value": 0.15},
+        ],
+        "logic": "AND",
+        "color": "#bc8cff",
+    },
 
     # ── 전설적 투자자 전략 ────────────────────────────────────────
     "greenblatt": {
