@@ -96,9 +96,10 @@ export default function Home() {
       const mkt = opts?.market ?? curMkt;
       const conds = parseConds(opts?.conditions ?? conditions);
       if (!conds.length) {
-        loadAll(mkt);
+        await loadAll(mkt); // loadAll이 자체 스피너 처리
         return;
       }
+      setFetching(true);
       try {
         const rows = await apiScreen({
           conditions: conds,
@@ -112,6 +113,8 @@ export default function Home() {
         setHasLoaded(true);
       } catch (e) {
         console.error("screen error", e);
+      } finally {
+        setFetching(false);
       }
     },
     [conditions, logic, curMkt, sortCol, sortAsc, loadAll],
@@ -322,6 +325,7 @@ export default function Home() {
       <StockTable
         rows={displayRows}
         loading={!hasLoaded}
+        fetching={fetching}
         sortCol={sortCol}
         sortAsc={sortAsc}
         onSort={sortBy}
