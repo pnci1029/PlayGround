@@ -51,11 +51,27 @@ def init_db() -> None:
                     div_yield   DECIMAL(8,4),
                     week52_high DECIMAL(15,4),
                     week52_low  DECIMAL(15,4),
+                    debt_ratio   DECIMAL(12,4),
+                    eps_growth   DECIMAL(12,4),
+                    sales_growth DECIMAL(12,4),
                     updated_at  TIMESTAMP,
                     PRIMARY KEY (ticker, market)
                 )
             """)
             print(f"✓ Table '{DB_SCHEMA}.stocks' created/verified")
+
+            # 2b. 신규 컬럼 자동 마이그레이션.
+            # CREATE TABLE IF NOT EXISTS는 기존 테이블에 컬럼을 추가하지 않으므로,
+            # 이미 떠 있는 DB에도 반영되도록 ADD COLUMN IF NOT EXISTS를 멱등 실행한다.
+            for col, ddl in (
+                ("debt_ratio",   "DECIMAL(12,4)"),
+                ("eps_growth",   "DECIMAL(12,4)"),
+                ("sales_growth", "DECIMAL(12,4)"),
+            ):
+                cur.execute(
+                    f"ALTER TABLE {DB_SCHEMA}.stocks ADD COLUMN IF NOT EXISTS {col} {ddl}"
+                )
+            print(f"✓ Table '{DB_SCHEMA}.stocks' columns migrated")
             
             # 3. last_refresh 테이블 생성
             cur.execute(f"""
