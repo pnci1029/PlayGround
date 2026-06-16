@@ -54,6 +54,7 @@ export default function Home() {
   const [wlOpen, setWlOpen] = useState(false);
   const [chartStock, setChartStock] = useState<Stock | null>(null);
   const [query, setQuery] = useState("");
+  const [fetching, setFetching] = useState(false); // 조회/스크리닝 진행 중 스피너용
 
   // 조건 행 id 카운터 (렌더와 무관한 단순 증가값)
   const condIdRef = useRef(0);
@@ -68,6 +69,7 @@ export default function Home() {
   // ── 데이터 로드 ────────────────────────────────────────────────────
   const loadAll = useCallback(
     async (mkt: "ALL" | Market = curMkt) => {
+      setFetching(true);
       try {
         const rows = await apiStocks({
           market: mkt === "ALL" ? undefined : mkt,
@@ -77,6 +79,8 @@ export default function Home() {
         setHasLoaded(true);
       } catch (e) {
         console.error("loadAll error", e);
+      } finally {
+        setFetching(false);
       }
     },
     [curMkt],
