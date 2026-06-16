@@ -50,6 +50,7 @@ KR_TICKERS = [
 NUMERIC_COLS: set[str] = {
     "price", "change_pct", "market_cap", "per", "pbr",
     "roe", "eps", "div_yield", "week52_high", "week52_low", "volume",
+    "debt_ratio", "eps_growth", "sales_growth",
 }
 
 OPS: dict[str, str] = {
