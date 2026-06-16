@@ -54,6 +54,22 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .dca-open-btn:hover { border-color: var(--green); color: var(--green); }
 
 /* ── filter bar ── */
+/* ── table loading spinner (재조회/스크리닝 중) ── */
+.table-loading {
+  position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
+  z-index: 400; display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.spinner {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid var(--border); border-top-color: var(--blue);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* ── chart OHLC legend ── */
 .chart-legend {
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px;
