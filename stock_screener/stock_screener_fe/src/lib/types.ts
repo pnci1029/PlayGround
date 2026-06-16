@@ -19,6 +19,9 @@ export interface Stock {
   volume: number | null;
   week52_high: number | null;
   week52_low: number | null;
+  debt_ratio: number | null; // 부채비율 % (예: 45 = 45%)
+  eps_growth: number | null; // 이익성장률 소수 (0.15 = 15%, roe와 단위 통일)
+  sales_growth: number | null; // 매출성장률 소수
 }
 
 export interface Candle {
