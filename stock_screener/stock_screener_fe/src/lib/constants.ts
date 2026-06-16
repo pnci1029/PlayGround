@@ -13,6 +13,9 @@ export const FIELDS: { v: string; l: string }[] = [
   { v: "week52_high", l: "52W 고가" },
   { v: "week52_low", l: "52W 저가" },
   { v: "volume", l: "거래량" },
+  { v: "debt_ratio", l: "부채비율 %" },
+  { v: "eps_growth", l: "이익성장률(소수)" },
+  { v: "sales_growth", l: "매출성장률(소수)" },
 ];
 
 export const OPS: Op[] = ["<", "<=", ">", ">=", "="];
