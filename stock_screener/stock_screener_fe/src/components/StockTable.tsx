@@ -39,6 +39,7 @@ function cell(v: string | null) {
 interface Props {
   rows: Stock[];
   loading: boolean;
+  fetching?: boolean; // 재조회/스크리닝 진행 중 (기존 표 위에 스피너)
   sortCol: string;
   sortAsc: boolean;
   onSort: (col: string) => void;
@@ -48,6 +49,7 @@ interface Props {
 export default function StockTable({
   rows,
   loading,
+  fetching,
   sortCol,
   sortAsc,
   onSort,
@@ -55,6 +57,12 @@ export default function StockTable({
 }: Props) {
   return (
     <div className="table-wrap" id="tableWrap">
+      {fetching && (
+        <div className="table-loading" role="status" aria-live="polite">
+          <span className="spinner" />
+          불러오는 중…
+        </div>
+      )}
       <table>
         <thead>
           <tr>
