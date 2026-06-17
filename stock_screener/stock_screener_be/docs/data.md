@@ -2,7 +2,7 @@
 
 ## DB 스키마
 
-파일: `stocks.db` (SQLite, 프로젝트 루트)
+DB: **PostgreSQL** (`psycopg2`). 접속 정보는 `.env`(`DB_HOST`/`DB_NAME`/`DB_SCHEMA` 등), 스키마는 기본 `stocks`. 컬럼 타입은 아래 표가 의미 기준이며 실제 DDL은 `app/db.py` 참조.
 
 ### `stocks` 테이블
 
