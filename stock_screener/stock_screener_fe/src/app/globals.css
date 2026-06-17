@@ -82,6 +82,17 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   .chart-legend { font-size: 11px; gap: 3px 8px; }
 }
 
+/* ── chart 재무지표 요약 ── */
+.chart-funda {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px;
+  padding: 8px 0 2px; font-family: var(--mono); font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--border2);
+}
+.chart-funda .cf-item b { color: var(--text); font-weight: 600; margin-left: 2px; }
+@media (max-width: 480px) {
+  .chart-funda { font-size: 11px; gap: 3px 10px; }
+}
+
 /* ── search bar ── */
 .searchbar {
   background: var(--surface); border-bottom: 1px solid var(--border);
