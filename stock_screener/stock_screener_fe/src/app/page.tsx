@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { Market, Stock, Strategy } from "@/lib/types";
 import {
   apiStocks,
@@ -54,6 +61,8 @@ export default function Home() {
   const [wlOpen, setWlOpen] = useState(false);
   const [chartStock, setChartStock] = useState<Stock | null>(null);
   const [query, setQuery] = useState("");
+  // 입력은 즉시 반영하되, 무거운 목록 필터링은 지연시켜 타이핑 끊김 방지
+  const deferredQuery = useDeferredValue(query);
   const [fetching, setFetching] = useState(false); // 조회/스크리닝 진행 중 스피너용
 
   // 조건 행 id 카운터 (렌더와 무관한 단순 증가값)
@@ -196,7 +205,7 @@ export default function Home() {
 
   // ── 정렬된 표시 행 (원본 applySort) ─────────────────────────────────
   const displayRows = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
     const rows = q
       ? allRows.filter(
           (r) =>
@@ -216,7 +225,7 @@ export default function Home() {
         : (bv as number) - (av as number);
     });
     return rows;
-  }, [allRows, sortCol, sortAsc, query]);
+  }, [allRows, sortCol, sortAsc, deferredQuery]);
 
   // ── 부팅: 전략 로드 + 기본 조건 + 상태 폴링 ─────────────────────────
   const bootRef = useRef(false);
