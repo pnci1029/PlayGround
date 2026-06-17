@@ -88,7 +88,7 @@ HTML 페이지 반환 (SPA 진입점).
 
 | 필드 | 값 |
 |------|----|
-| `field` | `price`, `change_pct`, `market_cap`, `per`, `pbr`, `roe`, `eps`, `div_yield`, `week52_high`, `week52_low`, `volume` |
+| `field` | `price`, `change_pct`, `market_cap`, `per`, `pbr`, `roe`, `eps`, `div_yield`, `week52_high`, `week52_low`, `volume`, `debt_ratio`, `eps_growth`, `sales_growth` |
 | `op` | `>`, `<`, `>=`, `<=`, `=` |
 | `logic` | `AND` / `OR` |
 | `market` | `US`, `KR`, 또는 생략 (전체) |
