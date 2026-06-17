@@ -11,7 +11,7 @@ import {
   type Time,
 } from "lightweight-charts";
 import { apiCandles } from "@/lib/api";
-import { fmtPrice, fmtCap, changeMeta } from "@/lib/format";
+import { fmtNum, fmtPrice, fmtCap, changeMeta } from "@/lib/format";
 import type { Stock, Candle, Market } from "@/lib/types";
 
 const TFS: { k: string; label: string }[] = [
@@ -234,6 +234,8 @@ export default function ChartModal({ stock, onClose }: Props) {
           </button>
         </div>
 
+        <FundaStrip stock={stock} />
+
         <div style={{ display: "flex", gap: 6, padding: "4px 0 10px" }}>
           {TFS.map((t) => (
             <button
@@ -264,6 +266,30 @@ export default function ChartModal({ stock, onClose }: Props) {
           style={{ width: "100%", height: "360px", touchAction: "none" }}
         />
       </div>
+    </div>
+  );
+}
+
+// 종목 재무지표 한 줄 요약. 값이 없으면(특히 KR은 갱신 전) — 로 표시.
+function FundaStrip({ stock }: { stock: Stock }) {
+  const pct = (v: number | null) =>
+    v == null ? "—" : (v * 100).toFixed(1) + "%";
+  const items: [string, string][] = [
+    ["PER", fmtNum(stock.per, 1) ?? "—"],
+    ["PBR", fmtNum(stock.pbr, 2) ?? "—"],
+    ["ROE", pct(stock.roe)],
+    ["배당", pct(stock.div_yield)],
+    ["부채", stock.debt_ratio == null ? "—" : stock.debt_ratio.toFixed(0) + "%"],
+    ["이익성장", pct(stock.eps_growth)],
+    ["매출성장", pct(stock.sales_growth)],
+  ];
+  return (
+    <div className="chart-funda">
+      {items.map(([label, val]) => (
+        <span key={label} className="cf-item">
+          {label} <b>{val}</b>
+        </span>
+      ))}
     </div>
   );
 }
