@@ -82,6 +82,17 @@ KIS `inquire-price.output` → `stocks` 컬럼:
 | (없음) | roe, div_yield | KIS 기본 시세 미제공 → null |
 | (FDR 보강) | name | `StockListing("KRX")` 코드→이름 |
 
+### 국내 재무비율 (`domestic_finance`, TR `FHKST66430300`)
+`/uapi/domestic-stock/v1/finance/financial-ratio` → `output`은 결산기 배열(최신 `[0]`). 값은 % 단위.
+
+| KIS 필드 | 컬럼 | 비고 |
+|----------|------|------|
+| `lblt_rate` | debt_ratio | 부채비율(%) — 그대로 저장 |
+| `grs` | sales_growth | 매출액 증가율(%) → **÷100 소수 저장** |
+| `ntin_inrt` | eps_growth | 순이익 증가율(%) ≈ 이익성장률 → **÷100 소수 저장** |
+
+> 현재가 시세(`inquire-price`)엔 없는 항목이라 별도 TR로 종목당 추가 1콜. 실패해도 기본 펀더멘털은 유지(부분 NULL 허용).
+
 ### 미국 (`overseas_price`, TR `HHDFS00000300`)
 | KIS 필드 | 의미 |
 |----------|------|
