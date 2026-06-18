@@ -54,6 +54,7 @@ export interface FoodRecommendationDTO {
   reason: string;
 }
 
+// 백엔드 RestaurantSearchResult(/api/location/nearby-restaurants 응답)와 1:1 대응
 export interface RestaurantRecommendationDTO {
   name: string;
   category: string;
@@ -61,12 +62,11 @@ export interface RestaurantRecommendationDTO {
   latitude: number;
   longitude: number;
   rating: number;
-  distance: number;
+  distance: number; // 미터 단위
   priceLevel: number;
-  phone?: string;
+  phone: string | null;
   isOpen: boolean;
-  matchScore: number;
-  estimatedWalkTime: string;
+  placeId: string | null;
 }
 
 export interface LocationBasedRecommendationResponseDTO {

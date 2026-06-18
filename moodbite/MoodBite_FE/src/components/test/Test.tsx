@@ -165,7 +165,7 @@ export function Test({onBack}: TestProps) {
                 </div>
 
                 {error && (
-                    <p role="alert" style={{ color: '#ff6b6b', textAlign: 'center', margin: '12px 0' }}>
+                    <p role="alert" className={style.errorText}>
                         {error}
                     </p>
                 )}
