@@ -61,25 +61,11 @@ def upsert_fundamentals(conn, rows: list[dict]) -> None:
     _batch_upsert(conn, rows, _FUND_COLS)
 
 
+# PK(ticker,market) 제외 전 컬럼 — US 단건 upsert는 모든 값을 한 번에 채운다
+_ALL_UPDATE = [c for c in _COLS if c not in ("ticker", "market")]
+
+
 def upsert(conn, row: dict) -> None:
-    """PostgreSQL UPSERT using ON CONFLICT"""
-    with conn.cursor() as cur:
-        cur.execute(f"""
-            INSERT INTO {DB_SCHEMA}.stocks
-                (ticker,market,name,price,change_pct,volume,market_cap,
-                 per,pbr,roe,eps,div_yield,week52_high,week52_low,
-                 debt_ratio,eps_growth,sales_growth,updated_at)
-            VALUES
-                (%(ticker)s,%(market)s,%(name)s,%(price)s,%(change_pct)s,%(volume)s,%(market_cap)s,
-                 %(per)s,%(pbr)s,%(roe)s,%(eps)s,%(div_yield)s,%(week52_high)s,%(week52_low)s,
-                 %(debt_ratio)s,%(eps_growth)s,%(sales_growth)s,%(updated_at)s)
-            ON CONFLICT(ticker,market) DO UPDATE SET
-                name=EXCLUDED.name, price=EXCLUDED.price,
-                change_pct=EXCLUDED.change_pct, volume=EXCLUDED.volume,
-                market_cap=EXCLUDED.market_cap, per=EXCLUDED.per,
-                pbr=EXCLUDED.pbr, roe=EXCLUDED.roe, eps=EXCLUDED.eps,
-                div_yield=EXCLUDED.div_yield, week52_high=EXCLUDED.week52_high,
-                week52_low=EXCLUDED.week52_low, debt_ratio=EXCLUDED.debt_ratio,
-                eps_growth=EXCLUDED.eps_growth, sales_growth=EXCLUDED.sales_growth,
-                updated_at=EXCLUDED.updated_at
-        """, row)
+    """US 단건 upsert (가격+펀더멘털 전체). PK 외 모든 컬럼 갱신.
+    컬럼 목록은 _COLS 단일 소스에서 파생 → 필드 추가 시 여기만 자동 반영된다."""
+    _batch_upsert(conn, [row], _ALL_UPDATE)

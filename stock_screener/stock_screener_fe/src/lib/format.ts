@@ -15,6 +15,15 @@ export function fmtNum(
   return v.toFixed(digits) + suffix;
 }
 
+// roe·성장률처럼 소수(0.15)로 저장된 비율을 "15.0%" 문자열로. null이면 null.
+export function fmtPct(
+  v: number | null | undefined,
+  digits = 1,
+): string | null {
+  if (isNil(v)) return null;
+  return (v * 100).toFixed(digits) + "%";
+}
+
 export function fmtCap(v: number | null | undefined): string | null {
   if (isNil(v)) return null;
   if (v >= 1e12) return (v / 1e12).toFixed(2) + "T";
