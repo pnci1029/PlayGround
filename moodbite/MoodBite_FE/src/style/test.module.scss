@@ -223,3 +223,16 @@
     transform: rotate(360deg);
   }
 }
+
+.errorText {
+  color: #ff6b6b;
+  text-align: center;
+  margin: 12px 0;
+}
+
+.resultLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

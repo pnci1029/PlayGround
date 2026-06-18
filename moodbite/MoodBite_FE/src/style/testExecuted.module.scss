@@ -1,6 +1,6 @@
 @import "common/variables";
 
-/* ===== A5 결과화면 개편: 음식 hero / 칩 / 대안 카드 ===== */
+/* ===== A5 결과화면: 음식 hero / 칩 / 대안 카드 ===== */
 .heroCard {
   position: relative;
   margin-bottom: var(--space-6);
@@ -112,7 +112,7 @@
   color: var(--color-neutral-800);
   font-family: var(--font-primary);
   overflow-x: hidden;
-  
+
   &::before {
     content: '';
     position: fixed;
@@ -120,7 +120,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
+    background:
       radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
     pointer-events: none;
@@ -140,7 +140,7 @@
   box-shadow: var(--shadow-xl);
   z-index: var(--z-fixed);
   animation: slideDown 0.8s var(--transition-slow) forwards;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -164,7 +164,7 @@
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -177,7 +177,7 @@
 
   &:hover {
     transform: translateX(-3px);
-    
+
     &::before {
       opacity: 1;
     }
@@ -198,7 +198,7 @@
   animation: fadeInSlideLeft 0.8s var(--transition-slow) forwards;
   animation-delay: 0.3s;
   letter-spacing: -0.02em;
-  
+
   background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-primary-600) 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -215,403 +215,9 @@
   justify-content: flex-start;
   position: relative;
   z-index: 1;
-  
+
   @include mobile {
-    padding: 90px var(--space-5) var(--space-6);
-  }
-}
-
-.sectionTitle {
-  font-family: var(--font-primary);
-  font-size: var(--text-2xl);
-  font-weight: 800;
-  margin-bottom: var(--space-8);
-  color: var(--color-neutral-900);
-  letter-spacing: -0.03em;
-  opacity: 0;
-  animation: fadeInUp 0.8s var(--transition-slow) forwards;
-  animation-delay: 0.4s;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: var(--gradient-primary);
-    border-radius: var(--radius-full);
-  }
-  
-  @include mobile {
-    font-size: var(--text-xl);
-    margin-bottom: var(--space-6);
-  }
-}
-
-.analysisSection {
-  margin-bottom: var(--space-12);
-  @include card-modern;
-  padding: var(--space-8);
-  background: var(--gradient-card);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: var(--shadow-xl);
-  opacity: 0;
-  animation: fadeInUp 0.8s var(--transition-slow) forwards;
-  animation-delay: 0.5s;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-primary);
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  }
-  
-  @include mobile {
-    padding: var(--space-6);
-    margin-bottom: var(--space-10);
-  }
-}
-
-.analysisGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-6);
-  margin-bottom: var(--space-8);
-  
-  @include mobile {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-  }
-}
-
-.analysisItem {
-  text-align: center;
-  @include glass-effect(0.7, 15px);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-4);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--gradient-primary-soft);
-    transform: scaleX(0);
-    transition: transform var(--transition-base);
-  }
-  
-  &:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: var(--shadow-xl);
-    border-color: rgba(20, 184, 166, 0.3);
-    
-    &::before {
-      transform: scaleX(1);
-    }
-  }
-  
-  @include mobile {
-    padding: var(--space-5) var(--space-3);
-  }
-}
-
-.scoreLabel {
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  margin-bottom: var(--space-3);
-  color: var(--color-neutral-600);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  
-  @include mobile {
-    font-size: var(--text-xs);
-    margin-bottom: var(--space-2);
-  }
-}
-
-.scoreValue {
-  font-family: var(--font-secondary);
-  font-size: var(--text-3xl);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--color-neutral-800) 0%, var(--color-primary-600) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 50%;
-    width: 30px;
-    height: 2px;
-    background: var(--gradient-primary-soft);
-    border-radius: var(--radius-full);
-    transform: translateX(-50%);
-    opacity: 0.6;
-  }
-  
-  @include mobile {
-    font-size: var(--text-2xl);
-  }
-}
-
-.contextInfo {
-  display: flex;
-  gap: var(--space-8);
-  justify-content: center;
-  flex-wrap: wrap;
-  
-  @include mobile {
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-}
-
-.contextItem {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  @include glass-effect(0.6, 12px);
-  padding: var(--space-4) var(--space-6);
-  border-radius: var(--radius-full);
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-neutral-700);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s;
-  }
-
-  &:hover {
-    transform: translateY(-2px) scale(1.05);
-    @include glass-effect(0.8, 15px);
-    border-color: rgba(20, 184, 166, 0.4);
-    box-shadow: var(--shadow-lg);
-    
-    &::before {
-      left: 100%;
-    }
-  }
-
-  svg {
-    color: var(--color-primary-600);
-    filter: drop-shadow(0 1px 2px rgba(20, 184, 166, 0.2));
-  }
-  
-  @include mobile {
-    padding: var(--space-3) var(--space-5);
-    font-size: var(--text-sm);
-  }
-}
-
-.recommendationSection {
-  margin-bottom: var(--space-12);
-  opacity: 0;
-  animation: fadeInUp 0.8s var(--transition-slow) forwards;
-  animation-delay: 0.6s;
-  
-  @include mobile {
-    margin-bottom: var(--space-10);
-  }
-}
-
-.loadingContainer {
-  text-align: center;
-  padding: var(--space-16) var(--space-8);
-  @include card-modern;
-  background: var(--gradient-card);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: var(--shadow-xl);
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    background: conic-gradient(from 0deg, var(--color-primary-400), var(--color-primary-600), var(--color-primary-400));
-    border-radius: var(--radius-xl);
-    z-index: -1;
-    animation: rotate 3s linear infinite;
-  }
-
-  p {
-    margin-top: var(--space-6);
-    color: var(--color-neutral-600);
-    font-family: var(--font-primary);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    line-height: 1.7;
-  }
-  
-  @include mobile {
-    padding: var(--space-12) var(--space-6);
-    
-    p {
-      font-size: var(--text-base);
-    }
-  }
-}
-
-.spinner {
-  animation: spin 2s linear infinite;
-  color: var(--color-primary-500);
-  filter: drop-shadow(0 2px 4px rgba(20, 184, 166, 0.3));
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.summaryCard {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-left: 4px solid #4ECDC4;
-
-  p {
-    margin: 0;
-    line-height: 1.6;
-    font-size: 1.1rem;
-  }
-}
-
-.restaurantList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.restaurantCard {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
-  backdrop-filter: blur(10px);
-  transition: transform 0.2s, background-color 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.restaurantHeader {
-  margin-bottom: 1rem;
-}
-
-.restaurantName {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0;
-  color: #4ECDC4;
-}
-
-.restaurantDescription {
-  margin: 0 0 1rem 0;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.restaurantDetails {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.detailItem {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
-.recommendReason {
-  background: rgba(76, 205, 196, 0.2);
-  border-radius: 8px;
-  padding: 1rem;
-  border-left: 3px solid #4ECDC4;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.fullTextRecommendation {
-  @include card-modern;
-  background: var(--gradient-card);
-  padding: var(--space-8);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: var(--shadow-xl);
-  position: relative;
-  
-  &::before {
-    content: '📝';
-    position: absolute;
-    top: var(--space-6);
-    right: var(--space-6);
-    font-size: var(--text-2xl);
-    opacity: 0.5;
-  }
-  
-  @include mobile {
-    padding: var(--space-6);
-  }
-}
-
-.recommendationText {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: var(--font-primary);
-  line-height: 1.8;
-  margin: 0;
-  color: var(--color-neutral-700);
-  font-size: var(--text-base);
-  font-weight: 500;
-  
-  @include mobile {
-    font-size: var(--text-sm);
-    line-height: 1.7;
+    padding: 80px 1rem 2rem;
   }
 }
 
@@ -625,7 +231,7 @@
   flex-direction: column;
   gap: var(--space-4);
   align-items: center;
-  
+
   @include mobile {
     margin-top: var(--space-10);
     gap: var(--space-3);
@@ -645,7 +251,7 @@
   box-shadow: var(--shadow-xl), var(--shadow-primary);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -660,7 +266,7 @@
   &:hover {
     transform: translateY(-4px) scale(1.05);
     box-shadow: var(--shadow-xl), 0 16px 40px rgba(20, 184, 166, 0.4);
-    
+
     &::before {
       left: 100%;
     }
@@ -669,7 +275,7 @@
   &:active {
     transform: translateY(-2px) scale(1.02);
   }
-  
+
   @include mobile {
     padding: var(--space-4) var(--space-8);
     font-size: var(--text-base);
@@ -692,7 +298,7 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s var(--transition-smooth);
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -703,31 +309,24 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.6s;
   }
-  
+
   &:hover {
     transform: translateY(-3px) scale(1.03);
     box-shadow: var(--shadow-lg), 0 12px 32px rgba(251, 146, 60, 0.4);
-    
+
     &::before {
       left: 100%;
     }
   }
-  
+
   &:active {
     transform: translateY(-1px) scale(1.01);
   }
-  
+
   @include mobile {
     padding: var(--space-3) var(--space-6);
     font-size: var(--text-sm);
   }
-}
-
-// 새로운 음식 추천 UI 스타일
-.foodRecommendations {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
 }
 
 .reasonCard {
@@ -738,7 +337,7 @@
   box-shadow: var(--shadow-xl);
   border-left: 6px solid var(--color-primary-500);
   position: relative;
-  
+
   &::before {
     content: '💭';
     position: absolute;
@@ -747,7 +346,7 @@
     font-size: var(--text-2xl);
     opacity: 0.6;
   }
-  
+
   @include mobile {
     padding: var(--space-6);
   }
@@ -760,7 +359,7 @@
   margin: 0 0 var(--space-4) 0;
   color: var(--color-neutral-900);
   letter-spacing: -0.02em;
-  
+
   @include mobile {
     font-size: var(--text-lg);
   }
@@ -773,130 +372,11 @@
   font-family: var(--font-primary);
   font-size: var(--text-base);
   font-weight: 500;
-  
+
   @include mobile {
     font-size: var(--text-sm);
     line-height: 1.7;
   }
-}
-
-.primaryFoodCard {
-  background: var(--gradient-card);
-  @include card-modern;
-  padding: var(--space-12) var(--space-8);
-  border: 3px solid rgba(255, 255, 255, 0.6);
-  text-align: center;
-  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(20, 184, 166, 0.1);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: var(--gradient-primary);
-    animation: shimmer 3s ease-in-out infinite;
-  }
-  
-  &::after {
-    content: '🍽️';
-    position: absolute;
-    top: var(--space-6);
-    right: var(--space-6);
-    font-size: var(--text-3xl);
-    opacity: 0.6;
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  @include mobile {
-    padding: var(--space-10) var(--space-6);
-  }
-}
-
-@keyframes shimmer {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(400%); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.primaryHeader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-5);
-  margin-bottom: var(--space-8);
-  
-  @include mobile {
-    flex-direction: column;
-    gap: var(--space-3);
-    margin-bottom: var(--space-6);
-  }
-}
-
-.primaryIcon {
-  color: var(--color-primary-600);
-  filter: drop-shadow(0 4px 8px rgba(20, 184, 166, 0.3));
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.primaryTitle {
-  font-family: var(--font-primary);
-  font-size: var(--text-xl);
-  font-weight: 900;
-  margin: 0;
-  color: var(--color-neutral-900);
-  letter-spacing: -0.03em;
-  
-  @include mobile {
-    font-size: var(--text-lg);
-  }
-}
-
-.primarySubtitle {
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  font-weight: 600;
-  margin: var(--space-2) 0 0 0;
-  color: var(--color-neutral-600);
-  
-  @include mobile {
-    font-size: var(--text-sm);
-  }
-}
-
-.primaryFoodName {
-  font-family: var(--font-primary);
-  font-size: var(--text-4xl);
-  font-weight: 900;
-  margin: 0;
-  letter-spacing: -0.04em;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 4px rgba(20, 184, 166, 0.2));
-  animation: textGlow 3s ease-in-out infinite;
-  
-  @include mobile {
-    font-size: var(--text-3xl);
-  }
-}
-
-@keyframes textGlow {
-  0%, 100% { filter: drop-shadow(0 2px 4px rgba(20, 184, 166, 0.2)); }
-  50% { filter: drop-shadow(0 4px 12px rgba(20, 184, 166, 0.4)); }
 }
 
 .alternativesSection {
@@ -906,7 +386,7 @@
   border: 2px solid rgba(255, 255, 255, 0.4);
   box-shadow: var(--shadow-xl);
   position: relative;
-  
+
   &::before {
     content: '🍽️✨';
     position: absolute;
@@ -915,7 +395,7 @@
     font-size: var(--text-lg);
     opacity: 0.5;
   }
-  
+
   @include mobile {
     padding: var(--space-6);
   }
@@ -929,7 +409,7 @@
   color: var(--color-neutral-900);
   letter-spacing: -0.02em;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -940,145 +420,13 @@
     background: var(--gradient-primary-soft);
     border-radius: var(--radius-full);
   }
-  
+
   @include mobile {
     font-size: var(--text-lg);
   }
 }
 
-.alternativesList {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  
-  @include mobile {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
-  }
-}
-
-.alternativeCard {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  @include glass-effect(0.7, 12px);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-6);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  &:hover {
-    @include glass-effect(0.9, 15px);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(20, 184, 166, 0.3);
-    
-    &::before {
-      left: 100%;
-    }
-  }
-  
-  @include mobile {
-    padding: var(--space-4) var(--space-5);
-    gap: var(--space-3);
-  }
-}
-
-.alternativeNumber {
-  background: var(--gradient-primary);
-  color: white;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-secondary);
-  font-weight: 900;
-  font-size: var(--text-base);
-  flex-shrink: 0;
-  box-shadow: var(--shadow-primary);
-  border: 2px solid white;
-  transition: transform var(--transition-base);
-  
-  &:hover {
-    transform: scale(1.1) rotate(5deg);
-  }
-  
-  @include mobile {
-    width: 32px;
-    height: 32px;
-    font-size: var(--text-sm);
-  }
-}
-
-.alternativeName {
-  font-family: var(--font-primary);
-  font-size: var(--text-lg);
-  font-weight: 700;
-  color: var(--color-neutral-800);
-  flex: 1;
-  transition: color var(--transition-base);
-  
-  &:hover {
-    color: var(--color-primary-700);
-  }
-  
-  @include mobile {
-    font-size: var(--text-base);
-  }
-}
-
-@include mobile {
-  .mainContent {
-    padding: 80px 1rem 2rem;
-  }
-
-  .analysisGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .contextInfo {
-    justify-content: stretch;
-  }
-
-  .primaryFoodCard {
-    padding: 2rem 1.5rem;
-  }
-
-  .primaryFoodName {
-    font-size: 2rem;
-  }
-
-  .alternativesList {
-    grid-template-columns: 1fr;
-  }
-
-  .primaryHeader {
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  .sectionTitle {
-    font-size: 1.3rem;
-  }
-}
-
-// Keyframe animations
+// ===== Keyframes (위 클래스에서 실제 사용하는 것만) =====
 @keyframes fadeInUp {
   from {
     opacity: 0;
