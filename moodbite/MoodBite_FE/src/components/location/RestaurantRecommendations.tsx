@@ -2,20 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Phone, ExternalLink, Navigation, Loader } from 'lucide-react';
 import style from '../../style/location/restaurantRecommendations.module.scss';
 import { MainApi } from '../api/MainApi';
-
-interface Restaurant {
-    name: string;
-    category: string;
-    address: string;
-    latitude: number;
-    longitude: number;
-    rating: number;
-    distance: number; // 미터 단위
-    priceLevel: number;
-    phone: string | null;
-    isOpen: boolean;
-    placeId: string | null;
-}
+import { RestaurantRecommendationDTO as Restaurant } from '../../types/test';
 
 interface RestaurantRecommendationsProps {
     location: GeolocationPosition;

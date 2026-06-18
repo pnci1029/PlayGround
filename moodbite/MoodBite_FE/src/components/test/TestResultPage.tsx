@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TestExecuted } from './TestExecuted';
 import { TestResultPostDTO } from '../../types/test';
+import style from '../../style/test.module.scss';
 
 interface ResultState {
     testResult: TestResultPostDTO;
@@ -22,12 +23,7 @@ export function TestResultPage() {
 
     if (!state?.testResult) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh'
-            }}>
+            <div className={style.resultLoading}>
                 <div>로딩 중...</div>
             </div>
         );
