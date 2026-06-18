@@ -2,7 +2,7 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {BrowserRouter, Route, Routes, useNavigate} from 'react-router-dom';
+import {BrowserRouter, Navigate, Route, Routes, useNavigate} from 'react-router-dom';
 import {Main} from "./components/common/Main";
 import App from "./App";
 import { TestResultPage } from "./components/test/TestResultPage";
@@ -32,6 +32,7 @@ root.render(
                     <Route path="test" element={<TestRoute/>} />
                     <Route path="test/result" element={<TestResultPage/>} />
                     <Route path="nearby" element={<NearbyRoute/>} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
             </Routes>
         </BrowserRouter>
