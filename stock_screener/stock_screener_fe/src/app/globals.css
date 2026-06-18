@@ -573,12 +573,21 @@ tr:hover td { background: #1c2128; }
   .searchbar { padding: 8px 10px; }
   .search-input { max-width: none; }
 
-  /* Filter bar: stack vertically */
-  .filterbar { flex-direction: column; align-items: flex-start; padding: 8px 10px; top: calc(44px + var(--safe-top)); }
+  /* Filter bar: 가로 정렬 + 자동 줄바꿈 (이전 column 스택은 버튼이 깨져 보였음) */
+  .filterbar {
+    flex-direction: row; flex-wrap: wrap; align-items: center;
+    padding: 8px 10px; gap: 6px; top: calc(44px + var(--safe-top));
+  }
+  .filter-label { width: 100%; }            /* 라벨은 한 줄 차지 */
+  #condList { width: 100%; }                 /* 조건 행 전체 너비 */
   .cond-row { width: 100%; }
-  .cond-sel { flex: 1; width: auto; min-width: 90px; }
-  .run-btn, .reset-btn { width: 48%; }
-  #condList { width: 100%; }
+  .cond-sel { flex: 1; width: auto; min-width: 0; }  /* 남는 폭 차지 + 넘침 방지 */
+  .cond-op  { width: 46px; flex: none; }
+  .cond-val { width: 64px; flex: none; }
+  .filterbar .spacer { display: none; }      /* column 잔재(세로 빈공간) 제거 */
+  .logic-toggle, .add-cond { flex: 0 0 auto; }
+  .run-btn, .reset-btn { flex: 1 1 0; }      /* 버튼은 한 줄에서 균등 분할 */
+  .result-count { width: 100%; text-align: right; }
 
   /* Strategy panel: vertical stack */
   .strategy-panel { max-height: none; }
