@@ -11,8 +11,9 @@ import {
   type Time,
 } from "lightweight-charts";
 import { apiCandles } from "@/lib/api";
-import { fmtNum, fmtPrice, fmtCap, changeMeta } from "@/lib/format";
-import type { Stock, Candle, Market } from "@/lib/types";
+import { fmtNum, fmtPct } from "@/lib/format";
+import type { Stock, Candle } from "@/lib/types";
+import ChartLegend, { buildLegend, type Legend } from "./ChartLegend";
 
 const TFS: { k: string; label: string }[] = [
   { k: "D", label: "일" },
@@ -24,36 +25,6 @@ const TFS: { k: string; label: string }[] = [
 interface Props {
   stock: Stock;
   onClose: () => void;
-}
-
-interface Legend {
-  date: string;
-  open: number | null;
-  high: number | null;
-  low: number | null;
-  close: number | null;
-  volume: number | null;
-  changePct: number | null; // 직전 봉 종가 대비 등락률
-}
-
-// data[i] 봉의 레전드 정보. 등락률은 직전 봉 종가 기준(첫 봉은 시가 기준).
-function buildLegend(data: Candle[], i: number): Legend | null {
-  const c = data[i];
-  if (!c) return null;
-  const prev = i > 0 ? data[i - 1].close : c.open;
-  const changePct =
-    prev != null && prev !== 0 && c.close != null
-      ? ((c.close - prev) / prev) * 100
-      : null;
-  return {
-    date: c.date,
-    open: c.open,
-    high: c.high,
-    low: c.low,
-    close: c.close,
-    volume: c.volume,
-    changePct,
-  };
 }
 
 export default function ChartModal({ stock, onClose }: Props) {
@@ -272,16 +243,14 @@ export default function ChartModal({ stock, onClose }: Props) {
 
 // 종목 재무지표 한 줄 요약. 값이 없으면(특히 KR은 갱신 전) — 로 표시.
 function FundaStrip({ stock }: { stock: Stock }) {
-  const pct = (v: number | null) =>
-    v == null ? "—" : (v * 100).toFixed(1) + "%";
   const items: [string, string][] = [
     ["PER", fmtNum(stock.per, 1) ?? "—"],
     ["PBR", fmtNum(stock.pbr, 2) ?? "—"],
-    ["ROE", pct(stock.roe)],
-    ["배당", pct(stock.div_yield)],
+    ["ROE", fmtPct(stock.roe, 1) ?? "—"],
+    ["배당", fmtPct(stock.div_yield, 1) ?? "—"],
     ["부채", stock.debt_ratio == null ? "—" : stock.debt_ratio.toFixed(0) + "%"],
-    ["이익성장", pct(stock.eps_growth)],
-    ["매출성장", pct(stock.sales_growth)],
+    ["이익성장", fmtPct(stock.eps_growth, 1) ?? "—"],
+    ["매출성장", fmtPct(stock.sales_growth, 1) ?? "—"],
   ];
   return (
     <div className="chart-funda">
@@ -290,44 +259,6 @@ function FundaStrip({ stock }: { stock: Stock }) {
           {label} <b>{val}</b>
         </span>
       ))}
-    </div>
-  );
-}
-
-// 차트 상단 OHLC 레전드. PC는 호버, 모바일은 터치-드래그로 갱신되며
-// 기본값은 최신 봉이라 입력 없이도 항상 값이 보인다.
-function ChartLegend({ legend, market }: { legend: Legend; market: Market }) {
-  const chg = changeMeta(legend.changePct);
-  const chgColor =
-    chg?.cls === "up"
-      ? "var(--green)"
-      : chg?.cls === "down"
-        ? "var(--red)"
-        : "var(--muted)";
-  const price = (v: number | null) => fmtPrice(v, market) ?? "—";
-  return (
-    <div className="chart-legend">
-      <span className="cl-date">{legend.date}</span>
-      <span className="cl-item">
-        시 <b>{price(legend.open)}</b>
-      </span>
-      <span className="cl-item">
-        고 <b style={{ color: "var(--green)" }}>{price(legend.high)}</b>
-      </span>
-      <span className="cl-item">
-        저 <b style={{ color: "var(--red)" }}>{price(legend.low)}</b>
-      </span>
-      <span className="cl-item">
-        종 <b style={{ color: chgColor }}>{price(legend.close)}</b>
-      </span>
-      <span className="cl-item">
-        거래량 <b>{fmtCap(legend.volume) ?? "—"}</b>
-      </span>
-      {chg && (
-        <span className="cl-chg" style={{ color: chgColor }}>
-          {chg.text}
-        </span>
-      )}
     </div>
   );
 }
