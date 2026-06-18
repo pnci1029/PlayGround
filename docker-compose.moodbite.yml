@@ -56,8 +56,8 @@ services:
       - "3001:3000"
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=http://localhost:8082/api
-      - REACT_APP_WS_URL=ws://localhost:8084
+    # 참고: Vite 번들의 API URL은 빌드 시점에 주입된다. 로컬 통합환경에서 값을 바꾸려면
+    # 위 build 섹션에 args(VITE_API_URL)를 추가해야 한다. (runtime env 는 정적 번들에 반영되지 않음)
     depends_on:
       - moodbite-backend
     restart: unless-stopped
