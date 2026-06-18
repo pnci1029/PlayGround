@@ -23,31 +23,6 @@ export interface TestResultPostDTO{
   mealTime: MealTime | null;
 }
 
-export interface TestResultResponseDTO{
-  id: number;
-  message: string;
-  aiRecommendation?: string;
-}
-
-// Location-based types
-export interface LocationDTO {
-  latitude: number;
-  longitude: number;
-}
-
-export interface LocationBasedTestResultRequestDTO {
-  scores: {
-    tired: number;
-    anger: number;
-    stress: number;
-    appetite: number;
-    budget: number;
-  };
-  dining: DiningOption;
-  mealTime: MealTime | null;
-  location?: LocationDTO;
-}
-
 export interface FoodRecommendationDTO {
   primaryFood: string;
   alternativefoods: string[];
@@ -69,23 +44,8 @@ export interface RestaurantRecommendationDTO {
   placeId: string | null;
 }
 
-export interface LocationBasedRecommendationResponseDTO {
-  id: number;
-  message: string;
-  foodRecommendation: FoodRecommendationDTO;
-  nearbyRestaurants: RestaurantRecommendationDTO[];
-}
 
-export interface Scores {
-  tired: number;
-  anger: number;
-  stress: number;
-  appetite: number;
-  budget: number;
-  // dining: DiningOption | null;
-}
-
-
+// 추천 로직 설계 참고용 메모 (입력 후보)
 // 신체적 상태:
 // 피로도 수준 (1-10 척도)
 // 수면 시간과 질
