@@ -5,6 +5,7 @@ import {
   fmtNum,
   fmtCap,
   fmtPrice,
+  fmtPct,
   changeMeta,
   sparkMeta,
 } from "@/lib/format";
@@ -140,14 +141,8 @@ export default function StockTable({
                   <td>{cell(fmtCap(r.market_cap))}</td>
                   <td>{cell(fmtNum(r.per, 1))}</td>
                   <td>{cell(fmtNum(r.pbr, 2))}</td>
-                  <td>
-                    {r.roe == null ? NA : (r.roe * 100).toFixed(1) + "%"}
-                  </td>
-                  <td>
-                    {r.div_yield == null
-                      ? NA
-                      : (r.div_yield * 100).toFixed(2) + "%"}
-                  </td>
+                  <td>{cell(fmtPct(r.roe, 1))}</td>
+                  <td>{cell(fmtPct(r.div_yield, 2))}</td>
                   <td>{cell(fmtPrice(r.week52_high, r.market))}</td>
                   <td>{cell(fmtPrice(r.week52_low, r.market))}</td>
                   <td>
