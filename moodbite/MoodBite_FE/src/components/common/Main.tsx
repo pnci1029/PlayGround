@@ -5,6 +5,7 @@ import {Header} from "../layout/Header";
 import {BottomNavigation} from "../layout/BottomNavigation";
 import {SideMenu} from "../layout/SideMenu";
 import {HomeContent} from "../home/HomeContent";
+import {Toast} from "./Toast";
 
 export function Main() {
     const navigate = useNavigate();
@@ -57,26 +58,7 @@ export function Main() {
                 menuItems={menuItems}
             />
 
-            {toast && (
-                <div
-                    role="status"
-                    style={{
-                        position: 'fixed',
-                        left: '50%',
-                        bottom: '90px',
-                        transform: 'translateX(-50%)',
-                        background: 'rgba(0, 0, 0, 0.8)',
-                        color: '#fff',
-                        padding: '10px 18px',
-                        borderRadius: '20px',
-                        fontSize: '14px',
-                        zIndex: 1000,
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    {toast}
-                </div>
-            )}
+            <Toast message={toast} />
         </div>
     );
 }
