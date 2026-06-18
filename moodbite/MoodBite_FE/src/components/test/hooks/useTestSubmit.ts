@@ -20,16 +20,11 @@ export function useTestSubmit() {
             try {
                 const result = await executePromise<FoodRecommendationDTO>(TestApi.submitTestResult(dto));
 
-                // URL 파라미터로 데이터 전달하여 결과 페이지로 네비게이션
-                const testData = encodeURIComponent(JSON.stringify(dto));
-
-                let recommendation = '';
-                if (isFoodRecommendationDTO(result)) {
-                    recommendation = JSON.stringify(result);
-                }
-
-                const encodedRecommendation = encodeURIComponent(recommendation);
-                navigate(`/test/result?data=${testData}&recommendation=${encodedRecommendation}`);
+                // router state 로 결과를 전달한다. (URL 쿼리스트링 방식은 길이 한계·인코딩 취약 문제가 있었다)
+                const recommendation = isFoodRecommendationDTO(result) ? JSON.stringify(result) : '';
+                navigate('/test/result', {
+                    state: { testResult: dto, recommendation },
+                });
             } catch (e) {
                 console.error('Error submitting test result:', e);
                 setError('추천 결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.');

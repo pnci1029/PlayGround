@@ -1,16 +1,14 @@
 import React, {useCallback, useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import style from "../../style/main.module.scss";
-import {Test} from "../test/Test";
 import {Header} from "../layout/Header";
 import {BottomNavigation} from "../layout/BottomNavigation";
 import {SideMenu} from "../layout/SideMenu";
 import {HomeContent} from "../home/HomeContent";
-import {NearbyRestaurants} from "../location/NearbyRestaurants";
 
 export function Main() {
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [showTest, setShowTest] = useState(false);
-    const [showNearby, setShowNearby] = useState(false);
     const [toast, setToast] = useState<string | null>(null);
 
     // 아직 구현되지 않은 기능에 대한 안내 토스트
@@ -36,18 +34,8 @@ export function Main() {
         { label: '앱 정보', onClick: handleMenuItem },
     ];
 
-    // 주변 맛집 화면
-    if (showNearby) {
-        return <NearbyRestaurants onBack={() => setShowNearby(false)} />;
-    }
-
-    // 테스트 화면
-    // 테스트 완료 시 useTestSubmit 에서 /test/result 로 라우팅된다.
-    if (showTest) {
-        return <Test onBack={() => setShowTest(false)} />;
-    }
-
     // 메인 홈 화면
+    // 테스트/주변맛집은 별도 라우트(/test, /nearby)로 이동한다.
     return (
         <div className={style.container}>
             <Header
@@ -55,10 +43,10 @@ export function Main() {
                 onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
             />
 
-            <HomeContent onStartTest={() => setShowTest(true)} />
+            <HomeContent onStartTest={() => navigate('/test')} />
 
             <BottomNavigation
-                onNearbyRestaurants={() => setShowNearby(true)}
+                onNearbyRestaurants={() => navigate('/nearby')}
                 onFavorites={showComingSoon}
                 onProfile={showComingSoon}
             />
