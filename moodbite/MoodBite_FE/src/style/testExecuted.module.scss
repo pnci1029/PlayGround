@@ -11,7 +11,7 @@
   text-align: center;
   color: #fff;
   overflow: hidden;
-  animation: fadeInUp 0.5s var(--transition-base) both;
+  animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .heroEmoji {
@@ -139,7 +139,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--shadow-xl);
   z-index: var(--z-fixed);
-  animation: slideDown 0.8s var(--transition-slow) forwards;
+  animation: slideDown 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   &::before {
     content: '';
@@ -194,9 +194,6 @@
   font-size: var(--text-xl);
   font-weight: 800;
   color: var(--color-neutral-900);
-  opacity: 0;
-  animation: fadeInSlideLeft 0.8s var(--transition-slow) forwards;
-  animation-delay: 0.3s;
   letter-spacing: -0.02em;
 
   background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-primary-600) 100%);
@@ -225,8 +222,8 @@
   text-align: center;
   margin-top: var(--space-12);
   opacity: 0;
-  animation: fadeInUp 0.8s var(--transition-slow) forwards;
-  animation-delay: 0.8s;
+  animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.35s;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
