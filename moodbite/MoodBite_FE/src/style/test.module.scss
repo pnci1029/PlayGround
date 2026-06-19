@@ -32,7 +32,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--shadow-lg);
   z-index: var(--z-fixed);
-  animation: slideDown 0.6s var(--transition-slow) forwards;
+  animation: slideDown 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @include mobile {
     padding: var(--space-4) var(--space-5);
@@ -77,9 +77,6 @@
     font-size: var(--text-xl);
     font-weight: 700;
     color: var(--color-neutral-800);
-    opacity: 0;
-    animation: fadeInSlideLeft 0.6s var(--transition-slow) forwards;
-    animation-delay: 0.2s;
     letter-spacing: -0.02em;
 
     @include mobile {
@@ -173,7 +170,7 @@
 
 /* 단계 전환 애니메이션 */
 .stepWrapper {
-  animation: stepFadeIn 0.35s var(--transition-base);
+  animation: stepFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes stepFadeIn {
