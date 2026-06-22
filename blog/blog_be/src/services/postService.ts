@@ -1,9 +1,9 @@
-import { pool } from '@/utils/database.js';
-import type { 
-  CreatePostInput, 
-  UpdatePostInput, 
-  PostQueryInput 
-} from '@/models/post.js';
+import { pool } from '../utils/database.js';
+import type {
+  CreatePostInput,
+  UpdatePostInput,
+  PostQueryInput
+} from '../models/post.js';
 export interface Post {
   id: string;
   title: string;
@@ -70,12 +70,13 @@ export class PostService {
     
     const query = `
       INSERT INTO posts (
-        title, slug, content, excerpt, category, tags, 
-        reading_time, code_languages, is_published, published_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        title, slug, content, excerpt, category, tags,
+        reading_time, code_languages, is_published, published_at,
+        author_id, author_name
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
     `;
-    
+
     const values = [
       input.title,
       input.slug,
@@ -86,7 +87,9 @@ export class PostService {
       readingTime,
       codeLanguages,
       input.isPublished,
-      input.isPublished ? now : null
+      input.isPublished ? now : null,
+      input.author_id,
+      input.author_name ?? null
     ];
     
     const result = await pool.query<DbPost>(query, values);
@@ -194,8 +197,9 @@ export class PostService {
     }
     
     if (search) {
+      // excerpt 가 NULL 이면 연결 결과 전체가 NULL 이 되어 검색이 안 되므로 COALESCE 로 보정
       whereClause += ` AND (
-        to_tsvector('english', title || ' ' || excerpt || ' ' || content) 
+        to_tsvector('english', title || ' ' || COALESCE(excerpt, '') || ' ' || content)
         @@ plainto_tsquery('english', $${paramCount++})
       )`;
       queryParams.push(search);

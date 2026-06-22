@@ -10,7 +10,9 @@ export const pool = new Pool({
 
 export async function initializeDatabase() {
   try {
-    await pool.connect();
+    // pool.connect() 로 얻은 client 를 release 하지 않으면 커넥션이 영구 점유된다.
+    // pool.query 는 내부적으로 client 를 빌렸다가 자동 반환하므로 연결 확인용으로 적합.
+    await pool.query('SELECT 1');
     console.log('Database connected successfully');
     
     // Create tables if they don't exist
@@ -86,7 +88,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS idx_posts_tags ON posts USING GIN (tags)
     `,
     `
-    CREATE INDEX IF NOT EXISTS idx_posts_search ON posts USING GIN (to_tsvector('english', title || ' ' || excerpt || ' ' || content))
+    CREATE INDEX IF NOT EXISTS idx_posts_search ON posts USING GIN (to_tsvector('english', title || ' ' || COALESCE(excerpt, '') || ' ' || content))
     `
   ];
 
