@@ -37,18 +37,6 @@ server:
     max-http-form-post-size: 10MB
     max-swallow-size: 10MB
 
-openai:
-  model: gpt-3.5-turbo
-  api:
-    url: 'https://api.openai.com/v1/chat/completions'
-    key: ${secret.openai.api.key}
-
-openRouter:
-  model: perplexity/sonar-reasoning
-  api:
-    url: 'https://openrouter.ai/api/v1/chat/completions'
-    key: ${secret.openrouter.api.key}
-
 kakao:
   maps:
     api:
