@@ -4,10 +4,16 @@ import type { ChatMessage, ChatUser, WebSocketConnection } from './types/websock
 
 type User = ChatUser
 
+// 스팸/저장 폭증 방지용 제한값
+const MAX_MESSAGE_LENGTH = 1000
+const MAX_NICKNAME_LENGTH = 30
+const MIN_MESSAGE_INTERVAL_MS = 400
+
 class ChatWebSocketServer {
   private wss: WebSocketServer
   private connections = new Map<string, any>() // WebSocket 객체 저장
   private users = new Map<string, User>()
+  private lastMessageAt = new Map<string, number>() // userId -> epoch ms (rate limit)
 
   // DB에서 최근 메시지 불러오기
   private async loadRecentMessages(limit: number = 50): Promise<ChatMessage[]> {
@@ -101,7 +107,8 @@ class ChatWebSocketServer {
         const user = this.users.get(userId)
         this.connections.delete(userId)
         this.users.delete(userId)
-        
+        this.lastMessageAt.delete(userId)
+
         if (user) {
           console.log(`💬 Chat user left: ${user.nickname} (${userId}) - 남은 ${this.connections.size}명`)
           
@@ -120,6 +127,7 @@ class ChatWebSocketServer {
         console.error('Chat WebSocket error:', error)
         this.connections.delete(userId)
         this.users.delete(userId)
+        this.lastMessageAt.delete(userId)
       })
     })
 
@@ -152,27 +160,40 @@ class ChatWebSocketServer {
     const user = this.users.get(userId)
     if (!user) return
 
-    if (data.type === 'message' && data.message) {
-      // 닉네임이 전송되면 업데이트
-      if (data.nickname) {
-        user.nickname = data.nickname
+    if (data.type !== 'message' || !data.message) return
+
+    // 1) 내용 정리 및 빈 메시지/과도한 길이 차단
+    const message = String(data.message).trim().slice(0, MAX_MESSAGE_LENGTH)
+    if (!message) return
+
+    // 2) rate limit: 너무 빠른 연속 전송 차단(스팸/저장 폭증 방지)
+    const now = Date.now()
+    const last = this.lastMessageAt.get(userId) || 0
+    if (now - last < MIN_MESSAGE_INTERVAL_MS) return
+    this.lastMessageAt.set(userId, now)
+
+    // 3) 닉네임 변경 시 길이 제한 후 반영
+    if (data.nickname) {
+      const nickname = String(data.nickname).trim().slice(0, MAX_NICKNAME_LENGTH)
+      if (nickname) {
+        user.nickname = nickname
         this.users.set(userId, user)
       }
-
-      const chatMessage: ChatMessage = {
-        type: 'message',
-        message: data.message.trim(),
-        nickname: user.nickname,
-        timestamp: Date.now(),
-        userId
-      }
-
-      // DB에 메시지 저장
-      await this.saveMessage(chatMessage)
-
-      // 모든 사용자에게 브로드캐스트
-      this.broadcast(chatMessage)
     }
+
+    const chatMessage: ChatMessage = {
+      type: 'message',
+      message,
+      nickname: user.nickname,
+      timestamp: now,
+      userId
+    }
+
+    // DB에 메시지 저장
+    await this.saveMessage(chatMessage)
+
+    // 모든 사용자에게 브로드캐스트
+    this.broadcast(chatMessage)
   }
 
   private broadcast(message: ChatMessage, excludeUserId?: string) {

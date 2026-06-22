@@ -18,20 +18,13 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.config import KR_TICKERS, SP500_TICKERS
+from app.strategy_eval import evaluate_conditions
 from strategies import STRATEGIES
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 _POOL = ThreadPoolExecutor(max_workers=12, thread_name_prefix="bt")
-
-OPS = {
-    ">":  lambda a, b: a > b,
-    "<":  lambda a, b: a < b,
-    ">=": lambda a, b: a >= b,
-    "<=": lambda a, b: a <= b,
-    "=":  lambda a, b: a == b,
-}
 
 
 class BacktestRequest(BaseModel):
@@ -64,7 +57,7 @@ async def run_backtest(req: BacktestRequest):
         )
     except Exception as exc:
         logger.exception("backtest failed: %s", exc)
-        return {"error": f"백테스트 실행 오류: {exc}"}
+        return {"error": "백테스트 실행 중 오류가 발생했습니다"}
 
     return result
 
@@ -136,7 +129,7 @@ def _analyze(ticker, market, start_date, end_date, conditions, logic):
 
         funds, quality = _historical_fundamentals(t, start_date, start_price)
 
-        if not _check(funds, conditions, logic):
+        if evaluate_conditions(funds, conditions, logic) is not True:
             return {"ticker": ticker.replace(".KS", ""), "matched": False}
 
         info = t.info
@@ -269,25 +262,3 @@ def _price_return(ticker: str, start_date: str, end_date: str):
         return round((e - s) / s * 100, 2)
     except Exception:
         return None
-
-
-def _check(funds: dict, conditions: list, logic: str) -> bool:
-    evals = []
-    for c in conditions:
-        fval = funds.get(c["field"])
-        if fval is None:
-            evals.append(None)
-            continue
-        op_fn = OPS.get(c["op"])
-        if op_fn is None:
-            evals.append(None)
-            continue
-        try:
-            evals.append(op_fn(float(fval), float(c["value"])))
-        except Exception:
-            evals.append(None)
-
-    known = [e for e in evals if e is not None]
-    if not known:
-        return False
-    return all(known) if logic == "AND" else any(known)
