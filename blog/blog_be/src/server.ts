@@ -1,11 +1,11 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { config } from '@/utils/config.js';
-import { initializeDatabase } from '@/utils/database.js';
-import postsRoutes from '@/routes/posts.js';
-import authRoutes from '@/routes/auth.js';
-import usersRoutes from '@/routes/users.js';
-import categoriesRoutes from '@/routes/categories.js';
+import { config } from './utils/config.js';
+import { initializeDatabase } from './utils/database.js';
+import postsRoutes from './routes/posts.js';
+import authRoutes from './routes/auth.js';
+import usersRoutes from './routes/users.js';
+import categoriesRoutes from './routes/categories.js';
 
 const fastify = Fastify({
   logger: true

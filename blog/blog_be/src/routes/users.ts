@@ -1,9 +1,13 @@
 import { FastifyPluginAsync } from 'fastify';
 import { UserService } from '../services/userService.js';
 import { createUserSchema, loginSchema, updateUserSchema } from '../models/user.js';
+import { authenticateUser, requireRole } from '../middleware/auth.js';
 import { ZodError } from 'zod';
 
 const userService = new UserService();
+
+// 사용자 관리는 관리자 전용 (로그인 제외)
+const adminOnly = { preHandler: [authenticateUser, requireRole(['admin'])] };
 
 // Helper function to format Zod validation errors
 function formatZodError(error: ZodError): { field: string; message: string }[] {
@@ -29,7 +33,7 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   });
   
   // Create user (admin only)
-  fastify.post('/', async (request, reply) => {
+  fastify.post('/', adminOnly, async (request, reply) => {
     try {
       const input = createUserSchema.parse(request.body);
       const user = await userService.createUser(input);
@@ -51,7 +55,7 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   });
   
   // Get all users (admin only)
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/', adminOnly, async (request, reply) => {
     try {
       const users = await userService.getAllUsers();
       return reply.send(users);
@@ -62,8 +66,8 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
   
-  // Get user by ID
-  fastify.get('/:id', async (request, reply) => {
+  // Get user by ID (admin only)
+  fastify.get('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const user = await userService.getUserById(id);
@@ -81,7 +85,7 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   });
   
   // Update user (admin only)
-  fastify.put('/:id', async (request, reply) => {
+  fastify.put('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const input = updateUserSchema.parse(request.body);
@@ -101,7 +105,7 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   });
   
   // Delete user (admin only)
-  fastify.delete('/:id', async (request, reply) => {
+  fastify.delete('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
       const success = await userService.deleteUser(id);
