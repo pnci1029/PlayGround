@@ -80,8 +80,8 @@ class ScientificFoodRecommendationService(
         val scores = request.scores
 
         // Core psychological factors
-        totalScore += calculateStressCortisolScore(food, scores, request) * STRESS_CORTISOL_WEIGHT
-        totalScore += calculateFatigueEnergyScore(food, scores.tired, request.mealTime) * FATIGUE_ENERGY_WEIGHT
+        totalScore += calculateStressCortisolScore(food, scores) * STRESS_CORTISOL_WEIGHT
+        totalScore += calculateFatigueEnergyScore(food, scores.tired) * FATIGUE_ENERGY_WEIGHT
         totalScore += calculateAppetiteHormoneScore(food, scores.appetite, request.mealTime) * APPETITE_HORMONE_WEIGHT
 
         // Temporal factors
@@ -107,7 +107,7 @@ class ScientificFoodRecommendationService(
      * 스트레스-코르티솔 축 분석 (2024 Am J Clinical Nutrition 업데이트)
      * 스트레스 시 코르티솔 증가로 고칼로리, 달콤한 음식과 컴포트 푸드 선호 증가
      */
-    private fun calculateStressCortisolScore(food: FoodRecommendation, scores: ScoresDTO, request: TestResultRequestDTO): Double {
+    private fun calculateStressCortisolScore(food: FoodRecommendation, scores: ScoresDTO): Double {
         // 입력은 0~100. 두 값 평균을 0~5 스케일로 정규화 (임계값 4.0/3.0/2.0 기준)
         val combinedStress = (scores.stress + scores.anger) / 40.0
 
@@ -268,7 +268,7 @@ class ScientificFoodRecommendationService(
      * 피로-에너지 대사 분석 (2024 PMC Nutrients & Cell Metabolism 연구 기반)
      * 피로도에 따른 미토콘드리아 기능, 혈당 조절, 에너지 대사 최적화
      */
-    private fun calculateFatigueEnergyScore(food: FoodRecommendation, tired: Int, mealTime: String?): Double {
+    private fun calculateFatigueEnergyScore(food: FoodRecommendation, tired: Int): Double {
         val fatigueLevel = tired / 100.0 // 0~100 입력을 0~1로 정규화 (임계값 0.8/0.6/0.3)
 
         return when {
