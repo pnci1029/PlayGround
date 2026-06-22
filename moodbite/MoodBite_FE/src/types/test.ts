@@ -36,9 +36,9 @@ export interface RestaurantRecommendationDTO {
   address: string;
   latitude: number;
   longitude: number;
-  rating: number;
+  rating: number | null;   // 카카오맵은 평점을 제공하지 않아 null
   distance: number; // 미터 단위
-  priceLevel: number;
+  priceLevel: number | null; // 카카오맵은 가격대를 제공하지 않아 null
   phone: string | null;
   isOpen: boolean;
   placeId: string | null;

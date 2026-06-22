@@ -37,9 +37,9 @@ data class RestaurantSearchResult(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val rating: Double,
+    val rating: Double? = null,      // 카카오맵은 평점 정보를 제공하지 않음
     val distance: Int, // 미터 단위
-    val priceLevel: Int,
+    val priceLevel: Int? = null,     // 카카오맵은 가격대 정보를 제공하지 않음
     val phone: String? = null,
     val isOpen: Boolean = true,
     val placeId: String? = null

@@ -1,38 +1,26 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import style from "../../style/main.module.scss";
 import {Header} from "../layout/Header";
 import {BottomNavigation} from "../layout/BottomNavigation";
 import {SideMenu} from "../layout/SideMenu";
 import {HomeContent} from "../home/HomeContent";
-import {Toast} from "./Toast";
 
 export function Main() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [toast, setToast] = useState<string | null>(null);
 
-    // 아직 구현되지 않은 기능에 대한 안내 토스트
-    const showComingSoon = useCallback(() => {
-        setToast('준비 중인 기능이에요 🙂');
-    }, []);
-
-    useEffect(() => {
-        if (!toast) return;
-        const timer = setTimeout(() => setToast(null), 1800);
-        return () => clearTimeout(timer);
-    }, [toast]);
-
-    const handleMenuItem = useCallback(() => {
+    // 메뉴 항목 선택 시 메뉴를 닫고 해당 페이지로 이동
+    const goTo = useCallback((path: string) => {
         setIsMenuOpen(false);
-        showComingSoon();
-    }, [showComingSoon]);
+        navigate(path);
+    }, [navigate]);
 
     const menuItems = [
-        { label: '공지사항', onClick: handleMenuItem },
-        { label: '설정', onClick: handleMenuItem },
-        { label: '고객센터', onClick: handleMenuItem },
-        { label: '앱 정보', onClick: handleMenuItem },
+        { label: '공지사항', onClick: () => goTo('/notices') },
+        { label: '설정', onClick: () => goTo('/settings') },
+        { label: '고객센터', onClick: () => goTo('/support') },
+        { label: '앱 정보', onClick: () => goTo('/about') },
     ];
 
     // 메인 홈 화면
@@ -48,8 +36,8 @@ export function Main() {
 
             <BottomNavigation
                 onNearbyRestaurants={() => navigate('/nearby')}
-                onFavorites={showComingSoon}
-                onProfile={showComingSoon}
+                onFavorites={() => navigate('/favorites')}
+                onProfile={() => navigate('/profile')}
             />
 
             <SideMenu
@@ -57,8 +45,6 @@ export function Main() {
                 onClose={() => setIsMenuOpen(false)}
                 menuItems={menuItems}
             />
-
-            <Toast message={toast} />
         </div>
     );
 }
