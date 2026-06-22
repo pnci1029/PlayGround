@@ -9,8 +9,11 @@ RUN npm install
 # 소스 코드 복사
 COPY . ./
 
+# 프로덕션 빌드 (TypeScript -> dist/)
+RUN npm run build
+
 # 포트 노출
 EXPOSE 8003 8013
 
-# 개발 서버 실행
-CMD ["npm", "run", "dev"]
+# 프로덕션 서버 실행
+CMD ["npm", "start"]
