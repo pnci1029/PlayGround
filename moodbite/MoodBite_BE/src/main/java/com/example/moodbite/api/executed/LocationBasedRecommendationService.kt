@@ -7,20 +7,14 @@ import com.example.moodbite.api.location.RestaurantSearchResult
 import com.example.moodbite.domain.executed.TestExecuted
 import com.example.moodbite.domain.executed.TestExecutedRepository
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class LocationBasedRecommendationService {
-
-    @Autowired
-    private lateinit var testExecutedRepository: TestExecutedRepository
-
-    @Autowired
-    private lateinit var scientificFoodRecommendationService: ScientificFoodRecommendationService
-
-    @Autowired
-    private lateinit var locationService: LocationService
+class LocationBasedRecommendationService(
+    private val testExecutedRepository: TestExecutedRepository,
+    private val scientificFoodRecommendationService: ScientificFoodRecommendationService,
+    private val locationService: LocationService
+) {
 
     private val objectMapper = ObjectMapper()
 

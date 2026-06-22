@@ -179,8 +179,13 @@ jobs:
           ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }}:${{ secrets.CONTABO_PATH }}/
         
         # 서버에서 소스 배포 및 deploy.sh 실행
+        # ⚠️ tar -xzf 는 압축파일에 없는 파일을 지우지 않는다(덮어쓰기/추가만).
+        #    그래서 git에서 삭제한 소스가 서버에 영원히 남아 컴파일이 깨진다.
+        #    압축 풀기 전에 소스 트리를 비워 '삭제'까지 반영한다.
+        #    (application-secret.yml, foods.json 등 gitignore 파일은 tar 안에 포함되어 다시 복원됨)
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
           "cd ${{ secrets.CONTABO_PATH }} && \
+           rm -rf playground/be moodbite/MoodBite_BE trend/trend_be blog/blog_be stock_screener/stock_screener_be && \
            tar -xzf playground-deploy.tar.gz && \
            rm -f playground-deploy.tar.gz && \
            chmod +x deploy.sh && \
