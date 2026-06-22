@@ -38,6 +38,8 @@ export const testConnection = async () => {
     client.release()
   } catch (error) {
     console.error('❌ PostgreSQL 연결 실패:', error)
+    // 연결 실패를 삼키면 DB 없이 서버가 떠서 모든 쿼리가 실패한다. 부팅을 중단한다.
+    throw error
   }
 }
 
