@@ -1,9 +1,10 @@
+import logging
+
 from fastapi import APIRouter
 import yfinance as yf
 
-from app.fetcher.common import safe_float
-
 router = APIRouter(prefix="/api", tags=["dca"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/dca")
@@ -75,4 +76,5 @@ def dca_simulate(
             "history":        history[-36:],
         }
     except Exception as e:
-        return {"error": str(e)}
+        logger.exception("dca simulate failed: %s", e)
+        return {"error": "시뮬레이션 중 오류가 발생했습니다"}

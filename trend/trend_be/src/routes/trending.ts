@@ -2,7 +2,7 @@
 // 트렌드 순위 조회 API 엔드포인트
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { DatabaseService } from '../services/database'
+import { databaseService } from '../services/database'
 
 interface TrendingRankingQuery {
   timeframe?: string
@@ -15,7 +15,7 @@ interface KeywordHistoryQuery {
 }
 
 export async function trendingRoutes(fastify: FastifyInstance) {
-  const db = new DatabaseService()
+  const db = databaseService
 
   /**
    * GET /api/trending/rankings
@@ -56,7 +56,7 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           FROM trend.trending_rankings tr
           LEFT JOIN LATERAL (
             SELECT AVG(sw.weight_value) as avg_weight
-            FROM source_weights sw
+            FROM trend.source_weights sw
             WHERE sw.source_name = ANY(tr.sources) AND sw.is_active = true
           ) sw ON true
           WHERE tr.timeframe = $1 
@@ -109,23 +109,28 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           .sort((a: any, b: any) => b.interest - a.interest)
           .slice(0, limitNum)
 
+        // DB가 없을 때는 실측 캐시(관심도)만으로 정직하게 구성한다.
+        // 순위 변동/성장률/언급수 등 집계가 필요한 값은 알 수 없으므로 임의 생성하지 않는다.
         const rankings = sortedTrends.map((trend: any, index: number) => ({
           rank: index + 1,
-          prevRank: Math.random() > 0.5 ? index + Math.floor(Math.random() * 3) : null,
+          prevRank: null,
           keyword: trend.keyword,
-          score: trend.interest * (Math.random() * 0.5 + 0.8),
-          mentions: Math.floor(trend.interest * 0.6),
-          engagement: Math.floor(trend.interest * 0.3),
-          growthRate: (Math.random() - 0.5) * 20,
+          score: trend.interest,
+          mentions: null,
+          engagement: null,
+          growthRate: null,
           sources: [trend.source],
-          trend: Math.random() > 0.7 ? 'new' : Math.random() > 0.5 ? 'up' : Math.random() > 0.3 ? 'down' : 'stable'
+          trend: 'new' as const
         }))
 
-        // 통계 데이터 계산
-        const stats = {
-          maxScore: Math.max(...rankings.map((r: any) => r.score)),
-          avgScore: Math.round(rankings.reduce((sum: number, r: any) => sum + r.score, 0) / rankings.length)
-        }
+        // 통계 데이터 계산 (빈 배열일 때 -Infinity/NaN 방지)
+        const scores = rankings.map((r: any) => r.score)
+        const stats = scores.length
+          ? {
+              maxScore: Math.max(...scores),
+              avgScore: Math.round(scores.reduce((sum: number, s: number) => sum + s, 0) / scores.length)
+            }
+          : { maxScore: 0, avgScore: 0 }
 
         reply.send({
           success: true,
@@ -172,15 +177,15 @@ export async function trendingRoutes(fastify: FastifyInstance) {
           mentions_count,
           engagement_total,
           growth_rate
-        FROM trend.trending_rankings 
-        WHERE LOWER(keyword) = LOWER($1) 
+        FROM trend.trending_rankings
+        WHERE LOWER(keyword) = LOWER($1)
         AND timeframe = $2
-        AND calculated_at >= NOW() - INTERVAL '${daysNum} days'
+        AND calculated_at >= NOW() - make_interval(days => $3)
         ORDER BY calculated_at DESC
         LIMIT 100
       `
 
-      const historyResult = await db.pool.query(query, [keyword, timeframe])
+      const historyResult = await db.pool.query(query, [keyword, timeframe, daysNum])
       const history = historyResult.rows
 
       // 키워드의 현재 상태 조회

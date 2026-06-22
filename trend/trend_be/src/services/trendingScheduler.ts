@@ -112,22 +112,21 @@ export class TrendingScheduler {
     }
     const timeframeHours = timeframeHoursMap[timeframe] || 24
 
-    // 기존 trends 테이블이 있다면 사용, 없다면 임시 데이터 생성
     try {
       const query = `
         SELECT keyword, source, interest as engagement, timestamp, region, category
-        FROM trends 
-        WHERE timestamp >= NOW() - INTERVAL '${timeframeHours} hours'
+        FROM trend.trends
+        WHERE timestamp >= NOW() - make_interval(hours => $1)
         AND keyword IS NOT NULL
         ORDER BY timestamp DESC
       `
-      
-      const result = await this.db.query(query)
+
+      const result = await this.db.query(query, [timeframeHours])
       return result || []
-      
+
     } catch (error) {
-      console.log('기존 trends 테이블이 없어서 임시 데이터를 생성합니다.')
-      return this.generateSampleTrendData(timeframe)
+      console.error('원시 트렌드 데이터 조회 실패:', error)
+      return []
     }
   }
 
@@ -166,18 +165,37 @@ export class TrendingScheduler {
       WHERE timeframe = $1 AND DATE(calculated_at) = CURRENT_DATE
     `, [timeframe])
 
-    // 새 순위 데이터 삽입
-    const values = rankings.map(ranking => 
-      `('${ranking.keyword}', '${timeframe}', ${ranking.rank}, ${ranking.trend === 'new' ? 'NULL' : (ranking.previousRank || 'NULL')}, ${ranking.score}, ${ranking.mentions}, ${ranking.engagement}, ${ranking.growthRate || 0}, ARRAY[${ranking.sources.map((s: string) => `'${s}'`).join(',')}])`
-    ).join(',')
+    // 새 순위 데이터 삽입 — 키워드/소스는 외부 입력(뉴스 제목 등)이라
+    // 반드시 파라미터 바인딩으로 SQL 인젝션을 차단한다.
+    const COLS = 9
+    const rowsSql: string[] = []
+    const params: any[] = []
+
+    rankings.forEach((ranking, i) => {
+      const b = i * COLS
+      rowsSql.push(
+        `($${b + 1}, $${b + 2}, $${b + 3}, $${b + 4}, $${b + 5}, $${b + 6}, $${b + 7}, $${b + 8}, $${b + 9})`
+      )
+      params.push(
+        ranking.keyword,
+        timeframe,
+        ranking.rank,
+        ranking.trend === 'new' ? null : (ranking.previousRank ?? null),
+        ranking.score,
+        ranking.mentions,
+        ranking.engagement,
+        ranking.growthRate ?? 0,
+        ranking.sources,   // text[] 컬럼: node-postgres가 JS 배열을 안전하게 직렬화
+      )
+    })
 
     const insertQuery = `
-      INSERT INTO trend.trending_rankings 
+      INSERT INTO trend.trending_rankings
       (keyword, timeframe, current_rank, previous_rank, trending_score, mentions_count, engagement_total, growth_rate, sources)
-      VALUES ${values}
+      VALUES ${rowsSql.join(',')}
     `
 
-    await this.db.query(insertQuery)
+    await this.db.query(insertQuery, params)
   }
 
   /**
@@ -194,7 +212,7 @@ export class TrendingScheduler {
       }, {})
 
       const query = `
-        INSERT INTO trending_stats_hourly 
+        INSERT INTO trend.trending_stats_hourly
         (keyword, hour_timestamp, mentions, engagement, unique_sources, source_breakdown)
         VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT (keyword, hour_timestamp) 
@@ -217,61 +235,19 @@ export class TrendingScheduler {
   }
 
   /**
-   * 임시 샘플 데이터 생성 (테스트용)
-   */
-  private generateSampleTrendData(timeframe: string): any[] {
-    const sampleKeywords = [
-      { keyword: 'ChatGPT', engagement: 1500, sources: ['hackernews', 'reddit'] },
-      { keyword: 'React 19', engagement: 1200, sources: ['github', 'devto'] },
-      { keyword: 'TypeScript 5', engagement: 900, sources: ['hackernews', 'devto'] },
-      { keyword: 'Next.js 14', engagement: 800, sources: ['github', 'reddit'] },
-      { keyword: 'AI Coding', engagement: 1100, sources: ['hackernews', 'reddit', 'devto'] },
-      { keyword: 'Docker', engagement: 600, sources: ['github', 'devto'] },
-      { keyword: 'Kubernetes', engagement: 700, sources: ['hackernews', 'github'] },
-      { keyword: 'Python 3.13', engagement: 850, sources: ['reddit', 'devto'] },
-      { keyword: 'WebAssembly', engagement: 500, sources: ['hackernews', 'github'] },
-      { keyword: 'Rust', engagement: 950, sources: ['hackernews', 'reddit', 'github'] }
-    ]
-
-    const now = new Date()
-    const data: any[] = []
-
-    sampleKeywords.forEach((item, index) => {
-      // 각 키워드에 대해 여러 개의 언급 생성
-      const mentionCount = Math.floor(Math.random() * 20) + 5
-      
-      for (let i = 0; i < mentionCount; i++) {
-        const timestamp = new Date(now.getTime() - Math.random() * (24 * 60 * 60 * 1000))
-        const randomSource = item.sources[Math.floor(Math.random() * item.sources.length)]
-        
-        data.push({
-          keyword: item.keyword,
-          source: randomSource,
-          engagement: Math.floor(item.engagement + (Math.random() - 0.5) * 200),
-          timestamp: timestamp,
-          region: 'global',
-          category: 'tech'
-        })
-      }
-    })
-
-    return data
-  }
-
-  /**
    * 오래된 데이터 정리
    */
   async cleanupOldData(): Promise<void> {
     try {
       // 30일 이상 된 히스토리 삭제
       await this.db.query(`
-        DELETE FROM trending_history 
+        DELETE FROM trend.trending_history
         WHERE recorded_at < NOW() - INTERVAL '30 days'
       `)
 
       // 7일 이상 된 시간별 통계 삭제
       await this.db.query(`
-        DELETE FROM trending_stats_hourly 
+        DELETE FROM trend.trending_stats_hourly
         WHERE hour_timestamp < NOW() - INTERVAL '7 days'
       `)
 

@@ -210,11 +210,11 @@ export class DatabaseService {
   async getTrendHistory(trendId: number, hours: number = 24): Promise<any[]> {
     const query = `
       SELECT interest, rank, snapshot_at
-      FROM trend.trend_history 
-      WHERE trend_id = $1 AND snapshot_at > CURRENT_TIMESTAMP - INTERVAL '${hours} hours'
+      FROM trend.trend_history
+      WHERE trend_id = $1 AND snapshot_at > CURRENT_TIMESTAMP - make_interval(hours => $2)
       ORDER BY snapshot_at ASC
     `
-    const result = await this.pool.query(query, [trendId])
+    const result = await this.pool.query(query, [trendId, hours])
     return result.rows
   }
 
@@ -284,10 +284,10 @@ export class DatabaseService {
   // 검색 기능
   async searchTrends(query: string, limit: number = 20): Promise<StoredTrendData[]> {
     const searchQuery = `
-      SELECT * FROM trend.trends 
-      WHERE keyword ILIKE $1 OR category ILIKE $1
+      SELECT * FROM trend.trends
+      WHERE (keyword ILIKE $1 OR category ILIKE $1)
       AND created_at > CURRENT_TIMESTAMP - INTERVAL '7 days'
-      ORDER BY 
+      ORDER BY
         CASE WHEN keyword ILIKE $1 THEN 1 ELSE 2 END,
         interest DESC,
         created_at DESC 
