@@ -249,7 +249,7 @@ class LocationBasedRecommendationService {
             else -> 0.0
         }
 
-        score += (restaurant.rating - 3.0) * 0.1
+        restaurant.rating?.let { score += (it - 3.0) * 0.1 }
 
         return minOf(1.0, maxOf(0.0, score))
     }

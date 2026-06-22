@@ -33,9 +33,9 @@ data class RestaurantRecommendationDTO(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val rating: Double,
+    val rating: Double?,
     val distance: Int,
-    val priceLevel: Int,
+    val priceLevel: Int?,
     val phone: String?,
     val isOpen: Boolean,
     val matchScore: Double, // 추천 음식과의 매칭 점수

@@ -85,9 +85,9 @@ class KakaoLocationService(
                     },
                     latitude = lat,
                     longitude = lng,
-                    rating = 4.0 + (0..10).random() * 0.1, // 카카오맵은 평점이 없어서 임시 생성
+                    rating = null,      // 카카오맵 키워드 검색은 평점을 제공하지 않음
                     distance = distance.toInt(),
-                    priceLevel = (1..3).random(),
+                    priceLevel = null,  // 카카오맵 키워드 검색은 가격대를 제공하지 않음
                     phone = place.get("phone").asText().ifEmpty { null },
                     isOpen = true, // 카카오맵은 영업시간 정보가 제한적
                     placeId = place.get("id").asText()

@@ -5,7 +5,6 @@ import com.example.moodbite.api.executed.dto.ScoresDTO
 
 import com.example.moodbite.api.food.entity.FoodRecommendation
 import com.example.moodbite.api.food.repository.FoodRecommendationRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import kotlin.math.*
 
@@ -14,10 +13,9 @@ import kotlin.math.*
  * 모든 입력 변수를 활용한 개인화된 영양학적 추천 시스템
  */
 @Service
-class ScientificFoodRecommendationService {
-
-    @Autowired
-    private lateinit var foodRecommendationRepository: FoodRecommendationRepository
+class ScientificFoodRecommendationService(
+    private val foodRecommendationRepository: FoodRecommendationRepository
+) {
 
     companion object {
         // 2024 Am J Clinical Nutrition: 스트레스-코르티솔-음식 관계 중요도 증가
