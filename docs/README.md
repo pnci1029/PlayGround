@@ -24,6 +24,9 @@
 └── docs/        # 프로젝트 문서
 ```
 
+## 작업 기록
+- [백엔드 개선 작업 (2026-06)](./backend-improvements-2026-06.md) — playground / trend / stock_screener 백엔드 보안·정합성·테스트 정비
+
 ## AI 개발 컨텍스트
 이 문서를 참고하여 바이브 코딩 시:
 1. TypeScript 일관성 유지

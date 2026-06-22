@@ -6,12 +6,8 @@ import toolsRoutes from './routes/tools'
 import { authRoutes } from './routes/auth'
 import { statsRoutes } from './routes/stats'
 import chatRoutes from './routes/chat'
-// import { artworkRoutes } from './routes/artworks'
 import { testConnection, initializeTables, db } from './config/database'
-// import { MigrationService } from '../migrations/migration.service'
 import { subdomainRoutingMiddleware, getSubdomainCorsOrigins, getSubdomainInfo } from './middleware/subdomain'
-// import canvasRoutes from './routes/canvas'
-// import websocketPlugin from './plugins/websocket'
 
 const fastify = Fastify({
   logger: true
@@ -30,16 +26,11 @@ fastify.register(cors, {
 // 서브도메인 라우팅 미들웨어 등록
 fastify.addHook('preHandler', subdomainRoutingMiddleware)
 
-// WebSocket 플러그인 등록
-// fastify.register(websocketPlugin)
-
 // 라우트 등록
 fastify.register(toolsRoutes, { prefix: `${config.api.prefix}/tools` })
 fastify.register(authRoutes, { prefix: `${config.api.prefix}/auth` })
 fastify.register(statsRoutes, { prefix: `${config.api.prefix}/stats` })
 fastify.register(chatRoutes, { prefix: `${config.api.prefix}/chat` })
-// fastify.register(artworkRoutes)
-// fastify.register(canvasRoutes, { prefix: `${config.api.prefix}/canvas` })
 
 // 헬스체크 라우트
 fastify.get('/health', async (request, reply) => {
@@ -63,10 +54,6 @@ const start = async () => {
 
     // 데이터베이스 테이블 초기화
     await initializeTables()
-
-    // 🔄 자동 마이그레이션 실행 (playground만)
-    // const migrationService = new MigrationService(db)
-    // await migrationService.runPendingMigrations(['playground.sql'])
 
     await fastify.listen({
       port: config.server.port,

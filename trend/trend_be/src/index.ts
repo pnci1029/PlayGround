@@ -6,7 +6,7 @@ import { config } from 'dotenv'
 import { trendRoutes } from './routes/trends'
 import { trendingRoutes } from './routes/trending'
 import { trendWebSocketService } from './services/trendWebSocket'
-import { databaseService, DatabaseService } from './services/database'
+import { databaseService } from './services/database'
 import { TrendingScheduler } from './services/trendingScheduler'
 import { MigrationService } from './services/migration.service'
 import { randomUUID } from 'crypto'
@@ -136,13 +136,13 @@ async function startServers() {
   await startHttpServer()
   await startWebSocketServer()
 
-  // 트렌드 순위 스케줄러 시작 (임시 비활성화)
-  if (dbConnected) {
-    console.log('⚠️ 트렌드 순위 스케줄러 임시 비활성화')
-    // const db = new DatabaseService()
-    // const scheduler = new TrendingScheduler(db)
-    // scheduler.start()
-    // console.log('✅ 트렌드 순위 스케줄러 시작됨 (10분 간격)')
+  // 트렌드 순위 스케줄러: 기본 비활성. ENABLE_TREND_SCHEDULER=true 일 때만 가동한다.
+  if (dbConnected && process.env.ENABLE_TREND_SCHEDULER === 'true') {
+    const scheduler = new TrendingScheduler(databaseService)
+    scheduler.start()
+    console.log('✅ 트렌드 순위 스케줄러 시작됨 (10분 간격)')
+  } else {
+    console.log('ℹ️ 트렌드 순위 스케줄러 비활성 (ENABLE_TREND_SCHEDULER=true 로 활성화)')
   }
 
   console.log('✅ 모든 서버가 성공적으로 시작되었습니다!')
