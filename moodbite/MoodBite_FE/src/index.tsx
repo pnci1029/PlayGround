@@ -7,6 +7,12 @@ import App from "./App";
 import { TestResultPage } from "./components/test/TestResultPage";
 import { Test } from "./components/test/Test";
 import { NearbyRestaurants } from "./components/location/NearbyRestaurants";
+import { FavoritesPage } from "./components/favorites/FavoritesPage";
+import { ProfilePage } from "./components/profile/ProfilePage";
+import { SettingsPage } from "./components/settings/SettingsPage";
+import { NoticesPage } from "./components/info/NoticesPage";
+import { SupportPage } from "./components/info/SupportPage";
+import { AboutPage } from "./components/info/AboutPage";
 
 // 라우트 진입점: 기존 onBack 인터페이스를 라우터 이동으로 연결한다.
 function TestRoute() {
@@ -31,6 +37,12 @@ root.render(
                     <Route path="test" element={<TestRoute/>} />
                     <Route path="test/result" element={<TestResultPage/>} />
                     <Route path="nearby" element={<NearbyRoute/>} />
+                    <Route path="favorites" element={<FavoritesPage/>} />
+                    <Route path="profile" element={<ProfilePage/>} />
+                    <Route path="settings" element={<SettingsPage/>} />
+                    <Route path="notices" element={<NoticesPage/>} />
+                    <Route path="support" element={<SupportPage/>} />
+                    <Route path="about" element={<AboutPage/>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Route>
             </Routes>

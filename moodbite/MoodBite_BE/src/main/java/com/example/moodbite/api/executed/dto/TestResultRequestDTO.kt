@@ -13,9 +13,3 @@ data class ScoresDTO(
     val appetite: Int,
     val budget: Int
 )
-
-data class TestResultResponseDTO(
-    val id: Long,
-    val message: String,
-    val aiRecommendation: String? = null
-)

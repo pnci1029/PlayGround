@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, RefreshCw, MapPin } from 'lucide-react';
+import { ArrowLeft, RefreshCw, MapPin, Heart } from 'lucide-react';
 import style from '../../style/testExecuted.module.scss';
 import { TestResultPostDTO } from '../../types/test';
 import NoRecommendations from '../ui/NoRecommendations';
 import { LocationPermission } from '../location/LocationPermission';
 import { RestaurantRecommendations } from '../location/RestaurantRecommendations';
 import { foodEmoji } from './foodVisuals';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useSettings } from '../../hooks/useSettings';
 
 interface FoodRecommendation {
     primaryFood: string | null;
@@ -33,14 +35,17 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
     const [showLocationPermission, setShowLocationPermission] = useState(false);
     const [userLocation, setUserLocation] = useState<GeolocationPosition | null>(null);
     const [showRestaurants, setShowRestaurants] = useState(false);
+    const { isFavorite, toggle } = useFavorites();
+    const { settings } = useSettings();
 
     useEffect(() => {
         setRecommendation(aiRecommendation || '');
-        if (aiRecommendation) {
+        // 설정에서 '위치 자동 요청'이 켜져 있을 때만 자동으로 권한을 묻는다.
+        if (aiRecommendation && settings.autoLocation) {
             const timer = setTimeout(() => setShowLocationPermission(true), 1500);
             return () => clearTimeout(timer);
         }
-    }, [aiRecommendation]);
+    }, [aiRecommendation, settings.autoLocation]);
 
     const handleLocationGranted = (location: GeolocationPosition) => {
         setUserLocation(location);
@@ -128,11 +133,30 @@ export function TestExecuted({ onBack, testResult, aiRecommendation, onRetryTest
                                 <div className={style.heroLabel}>오늘의 추천</div>
                                 <div className={style.heroName}>{primaryFood}</div>
                                 <div className={style.heroTie}>{heroTie}</div>
+                                <button
+                                    type="button"
+                                    aria-pressed={isFavorite(primaryFood)}
+                                    aria-label={isFavorite(primaryFood) ? '찜 해제' : '찜하기'}
+                                    onClick={() => toggle(primaryFood)}
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                                        marginTop: '1rem', padding: '0.5rem 1.1rem',
+                                        borderRadius: '9999px', cursor: 'pointer',
+                                        border: isFavorite(primaryFood) ? 'none' : '1px solid rgba(0,0,0,0.12)',
+                                        background: isFavorite(primaryFood) ? 'var(--color-secondary-500)' : '#fff',
+                                        color: isFavorite(primaryFood) ? '#fff' : 'var(--text-secondary)',
+                                        fontWeight: 600, fontSize: 'var(--text-sm)',
+                                        transition: 'all var(--transition-fast)',
+                                    }}
+                                >
+                                    <Heart size={16} fill={isFavorite(primaryFood) ? '#fff' : 'none'} />
+                                    {isFavorite(primaryFood) ? '찜 완료' : '찜하기'}
+                                </button>
                             </div>
                         )}
 
                         {/* 추천 이유 */}
-                        {reason && (
+                        {reason && settings.showScientificReason && (
                             <div className={style.reasonCard}>
                                 <h3 className={style.reasonTitle}>왜 이 음식이냐면</h3>
                                 <p className={style.reasonText}>{reason}</p>
