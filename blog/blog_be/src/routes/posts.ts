@@ -7,6 +7,7 @@ import {
   postQuerySchema
 } from '../models/post.js';
 import { authenticateUser, requireRole } from '../middleware/auth.js';
+import { isUuid } from '../utils/validation.js';
 
 const postService = new PostService();
 
@@ -35,14 +36,19 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
 
   // Get single post by slug
   fastify.get('/:slug', async (request, reply) => {
-    const { slug } = request.params as { slug: string };
-    const post = await postService.getPost(slug);
+    try {
+      const { slug } = request.params as { slug: string };
+      const post = await postService.getPost(slug);
 
-    if (!post) {
-      return reply.status(404).send({ error: 'Post not found' });
+      if (!post) {
+        return reply.status(404).send({ error: 'Post not found' });
+      }
+
+      return post;
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: 'Failed to fetch post' });
     }
-
-    return post;
   });
 
   // Create new post (requires authentication)
@@ -71,6 +77,9 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
   }, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const input = updatePostSchema.parse(request.body);
 
       const existing = await postService.getPostById(id);
@@ -99,14 +108,22 @@ const postsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.delete('/:id', {
     preHandler: [authenticateUser, requireRole(['admin', 'editor'])]
   }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    const success = await postService.deletePost(id);
+    try {
+      const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
+      const success = await postService.deletePost(id);
 
-    if (!success) {
-      return reply.status(404).send({ error: 'Post not found' });
+      if (!success) {
+        return reply.status(404).send({ error: 'Post not found' });
+      }
+
+      return { message: 'Post deleted successfully' };
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ error: 'Failed to delete post' });
     }
-
-    return { message: 'Post deleted successfully' };
   });
 };
 

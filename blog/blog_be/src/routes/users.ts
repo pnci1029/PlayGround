@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { UserService } from '../services/userService.js';
 import { createUserSchema, loginSchema, updateUserSchema } from '../models/user.js';
 import { authenticateUser, requireRole } from '../middleware/auth.js';
+import { isUuid } from '../utils/validation.js';
 import { ZodError } from 'zod';
 
 const userService = new UserService();
@@ -23,12 +24,18 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const input = loginSchema.parse(request.body);
       const result = await userService.authenticateUser(input);
-      
+
       return reply.send(result);
     } catch (error) {
-      return reply.status(401).send({ 
-        error: error instanceof Error ? error.message : 'Authentication failed' 
-      });
+      if (error instanceof ZodError) {
+        return reply.status(400).send({
+          error: '입력 데이터가 유효하지 않습니다',
+          details: formatZodError(error)
+        });
+      }
+      // 인증 실패는 401 일반 메시지로 통일. 예기치 못한 내부 에러 원문은 노출하지 않는다.
+      request.log.error(error);
+      return reply.status(401).send({ error: 'Authentication failed' });
     }
   });
   
@@ -42,15 +49,14 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     } catch (error) {
       if (error instanceof ZodError) {
         const validationErrors = formatZodError(error);
-        return reply.status(400).send({ 
+        return reply.status(400).send({
           error: '입력 데이터가 유효하지 않습니다',
           details: validationErrors
         });
       }
-      
-      return reply.status(400).send({ 
-        error: error instanceof Error ? error.message : '사용자 생성에 실패했습니다' 
-      });
+
+      request.log.error(error);
+      return reply.status(400).send({ error: '사용자 생성에 실패했습니다' });
     }
   });
   
@@ -70,12 +76,15 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const user = await userService.getUserById(id);
-      
+
       if (!user) {
         return reply.status(404).send({ error: 'User not found' });
       }
-      
+
       return reply.send(user);
     } catch (error) {
       return reply.status(500).send({ 
@@ -88,19 +97,27 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.put('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const input = updateUserSchema.parse(request.body);
-      
+
       const user = await userService.updateUser(id, input);
-      
+
       if (!user) {
         return reply.status(404).send({ error: 'User not found' });
       }
-      
+
       return reply.send(user);
     } catch (error) {
-      return reply.status(400).send({ 
-        error: error instanceof Error ? error.message : 'Failed to update user' 
-      });
+      if (error instanceof ZodError) {
+        return reply.status(400).send({
+          error: '입력 데이터가 유효하지 않습니다',
+          details: formatZodError(error)
+        });
+      }
+      request.log.error(error);
+      return reply.status(400).send({ error: 'Failed to update user' });
     }
   });
   
@@ -108,6 +125,9 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.delete('/:id', adminOnly, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const success = await userService.deleteUser(id);
       
       if (!success) {

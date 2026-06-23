@@ -1,9 +1,18 @@
 import { FastifyPluginAsync } from 'fastify';
+import { ZodError } from 'zod';
 import { CategoryService } from '../services/categoryService.js';
 import { createCategorySchema, updateCategorySchema } from '../models/category.js';
 import { authenticateUser, requireRole } from '../middleware/auth.js';
+import { isUuid } from '../utils/validation.js';
 
 const categoryService = new CategoryService();
+
+function zodErrorResponse(error: ZodError) {
+  return {
+    error: '입력 데이터가 유효하지 않습니다',
+    details: error.issues.map((e) => ({ field: e.path.join('.'), message: e.message }))
+  };
+}
 
 const categoriesRoutes: FastifyPluginAsync = async (fastify) => {
   // Get all categories (public)
@@ -34,12 +43,15 @@ const categoriesRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/:id', async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const category = await categoryService.getCategoryById(id);
-      
+
       if (!category) {
         return reply.status(404).send({ error: 'Category not found' });
       }
-      
+
       return reply.send(category);
     } catch (error) {
       return reply.status(500).send({ 
@@ -58,9 +70,11 @@ const categoriesRoutes: FastifyPluginAsync = async (fastify) => {
       
       return reply.status(201).send(category);
     } catch (error) {
-      return reply.status(400).send({ 
-        error: error instanceof Error ? error.message : 'Failed to create category' 
-      });
+      if (error instanceof ZodError) {
+        return reply.status(400).send(zodErrorResponse(error));
+      }
+      request.log.error(error);
+      return reply.status(400).send({ error: 'Failed to create category' });
     }
   });
   
@@ -70,19 +84,24 @@ const categoriesRoutes: FastifyPluginAsync = async (fastify) => {
   }, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const input = updateCategorySchema.parse(request.body);
-      
+
       const category = await categoryService.updateCategory(id, input);
-      
+
       if (!category) {
         return reply.status(404).send({ error: 'Category not found' });
       }
-      
+
       return reply.send(category);
     } catch (error) {
-      return reply.status(400).send({ 
-        error: error instanceof Error ? error.message : 'Failed to update category' 
-      });
+      if (error instanceof ZodError) {
+        return reply.status(400).send(zodErrorResponse(error));
+      }
+      request.log.error(error);
+      return reply.status(400).send({ error: 'Failed to update category' });
     }
   });
   
@@ -92,6 +111,9 @@ const categoriesRoutes: FastifyPluginAsync = async (fastify) => {
   }, async (request, reply) => {
     try {
       const { id } = request.params as { id: string };
+      if (!isUuid(id)) {
+        return reply.status(400).send({ error: '유효하지 않은 id 형식입니다' });
+      }
       const success = await categoryService.deleteCategory(id);
       
       if (!success) {
