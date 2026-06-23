@@ -84,7 +84,55 @@
 
 ---
 
+## 4. blog/blog_be (Node.js + Fastify) — 2차 개선 (2026-06-23)
+
+### 관리자 게이트 하드닝 (`routes/auth.ts`)
+- `/api/auth/check`는 프론트(`AdminAuthCheck.tsx`)가 쓰는 소프트 관리자 게이트. 실제 보안은 JWT(`users.ts`)가 담당하지만 게이트 자체도 보강:
+  - 평문 비교 `===` → **상수시간 비교**(`crypto.timingSafeEqual`)로 타이밍 공격 차단
+  - **IP 기반 레이트 리밋**(5분 5회) 추가 — 무차별 대입 방지
+  - body 누락/비문자열 입력 방어(400)
+
+### 에러 원문 노출 차단 (`routes/users.ts`, `categories.ts`)
+- create/update/login에서 `error.message`를 그대로 응답하던 것을 **일반 메시지 + `request.log.error()`**로 변경 (DB 제약조건/드라이버 에러 텍스트 누출 차단). `ZodError`는 400 + 필드별 상세로 분기.
+
+### 입력/일관성 보강
+- `posts.ts` GET `/:slug`·DELETE에 누락됐던 **try/catch + 로깅** 추가
+- `:id` 파라미터 **UUID 형식 검증**(`utils/validation.ts` 신규 `isUuid`) — 잘못된 id가 Postgres `invalid input syntax for uuid` 500을 유발하던 것을 400으로 정정 (posts/users/categories 전반)
+
+### 검증
+- `type-check` 통과, 기존 테스트 18개 전부 통과
+
+---
+
+## 5. moodbite (Kotlin + Spring Boot) — 2차 개선 (2026-06-23)
+
+> 참고: 인증 레이어 부재는 공개 앱 설계로 보고 손대지 않음. 로컬 JDK가 8뿐이라 컴파일 검증은 미실시(빌드는 Docker/JDK17). 코드 리뷰 기준 정합.
+
+### CORS 정정 (`TestController.kt`)
+- 전역 화이트리스트(`WebConfig`)를 무력화하던 컨트롤러 단 `@CrossOrigin(origins=["*"])` **제거** → 전역 허용 오리진 정책으로 복귀.
+
+### 입력 검증 도입 (Bean Validation)
+- `build.gradle.kts`에 `spring-boot-starter-validation` 추가
+- 외부 Kakao API로 직행하던 좌표·반경에 제약:
+  - `NearbyRestaurantsRequest`: 위도 ±90 / 경도 ±180 / 반경 0~20000m
+  - `LocationDTO`: 위도·경도 범위 + 부모 DTO에 `@field:Valid` 캐스케이드
+- 컨트롤러 `@RequestBody`에 `@Valid` 적용(`TestController`, `LocationController`, `LocationBasedRecommendationController`)
+
+### 로깅 정리
+- `println(...)` 예외 출력 → `KotlinLogging` 로거(`logger.error(msg, e)`)로 교체 (`LocationBasedRecommendationController`, `LocationService`)
+
+### 죽은 코드 제거
+- 빈 클래스 `api/test/domain/Test.kt`, 미사용 빈 `config/RestTemplateConfig.kt` 삭제
+
+---
+
+### 운영 스키마 자동변경 차단 (`application-prod.yml`)
+- `hibernate.ddl-auto: update` → **`none`** (사용자 승인 후 적용). 부팅마다 운영 DB 스키마를 자동 변경하던 동작 제거. 스키마 변경은 별도 마이그레이션으로만 수행.
+
+---
+
 ## 남은 작업 (TODO)
 
+- [ ] moodbite 컴파일/테스트 검증 (JDK17 환경 또는 Docker 빌드에서)
 - [ ] `stock_screener` `docs/` 본문(api.md/data.md 등)에 `strategy_eval` 분리·PostgreSQL 전환 반영
 - [ ] trend 스케줄러 운영 환경에서 `ENABLE_TREND_SCHEDULER` 설정 결정
