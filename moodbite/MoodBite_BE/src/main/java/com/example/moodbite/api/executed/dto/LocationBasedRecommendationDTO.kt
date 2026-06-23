@@ -1,16 +1,22 @@
 package com.example.moodbite.api.executed.dto
 
 import com.example.moodbite.api.location.RestaurantSearchResult
+import jakarta.validation.Valid
+import jakarta.validation.constraints.DecimalMax
+import jakarta.validation.constraints.DecimalMin
 
 data class LocationBasedTestResultRequestDTO(
     val scores: ScoresDTO,
     val dining: String,
     val mealTime: String?,
+    @field:Valid
     val location: LocationDTO? = null
 )
 
 data class LocationDTO(
+    @field:DecimalMin("-90.0") @field:DecimalMax("90.0")
     val latitude: Double,
+    @field:DecimalMin("-180.0") @field:DecimalMax("180.0")
     val longitude: Double
 )
 
