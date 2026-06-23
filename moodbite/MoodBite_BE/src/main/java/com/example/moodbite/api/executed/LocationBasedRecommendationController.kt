@@ -6,14 +6,18 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.validation.Valid
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+private val logger = KotlinLogging.logger {}
+
 @RestController
 @RequestMapping("/api/mood-test/location-based")
 class LocationBasedRecommendationController {
-    
+
     @Autowired
     private lateinit var locationBasedRecommendationService: LocationBasedRecommendationService
     
@@ -32,13 +36,13 @@ class LocationBasedRecommendationController {
         ApiResponse(responseCode = "500", description = "서버 오류", content = [Content()])
     ])
     fun submitLocationBasedTestResult(
-        @RequestBody requestDTO: LocationBasedTestResultRequestDTO
+        @Valid @RequestBody requestDTO: LocationBasedTestResultRequestDTO
     ): ResponseEntity<LocationBasedRecommendationResponseDTO> {
         return try {
             val response = locationBasedRecommendationService.getLocationBasedRecommendation(requestDTO)
             ResponseEntity.ok(response)
         } catch (e: Exception) {
-            println("위치 기반 추천 실패: ${e.message}")
+            logger.error("위치 기반 추천 실패: ${e.message}", e)
             ResponseEntity.internalServerError().build()
         }
     }
