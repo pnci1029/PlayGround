@@ -1,6 +1,9 @@
 package com.example.moodbite.api.location
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
+
+private val logger = KotlinLogging.logger {}
 
 @Service
 class LocationService(
@@ -25,7 +28,7 @@ class LocationService(
                 foodCategory = foodCategory
             )
         } catch (e: Exception) {
-            println("위치 기반 음식점 검색 실패: ${e.message}")
+            logger.error("위치 기반 음식점 검색 실패: ${e.message}", e)
             emptyList()
         }
     }
