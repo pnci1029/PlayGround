@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS story.bookmarks (
 | `GET`  | `/api/usage` | 오늘 남은 생성 횟수 `{ used, limit:3, remaining }` | - |
 | `POST` | `/api/stories` | **소설 생성** `{ genre, premise }` → 생성·저장·반환 (premise=간략 줄거리) | 차감 |
 | `POST` | `/api/stories/stream` | (선택) SSE 스트리밍 생성 | 차감 |
-| `GET`  | `/api/stories` | 공개 피드 목록(`?sort=recent|popular&cursor=`) | - |
+| `GET`  | `/api/stories` | 피드 목록(`?sort=recent|popular`) — **공개 글 + 내 글(비공개 포함, `X-Story-Uid` 기준)** | - |
 | `GET`  | `/api/stories/:id` | 단건 열람(조회수 +1) | - |
 | `GET`  | `/api/stories/mine` | 내 글 목록(`X-Story-Uid` 기준) | - |
 | `GET`  | `/api/stories/bookmarked` | 내가 저장한 글 목록 | - |

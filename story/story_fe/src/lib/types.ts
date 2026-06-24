@@ -47,4 +47,5 @@ export interface StoryListItem {
   genre: string
   view_count: number
   created_at: string
+  is_public: boolean
 }

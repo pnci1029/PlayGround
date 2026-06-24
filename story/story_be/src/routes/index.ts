@@ -6,7 +6,7 @@ import { getDb } from '../db.js'
 import { GenerateRequestSchema, SequelRequestSchema } from '../prompts.js'
 import { generateStory, generateSequel, StoryGenError } from '../storyService.js'
 
-const LIST_COLS = 'id, title, logline, genre, keywords, view_count, created_at'
+const LIST_COLS = 'id, title, logline, genre, view_count, created_at, is_public'
 
 // 익명 디바이스 ID 추출. (FE가 모든 요청에 X-Story-Uid 헤더 첨부)
 function getUid(req: FastifyRequest): string | null {
@@ -147,16 +147,18 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     return { success: true, data: { reported: true } }
   })
 
-  // 공개 피드 (남의 글 무제한 열람) — 목록(본문 제외)
+  // 피드 — 공개 글 + 내 글(비공개 포함). 목록(본문 제외)
   app.get('/api/stories', async (req) => {
     const q = req.query as Record<string, string | undefined>
+    const uid = getUid(req)
     const orderBy = q.sort === 'popular' ? 'view_count DESC, created_at DESC' : 'created_at DESC'
     const limit = Math.min(parseInt(q.limit ?? '20', 10) || 20, 50)
     const offset = parseInt(q.offset ?? '0', 10) || 0
+    const where = uid ? 'is_public = TRUE OR author_uid = $3' : 'is_public = TRUE'
+    const params = uid ? [limit, offset, uid] : [limit, offset]
     const { rows } = await getDb().query(
-      `SELECT ${LIST_COLS}
-       FROM story.stories WHERE is_public = TRUE ORDER BY ${orderBy} LIMIT $1 OFFSET $2`,
-      [limit, offset],
+      `SELECT ${LIST_COLS} FROM story.stories WHERE ${where} ORDER BY ${orderBy} LIMIT $1 OFFSET $2`,
+      params,
     )
     return { success: true, data: rows }
   })

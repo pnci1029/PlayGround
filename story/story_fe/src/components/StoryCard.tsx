@@ -9,7 +9,12 @@ export function StoryCard({ story }: { story: StoryListItem }) {
       className="block rounded-2xl border border-line bg-card p-5 transition active:scale-[0.99]"
     >
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-xs font-medium text-brand">{GENRE_NAME[story.genre] ?? story.genre}</span>
+        <span className="flex items-center gap-1.5 text-xs font-medium text-brand">
+          {GENRE_NAME[story.genre] ?? story.genre}
+          {!story.is_public && (
+            <span className="rounded bg-gray-700 px-1.5 py-0.5 text-[10px] text-gray-300">비공개</span>
+          )}
+        </span>
         <span className="text-xs text-gray-500">조회 {story.view_count}</span>
       </div>
       <h3 className="mb-1 line-clamp-1 text-lg font-semibold">{story.title}</h3>
