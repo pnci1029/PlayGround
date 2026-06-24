@@ -11,6 +11,7 @@ MOODBITE_CHANGED=${MOODBITE_CHANGED:-"false"}
 PLAYGROUND_CHANGED=${PLAYGROUND_CHANGED:-"false"}
 TREND_CHANGED=${TREND_CHANGED:-"false"}
 STOCK_SCREENER_CHANGED=${STOCK_SCREENER_CHANGED:-"false"}
+STORY_CHANGED=${STORY_CHANGED:-"false"}
 DOCKER_CHANGED=${DOCKER_CHANGED:-"false"}
 CADDY_CHANGED=${CADDY_CHANGED:-"false"}
 
@@ -136,6 +137,21 @@ if [[ "$STOCK_SCREENER_CHANGED" == "true" ]]; then
     echo "✅ Stock Screener 재배포 완료"
 fi
 
+if [[ "$STORY_CHANGED" == "true" ]]; then
+    echo "📖 Story 변경 감지 - Story 재배포"
+    cd story
+    # ${POSTGRES_PASSWORD} 보간은 compose 디렉터리의 .env 나 쉘에서만 읽힌다.
+    # 비밀번호는 루트 .env 에 있으므로 --env-file 로 그 파일을 보간 소스로 명시한다.
+    COMPOSE_ENV="--env-file ../.env"
+    docker compose $COMPOSE_ENV -p story_service build
+    # 고정 container_name(story)이 다른 compose 프로젝트로 떠 있으면 이름 충돌 → 강제 제거.
+    docker compose $COMPOSE_ENV -p story_service down --remove-orphans 2>/dev/null || true
+    docker rm -f story 2>/dev/null || true
+    docker compose $COMPOSE_ENV -p story_service up -d --force-recreate
+    cd ..
+    echo "✅ Story 재배포 완료"
+fi
+
 # Docker 설정 전체 변경 시 모든 백엔드 재배포 (DB 제외)
 if [[ "$DOCKER_CHANGED" == "true" ]]; then
     echo "🔄 Docker 설정 변경 감지 - 모든 백엔드 서비스 재배포"
@@ -146,7 +162,7 @@ if [[ "$DOCKER_CHANGED" == "true" ]]; then
     #  모든 서비스는 dir 이름 == container_name 이라 docker rm -f $project 로 충분)
     # trend 제외: trend Dockerfile의 COPY ../../migrations 가 빌드 컨텍스트 밖이라
     # 빌드 실패 → set -e 로 전체 배포가 멈춤. trend는 현재 배포 대상 아님.
-    for project in playground moodbite blog stock_screener; do
+    for project in playground moodbite blog stock_screener story; do
         if [ -d "$project" ] && [ -f "$project/docker-compose.yml" ]; then
             echo "🔄 $project 재배포 중..."
             cd $project
@@ -164,7 +180,7 @@ if [[ "$DOCKER_CHANGED" == "true" ]]; then
 fi
 
 # 변경사항이 없는 경우
-if [[ "$BLOG_CHANGED" == "false" && "$MOODBITE_CHANGED" == "false" && "$PLAYGROUND_CHANGED" == "false" && "$TREND_CHANGED" == "false" && "$STOCK_SCREENER_CHANGED" == "false" ]]; then
+if [[ "$BLOG_CHANGED" == "false" && "$MOODBITE_CHANGED" == "false" && "$PLAYGROUND_CHANGED" == "false" && "$TREND_CHANGED" == "false" && "$STOCK_SCREENER_CHANGED" == "false" && "$STORY_CHANGED" == "false" ]]; then
     echo "ℹ️  재배포할 변경사항이 없습니다"
 fi
 

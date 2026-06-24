@@ -174,6 +174,37 @@ services:
   # Stock Screener 프론트엔드는 Vercel에 배포됨 (stocks.chhong.kr)
   # → Docker 컨테이너로 띄우지 않음. stock_screener/stock_screener_fe/vercel.json 참고
 
+  # Story 백엔드 서비스 (Node.js + TypeScript + Fastify) — story.chhong.kr
+  story:
+    build:
+      context: ./story/story_be
+      dockerfile: Dockerfile
+    image: story-backend:latest
+    container_name: story
+    ports:
+      - "8004:8004"  # HTTP API (WebSocket 없음)
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - STORY_PORT=8004
+      - STORY_DB_DRIVER=pg
+      - STORY_DB_HOST=postgres
+      - STORY_DB_PORT=5432
+      - STORY_DB_SCHEMA=story
+      - POSTGRES_DB=${POSTGRES_DB:-playground}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+  # Story 프론트엔드는 Vercel에 배포됨 (story.chhong.kr)
+  # → Docker 컨테이너로 띄우지 않음. story/story_fe/vercel.json 참고
+
   # Caddy 리버스 프록시
   caddy:
     image: caddy:2-alpine

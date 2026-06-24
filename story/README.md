@@ -11,6 +11,7 @@ PlayGround 모노레포 소속 (공용 PostgreSQL `story` 스키마 사용).
 - [생성 파이프라인 스펙 (M2)](docs/generation-pipeline.md) — 프롬프트·스키마·에러·처리순서
 - [프론트엔드 스펙 (M3)](docs/frontend-spec.md) — 라우트·디자인·API 클라이언트
 - [LLM 소설생성 리서치](docs/llm-fiction-research.md) — 프롬프팅/기법/모델/안전
+- [배포 배선 (M4)](docs/deploy.md) — Docker/Caddy/Vercel/CI 등록 + 수동 운영 단계
 
 ## 구조
 ```

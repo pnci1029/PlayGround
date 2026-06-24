@@ -115,6 +115,7 @@ jobs:
             --exclude='moodbite/MoodBite_FE' \
             --exclude='trend/trend_fe' \
             --exclude='blog/blog_fe' \
+            --exclude='story/story_fe' \
             -czf playground-deploy.tar.gz \
             playground/be/ \
             moodbite/MoodBite_BE/ \
@@ -126,6 +127,8 @@ jobs:
             trend/docker-compose.yml \
             stock_screener/docker-compose.yml \
             stock_screener/stock_screener_be/ \
+            story/docker-compose.yml \
+            story/story_be/ \
             migrations/ \
             docker-compose.yml \
             docker-compose.db.yml \
@@ -166,6 +169,7 @@ jobs:
         echo "trend_backend=$(echo "$CHANGED_FILES" | grep -q '^trend/trend_be/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "blog_backend=$(echo "$CHANGED_FILES" | grep -q '^blog/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "stock_screener=$(echo "$CHANGED_FILES" | grep -q '^stock_screener/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        echo "story_backend=$(echo "$CHANGED_FILES" | grep -qE '^story/(story_be/|docker-compose)' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "caddy_config=$(echo "$CHANGED_FILES" | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "docker_config=$(echo "$CHANGED_FILES" | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
@@ -185,7 +189,7 @@ jobs:
         #    (application-secret.yml, foods.json 등 gitignore 파일은 tar 안에 포함되어 다시 복원됨)
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa ${{ secrets.CONTABO_USER }}@${{ secrets.CONTABO_HOST }} \
           "cd ${{ secrets.CONTABO_PATH }} && \
-           rm -rf playground/be moodbite/MoodBite_BE trend/trend_be blog/blog_be stock_screener/stock_screener_be && \
+           rm -rf playground/be moodbite/MoodBite_BE trend/trend_be blog/blog_be stock_screener/stock_screener_be story/story_be && \
            tar -xzf playground-deploy.tar.gz && \
            rm -f playground-deploy.tar.gz && \
            chmod +x deploy.sh && \
@@ -194,6 +198,7 @@ jobs:
            PLAYGROUND_CHANGED='${{ steps.changes.outputs.playground_backend }}' \
            TREND_CHANGED='${{ steps.changes.outputs.trend_backend }}' \
            STOCK_SCREENER_CHANGED='${{ steps.changes.outputs.stock_screener }}' \
+           STORY_CHANGED='${{ steps.changes.outputs.story_backend }}' \
            DOCKER_CHANGED='${{ steps.changes.outputs.docker_config }}' \
            CADDY_CHANGED='${{ steps.changes.outputs.caddy_config }}' \
            ./deploy.sh"

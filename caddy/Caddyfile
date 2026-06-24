@@ -197,6 +197,45 @@ blog.chhong.kr {
 	respond "Blog Frontend at Vercel" 404
 }
 
+# Story API 서브도메인 (Contabo) — WebSocket 없음(SSE/HTTP만)
+story-api.chhong.kr {
+	# SSL 인증서 자동 발급 (Let's Encrypt)
+
+	# API 요청
+	handle /api/* {
+		reverse_proxy story:8004 {
+			fail_duration 10s
+			max_fails 3
+		}
+	}
+
+	# Health check
+	handle /health {
+		reverse_proxy story:8004
+	}
+}
+
+# Story 도메인 - 프론트엔드는 Vercel, API는 백엔드
+story.chhong.kr {
+	# SSL 인증서 자동 발급
+
+	# API 요청
+	handle /api/* {
+		reverse_proxy story:8004 {
+			fail_duration 10s
+			max_fails 3
+		}
+	}
+
+	# Health check
+	handle /health {
+		reverse_proxy story:8004
+	}
+
+	# 프론트엔드는 Vercel에서 처리
+	respond "Story - Frontend at Vercel" 404
+}
+
 # Stock Screener API 서브도메인 (Contabo)
 stock-api.chhong.kr {
 	# SSL 인증서 자동 발급 (Let's Encrypt)
