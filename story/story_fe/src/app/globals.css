@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1a1a1a;
+  --color-card: #2d2d2d;
+  --color-brand: #8b7355;
+  --font-myeongjo: "Nanum Myeongjo", serif;
+}
+
+html,
+body {
+  background-color: var(--color-ink);
+  color: #ffffff;
+  font-family: var(--font-myeongjo);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 모바일 세이프에어리어 */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
