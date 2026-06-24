@@ -22,7 +22,7 @@
 | 항목 | 결정 |
 |------|------|
 | 사용자 식별 | **익명 디바이스 ID** (localStorage `story_uid`, 헤더 `X-Story-Uid`로 전송). 가입/로그인 없음 |
-| 생성 제한 | **사용자당 하루 3개** (KST 기준 자정 리셋). 남의 글 **열람은 무제한** |
+| 생성 제한 | 기본 **사용자당 하루 3개**(KST). **단 베타 기간은 무제한**(`STORY_UNLIMITED`, 기본 on). 남의 글 열람은 무제한 |
 | 콘텐츠 종류 | **초기엔 "소설"만**. (시/에세이/시나리오 등은 추후) |
 | 장르 | 소설 내 장르 다수 제공 — **SF, 판타지, 추리/미스터리** 중심 + 로맨스/스릴러/공포/사극/코미디 |
 | LLM 모델 | **전 단계 `gpt-4.1-mini`** (최저가 우선). 모더레이션은 무료 `omni-moderation-latest`. ※ 모델 선택 근거는 리서치 문서 "모델 선택 가이드" 참고 |
@@ -41,6 +41,7 @@
 - 익명 사용자 식별 + 하루 3개 생성 제한(서버 강제).
 - 장르 선택 → 키워드 입력 → AI 소설 생성 → 리더로 읽기.
 - 공개 피드(남이 만든 글 목록/열람), 조회수.
+- **공개/비공개 선택**: 생성 후 **기본 비공개로 등록** → 작성자가 리더에서 "공개하기"로 피드 노출 결정(언제든 토글).
 - 내 이야기 페이지(내가 쓴 글 / 저장한 글).
 - 북마크(저장), 공개 글 신고.
 - 입력/출력 모더레이션(안전).
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS story.stories (
   genre        VARCHAR(30) NOT NULL,            -- 'scifi' | 'fantasy' | 'mystery' ...
   keywords     TEXT[] NOT NULL DEFAULT '{}',    -- (레거시) 구 키워드 입력. 신규는 premise 사용
   premise      TEXT,                            -- 사용자가 적은 '간략한 줄거리' (생성 기반, 키워드 대체)
+  parent_id    UUID,                            -- 속편이면 원작 id (아니면 NULL)
   content      TEXT NOT NULL,                   -- 본문(전체). 챕터 분리 시 chapters로 확장 가능
   chapters     JSONB,                           -- [{title, body}] (선택) — 챕터형일 때
   model        VARCHAR(40),                     -- 'gpt-4.1-mini'
@@ -157,6 +159,8 @@ CREATE TABLE IF NOT EXISTS story.bookmarks (
 | `GET`  | `/api/stories/bookmarked` | 내가 저장한 글 목록 | - |
 | `POST` | `/api/stories/:id/bookmark` | 북마크 토글 → `{ bookmarked }` | - |
 | `POST` | `/api/stories/:id/report` | 신고 `{ reason? }` | - |
+| `PATCH`| `/api/stories/:id/visibility` | 공개/비공개 전환 `{ isPublic }` (작성자만) | - |
+| `POST` | `/api/stories/:id/sequel` | **속편 생성** `{ premise? }` — 원작 기반 다음 편 | 차감 |
 
 - 생성 흐름(서버): `usage 확인 → 초과 시 429` → `키워드 모더레이션` → `생성` → `출력 모더레이션` → `저장 + usage UPSERT +1` → 반환.
 - 쿼터 초과: HTTP **429** + `{ error: 'DAILY_LIMIT', remaining: 0 }`.

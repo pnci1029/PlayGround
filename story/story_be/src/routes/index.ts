@@ -3,8 +3,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { GENRES } from '../genres.js'
 import { getUsage } from '../usage.js'
 import { getDb } from '../db.js'
-import { GenerateRequestSchema } from '../prompts.js'
-import { generateStory, StoryGenError } from '../storyService.js'
+import { GenerateRequestSchema, SequelRequestSchema } from '../prompts.js'
+import { generateStory, generateSequel, StoryGenError } from '../storyService.js'
 
 const LIST_COLS = 'id, title, logline, genre, keywords, view_count, created_at'
 
@@ -41,7 +41,28 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     }
 
     try {
-      const story = await generateStory(uid, parsed.data.genre, parsed.data.premise)
+      const story = await generateStory(uid, parsed.data.genre, parsed.data.premise, parsed.data.subGenre)
+      return { success: true, data: story }
+    } catch (err) {
+      if (err instanceof StoryGenError) {
+        return reply.code(err.httpStatus).send({ success: false, error: err.code })
+      }
+      app.log.error(err)
+      return reply.code(502).send({ success: false, error: 'GENERATION_FAILED' })
+    }
+  })
+
+  // 속편 생성 (원작 id 기반)
+  app.post('/api/stories/:id/sequel', async (req, reply) => {
+    const uid = getUid(req)
+    if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })
+    const { id } = req.params as { id: string }
+    const parsed = SequelRequestSchema.safeParse(req.body ?? {})
+    if (!parsed.success) {
+      return reply.code(400).send({ success: false, error: 'INVALID_PREMISE', detail: parsed.error.issues })
+    }
+    try {
+      const story = await generateSequel(uid, id, parsed.data.premise)
       return { success: true, data: story }
     } catch (err) {
       if (err instanceof StoryGenError) {
@@ -95,6 +116,22 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
       [uid, id],
     )
     return { success: true, data: { bookmarked: true } }
+  })
+
+  // 공개/비공개 전환 (작성자만)
+  app.patch('/api/stories/:id/visibility', async (req, reply) => {
+    const uid = getUid(req)
+    if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })
+    const { id } = req.params as { id: string }
+    const isPublic = (req.body as { isPublic?: unknown } | undefined)?.isPublic === true
+    const { rows } = await getDb().query<{ author_uid: string }>(
+      `SELECT author_uid FROM story.stories WHERE id = $1`,
+      [id],
+    )
+    if (!rows[0]) return reply.code(404).send({ success: false, error: 'NOT_FOUND' })
+    if (rows[0].author_uid !== uid) return reply.code(403).send({ success: false, error: 'FORBIDDEN' })
+    await getDb().query(`UPDATE story.stories SET is_public = $1 WHERE id = $2`, [isPublic, id])
+    return { success: true, data: { isPublic } }
   })
 
   // 신고

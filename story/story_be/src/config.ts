@@ -17,6 +17,8 @@ export const config = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
   port: parseInt(process.env.STORY_PORT ?? '8004', 10),
   dailyLimit: parseInt(process.env.STORY_DAILY_LIMIT ?? '3', 10),
+  // 베타 기간: 작성 수 무제한 (기본 on). 정식 전환 시 STORY_UNLIMITED=false.
+  unlimited: (process.env.STORY_UNLIMITED ?? 'true') !== 'false',
 
   db: {
     driver: (process.env.STORY_DB_DRIVER ?? 'pglite') as 'pglite' | 'pg',

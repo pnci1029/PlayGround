@@ -12,6 +12,8 @@ PlayGround 모노레포 소속 (공용 PostgreSQL `story` 스키마 사용).
 - [프론트엔드 스펙 (M3)](docs/frontend-spec.md) — 라우트·디자인·API 클라이언트
 - [LLM 소설생성 리서치](docs/llm-fiction-research.md) — 프롬프팅/기법/모델/안전
 - [배포 배선 (M4)](docs/deploy.md) — Docker/Caddy/Vercel/CI 등록 + 수동 운영 단계
+- [로드맵: 장편·속편](docs/roadmap-longform-sequel.md) — 확장 기능 가능성·방법·작업량 진단
+- [로드맵: 로그인/계정](docs/roadmap-auth.md) — 익명 uid 한계 + 소셜로그인·머지 설계
 
 ## 구조
 ```

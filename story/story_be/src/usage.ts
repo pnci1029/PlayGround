@@ -10,6 +10,7 @@ export interface Usage {
   used: number
   limit: number
   remaining: number
+  unlimited: boolean
 }
 
 export async function getUsage(uid: string): Promise<Usage> {
@@ -18,7 +19,13 @@ export async function getUsage(uid: string): Promise<Usage> {
     [uid, kstToday()],
   )
   const used = Number(rows[0]?.count ?? 0)
-  return { used, limit: config.dailyLimit, remaining: Math.max(0, config.dailyLimit - used) }
+  const unlimited = config.unlimited
+  return {
+    used,
+    limit: config.dailyLimit,
+    remaining: unlimited ? Number.MAX_SAFE_INTEGER : Math.max(0, config.dailyLimit - used),
+    unlimited,
+  }
 }
 
 // 생성 성공 시에만 호출. 원자적 UPSERT 후 증가된 count 반환.

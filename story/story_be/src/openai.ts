@@ -5,6 +5,7 @@ import {
   OutlineSchema,
   ProseSchema,
   outlineSystemPrompt,
+  sequelOutlineSystemPrompt,
   proseSystemPrompt,
   premiseUserBlock,
   type Outline,
@@ -40,18 +41,45 @@ export function blockedCategory(categories: string[]): string | null {
 }
 
 // 1단계: 아웃라인/비트 (낮은 temp, 구조 안정) — premise(줄거리) 기반
-export async function generateOutline(genre: Genre, premise: string): Promise<Outline> {
+export async function generateOutline(
+  genre: Genre,
+  premise: string,
+  subGenre?: string,
+): Promise<Outline> {
   const completion = await client.beta.chat.completions.parse({
     model: config.openai.model,
     temperature: 0.5,
     messages: [
-      { role: 'system', content: outlineSystemPrompt(genre) },
+      { role: 'system', content: outlineSystemPrompt(genre, subGenre) },
       { role: 'user', content: premiseUserBlock(premise) },
     ],
     response_format: zodResponseFormat(OutlineSchema, 'outline'),
   })
   const parsed = completion.choices[0]?.message.parsed
   if (!parsed) throw new Error('outline parse failed')
+  return parsed
+}
+
+// 1단계(속편): 원작 컨텍스트를 주입한 아웃라인
+export async function generateSequelOutline(
+  genre: Genre,
+  parent: { title: string; logline: string; content: string },
+  direction?: string,
+): Promise<Outline> {
+  const completion = await client.beta.chat.completions.parse({
+    model: config.openai.model,
+    temperature: 0.5,
+    messages: [
+      { role: 'system', content: sequelOutlineSystemPrompt(genre, parent, direction) },
+      {
+        role: 'user',
+        content: direction ? `이어갈 방향: ${direction}` : '원작을 잇는 다음 이야기를 설계하라.',
+      },
+    ],
+    response_format: zodResponseFormat(OutlineSchema, 'outline'),
+  })
+  const parsed = completion.choices[0]?.message.parsed
+  if (!parsed) throw new Error('sequel outline parse failed')
   return parsed
 }
 
