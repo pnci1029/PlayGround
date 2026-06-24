@@ -12,9 +12,25 @@ import type {
   CandlesResult,
 } from "./types";
 
+// 4xx/5xx 응답을 그대로 .json() 하면 에러 본문이 정상 데이터처럼 흘러간다.
+// 상태 코드를 먼저 확인하고, 가능하면 백엔드의 error 메시지를 담아 throw 한다.
+async function parseOrThrow<T>(r: Response): Promise<T> {
+  if (!r.ok) {
+    let detail = "";
+    try {
+      const body = await r.json();
+      detail = body?.error || body?.detail || "";
+    } catch {
+      // JSON 이 아니면 무시
+    }
+    throw new Error(detail || `요청 실패 (HTTP ${r.status})`);
+  }
+  return r.json() as Promise<T>;
+}
+
 async function getJSON<T>(url: string): Promise<T> {
   const r = await fetch(url);
-  return r.json();
+  return parseOrThrow<T>(r);
 }
 
 async function sendJSON<T>(
@@ -27,7 +43,7 @@ async function sendJSON<T>(
     headers: { "Content-Type": "application/json" },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
-  return r.json();
+  return parseOrThrow<T>(r);
 }
 
 // ── 종목 ──────────────────────────────────────────────────────────────

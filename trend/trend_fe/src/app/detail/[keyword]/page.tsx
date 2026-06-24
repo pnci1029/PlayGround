@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+// 다른 훅(useTrends/useTrendingRankings)과 동일하게 환경변수 기반 API 베이스 사용.
+// (기존 하드코딩 'http://localhost:8002' 는 운영/HTTPS 에서 깨짐)
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is required')
+}
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 interface TrendDetail {
   keyword: string
   category: string
@@ -39,7 +46,10 @@ export default function TrendDetailPage() {
     try {
       setIsLoading(true)
       
-      const response = await fetch('http://localhost:8002/api/trends')
+      const response = await fetch(`${API_URL}/api/trends`)
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
       const data = await response.json()
       
       if (data.success) {
