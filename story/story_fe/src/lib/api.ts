@@ -1,7 +1,19 @@
 import { getDeviceId } from './device'
 import type { GeneratedStory, StoryDetail, StoryListItem, Usage } from './types'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8004/api'
+// API base 해석 (Vercel env 누락에도 안전):
+// 1) NEXT_PUBLIC_API_URL 있으면 그대로
+// 2) 브라우저 + localhost 아니면 '/api' (상대경로 → vercel.json이 story-api로 rewrite)
+// 3) 그 외(로컬 dev) → localhost:8004
+function apiBase(): string {
+  const env = process.env.NEXT_PUBLIC_API_URL
+  if (env) return env
+  if (typeof window !== 'undefined') {
+    const h = window.location.hostname
+    if (h !== 'localhost' && h !== '127.0.0.1') return '/api'
+  }
+  return 'http://localhost:8004/api'
+}
 
 export class ApiError extends Error {
   constructor(
@@ -30,7 +42,7 @@ export function messageOf(code: string): string {
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${apiBase()}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
