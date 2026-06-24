@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #1a1a1a;
-  --color-card: #2d2d2d;
-  --color-brand: #8b7355;
-  --font-myeongjo: "Nanum Myeongjo", serif;
+  --color-ink: #16161a;
+  --color-card: #232329;
+  --color-line: #2f2f37;
+  --color-brand: #b89a73;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-serif: "Nanum Myeongjo", serif;
 }
 
 html,
 body {
   background-color: var(--color-ink);
-  color: #ffffff;
-  font-family: var(--font-myeongjo);
+  color: #f2f2f4;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* 모바일 세이프에어리어 */

@@ -8,6 +8,7 @@ import type { Prose } from './prompts.js'
 
 export type GenErrorCode =
   | 'INVALID_GENRE'
+  | 'INVALID_PREMISE'
   | 'DAILY_LIMIT'
   | 'UNSAFE_INPUT'
   | 'UNSAFE_OUTPUT'
@@ -27,7 +28,7 @@ export interface GeneratedStory {
   title: string
   logline: string
   genre: string
-  keywords: string[]
+  premise: string
   chapters: Prose['chapters']
   createdAt: string
   usage: { used: number; limit: number; remaining: number }
@@ -37,7 +38,7 @@ export interface GeneratedStory {
 export async function generateStory(
   uid: string,
   genreId: string,
-  keywords: string[],
+  premise: string,
 ): Promise<GeneratedStory> {
   const genre = findGenre(genreId)
   if (!genre) throw new StoryGenError('INVALID_GENRE', 400)
@@ -47,7 +48,7 @@ export async function generateStory(
   if (usage.remaining <= 0) throw new StoryGenError('DAILY_LIMIT', 429)
 
   // 입력 모더레이션 (하드블록 카테고리만 차단)
-  const inMod = await moderate(keywords.join(', '))
+  const inMod = await moderate(premise)
   const inHit = blockedCategory(inMod.categories)
   if (inHit) {
     console.warn(`[moderation] 입력 차단 — category=${inHit}`)
@@ -59,13 +60,13 @@ export async function generateStory(
   let title: string
   let logline: string
   try {
-    const outline = await generateOutline(genre, keywords)
+    const outline = await generateOutline(genre, premise)
     title = outline.title
     logline = outline.logline
     prose = await generateProse(genre, outline)
   } catch {
     try {
-      const outline = await generateOutline(genre, keywords)
+      const outline = await generateOutline(genre, premise)
       title = outline.title
       logline = outline.logline
       prose = await generateProse(genre, outline)
@@ -88,9 +89,9 @@ export async function generateStory(
   const id = randomUUID()
   await getDb().query(
     `INSERT INTO story.stories
-       (id, author_uid, title, logline, genre, keywords, content, chapters, model)
+       (id, author_uid, title, logline, genre, premise, content, chapters, model)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [id, uid, title, logline, genreId, keywords, content, JSON.stringify(prose.chapters), config.openai.model],
+    [id, uid, title, logline, genreId, premise, content, JSON.stringify(prose.chapters), config.openai.model],
   )
 
   // 쿼터 +1
@@ -101,7 +102,7 @@ export async function generateStory(
     title,
     logline,
     genre: genreId,
-    keywords,
+    premise,
     chapters: prose.chapters,
     createdAt: new Date().toISOString(),
     usage: {

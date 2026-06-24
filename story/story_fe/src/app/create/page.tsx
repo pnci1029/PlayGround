@@ -8,28 +8,29 @@ import { GENRE_NAME } from '@/lib/genres'
 import { QuotaBadge } from '@/components/QuotaBadge'
 import { Spinner } from '@/components/Spinner'
 
+const EXAMPLES: Record<string, string> = {
+  scifi: '예) 기억을 사고파는 가게에서 일하는 청년이, 팔려나간 자신의 기억과 마주친다.',
+  fantasy: '예) 오래된 등대에 사는 말하는 까마귀가, 사라진 등대지기의 비밀을 들려준다.',
+  mystery: '예) 밤기차에서 한 승객이 사라지고, 옆자리 승객만이 그를 기억한다.',
+}
+
 function CreateInner() {
   const router = useRouter()
   const genre = useSearchParams().get('genre') ?? ''
 
-  const [keywords, setKeywords] = useState<string[]>([])
-  const [input, setInput] = useState('')
+  const [premise, setPremise] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  function addKeyword() {
-    const k = input.trim()
-    if (!k || keywords.includes(k) || keywords.length >= 5 || k.length > 20) return
-    setKeywords([...keywords, k])
-    setInput('')
-  }
+  const trimmed = premise.trim()
+  const canSubmit = trimmed.length >= 5 && !busy
 
   async function generate() {
-    if (keywords.length === 0 || busy) return
+    if (!canSubmit) return
     setBusy(true)
     setError(null)
     try {
-      const story = await api.generateStory(genre, keywords)
+      const story = await api.generateStory(genre, trimmed)
       router.push(`/reader/${story.id}`)
     } catch (e) {
       setError(e instanceof ApiError ? messageOf(e.code) : messageOf('UNKNOWN'))
@@ -48,60 +49,39 @@ function CreateInner() {
 
   return (
     <main className="flex flex-1 flex-col px-6 pb-10 pt-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <Link href="/genre" className="text-sm text-gray-400">
           ← 장르
         </Link>
         <QuotaBadge />
       </div>
 
-      <h1 className="text-2xl font-bold leading-snug">
-        이야기에 담을
-        <br />
-        키워드를 입력해 주세요
+      <h1 className="text-[1.7rem] font-bold leading-snug">
+        어떤 이야기인가요?
       </h1>
-      <p className="mt-2 text-sm text-brand">선택한 장르: {GENRE_NAME[genre] ?? '미선택'}</p>
+      <p className="mt-2 text-sm text-brand">{GENRE_NAME[genre] ?? '미선택'}</p>
 
-      <div className="mt-8 flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && addKeyword()}
-          maxLength={20}
-          placeholder="키워드 입력 (최대 5개)"
-          className="h-12 flex-1 rounded-xl bg-card px-4 text-white placeholder:text-gray-500 outline-none"
-        />
-        <button
-          onClick={addKeyword}
-          className="h-12 w-12 rounded-xl bg-brand text-xl font-bold text-white"
-          aria-label="키워드 추가"
-        >
-          +
-        </button>
+      <textarea
+        value={premise}
+        onChange={(e) => setPremise(e.target.value)}
+        maxLength={500}
+        rows={6}
+        placeholder={EXAMPLES[genre] ?? '떠오른 줄거리를 한두 문장으로 적어주세요.'}
+        className="mt-6 w-full resize-none rounded-2xl border border-line bg-card p-4 text-[15px] leading-7 text-white placeholder:text-gray-500 outline-none focus:border-brand/60"
+      />
+      <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+        <span>한두 문장이면 충분해요</span>
+        <span>{trimmed.length}/500</span>
       </div>
-
-      {keywords.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {keywords.map((k) => (
-            <button
-              key={k}
-              onClick={() => setKeywords(keywords.filter((x) => x !== k))}
-              className="flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-sm text-white"
-            >
-              {k} <span className="text-white/80">✕</span>
-            </button>
-          ))}
-        </div>
-      )}
 
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
       <div className="flex-1" />
 
       <button
-        disabled={keywords.length === 0}
+        disabled={!canSubmit}
         onClick={generate}
-        className="safe-bottom mt-6 flex h-14 items-center justify-center rounded-xl bg-brand text-base font-bold text-white transition active:scale-[0.99] disabled:bg-gray-700 disabled:text-gray-400"
+        className="safe-bottom mt-6 flex h-14 items-center justify-center rounded-xl bg-brand text-base font-semibold text-[#1a1410] transition active:scale-[0.99] disabled:bg-line disabled:text-gray-500"
       >
         이야기 생성하기
       </button>

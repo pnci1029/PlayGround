@@ -20,8 +20,8 @@ export function messageOf(code: string): string {
     case 'UNSAFE_INPUT':
     case 'UNSAFE_OUTPUT':
       return '안전 정책에 의해 생성할 수 없는 내용이에요. 다른 키워드로 시도해 주세요.'
-    case 'INVALID_KEYWORDS':
-      return '키워드는 1~5개, 각 20자 이내로 입력해 주세요.'
+    case 'INVALID_PREMISE':
+      return '줄거리는 5자 이상 500자 이내로 적어주세요.'
     case 'GENERATION_FAILED':
       return '생성에 실패했어요. 잠시 후 다시 시도해 주세요.'
     default:
@@ -48,10 +48,10 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   getUsage: () => req<Usage>('/usage'),
 
-  generateStory: (genre: string, keywords: string[]) =>
+  generateStory: (genre: string, premise: string) =>
     req<GeneratedStory>('/stories', {
       method: 'POST',
-      body: JSON.stringify({ genre, keywords }),
+      body: JSON.stringify({ genre, premise }),
     }),
 
   getFeed: (sort: 'recent' | 'popular' = 'recent') =>

@@ -6,7 +6,7 @@ import {
   ProseSchema,
   outlineSystemPrompt,
   proseSystemPrompt,
-  keywordsUserBlock,
+  premiseUserBlock,
   type Outline,
   type Prose,
 } from './prompts.js'
@@ -39,14 +39,14 @@ export function blockedCategory(categories: string[]): string | null {
   return categories.find((c) => config.moderationBlock.includes(c)) ?? null
 }
 
-// 1단계: 아웃라인/비트 (낮은 temp, 구조 안정)
-export async function generateOutline(genre: Genre, keywords: string[]): Promise<Outline> {
+// 1단계: 아웃라인/비트 (낮은 temp, 구조 안정) — premise(줄거리) 기반
+export async function generateOutline(genre: Genre, premise: string): Promise<Outline> {
   const completion = await client.beta.chat.completions.parse({
     model: config.openai.model,
     temperature: 0.5,
     messages: [
       { role: 'system', content: outlineSystemPrompt(genre) },
-      { role: 'user', content: keywordsUserBlock(keywords) },
+      { role: 'user', content: premiseUserBlock(premise) },
     ],
     response_format: zodResponseFormat(OutlineSchema, 'outline'),
   })

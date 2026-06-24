@@ -15,7 +15,7 @@ export interface GeneratedStory {
   title: string
   logline: string
   genre: string
-  keywords: string[]
+  premise: string
   chapters: Chapter[]
   createdAt: string
   usage: Usage
@@ -28,7 +28,8 @@ export interface StoryDetail {
   title: string
   logline: string
   genre: string
-  keywords: string[]
+  premise: string | null
+  keywords?: string[] // 레거시
   content: string
   chapters: Chapter[] | null
   view_count: number
@@ -42,7 +43,6 @@ export interface StoryListItem {
   title: string
   logline: string
   genre: string
-  keywords: string[]
   view_count: number
   created_at: string
 }

@@ -4,7 +4,8 @@
 
 ## 1. 스택
 - Next.js 15 App Router + React 19 + TypeScript + **Tailwind v4**
-- 폰트: **Nanum Myeongjo**(본문 가독성) — Google Fonts `<link>` 로드
+- 폰트: **Pretendard**(UI 산세리프, 기본) + **Nanum Myeongjo**(소설 본문 serif) — CDN `<link>` 로드
+- **이모지 최소화**: 장르 아이콘·장식 이모지 제거, 타이포 중심 카드
 - 상태: 로컬 훅 + localStorage. 별도 전역 상태 라이브러리 없음(MVP)
 - API: `NEXT_PUBLIC_API_URL`(기본 `http://localhost:8004/api`)
 
@@ -17,8 +18,8 @@
 | 경로 | 화면 | 동작 |
 |------|------|------|
 | `/` | 홈 | 타이틀 + 소개 카드 + "시작하기"(→/genre) + "다른 이야기 둘러보기"(→/feed) |
-| `/genre` | 장르 선택 | 8개 장르 그리드(이모지 아이콘), 선택 → /create?genre= |
-| `/create` | 키워드 입력 | 키워드 칩 1~5개, 쿼터 배지, "생성하기" → POST → /reader/[id] |
+| `/genre` | 장르 선택 | 8개 장르(이름+짧은 설명, 이모지 없음), 선택 → /create?genre= |
+| `/create` | 줄거리 입력 | **간략한 줄거리 textarea**(5~500자), 쿼터 배지, "생성하기" → POST → /reader/[id] |
 | `/reader/[id]` | 리더 | 챕터 본문, 글자 크기 조절, 키워드/조회수, "새 이야기"/"피드" |
 | `/feed` | 피드 | 공개 글 목록(최신/인기), 카드 클릭 → /reader/[id] |
 

@@ -37,11 +37,11 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
 
     const parsed = GenerateRequestSchema.safeParse(req.body)
     if (!parsed.success) {
-      return reply.code(400).send({ success: false, error: 'INVALID_KEYWORDS', detail: parsed.error.issues })
+      return reply.code(400).send({ success: false, error: 'INVALID_PREMISE', detail: parsed.error.issues })
     }
 
     try {
-      const story = await generateStory(uid, parsed.data.genre, parsed.data.keywords)
+      const story = await generateStory(uid, parsed.data.genre, parsed.data.premise)
       return { success: true, data: story }
     } catch (err) {
       if (err instanceof StoryGenError) {

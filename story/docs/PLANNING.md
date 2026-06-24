@@ -95,7 +95,8 @@ CREATE TABLE IF NOT EXISTS story.stories (
   title        VARCHAR(200) NOT NULL,
   logline      TEXT,                            -- 한 줄 요약
   genre        VARCHAR(30) NOT NULL,            -- 'scifi' | 'fantasy' | 'mystery' ...
-  keywords     TEXT[] NOT NULL DEFAULT '{}',
+  keywords     TEXT[] NOT NULL DEFAULT '{}',    -- (레거시) 구 키워드 입력. 신규는 premise 사용
+  premise      TEXT,                            -- 사용자가 적은 '간략한 줄거리' (생성 기반, 키워드 대체)
   content      TEXT NOT NULL,                   -- 본문(전체). 챕터 분리 시 chapters로 확장 가능
   chapters     JSONB,                           -- [{title, body}] (선택) — 챕터형일 때
   model        VARCHAR(40),                     -- 'gpt-4.1-mini'
@@ -148,7 +149,7 @@ CREATE TABLE IF NOT EXISTS story.bookmarks (
 | `GET`  | `/health` | 헬스체크 | - |
 | `GET`  | `/api/genres` | 장르 목록 | - |
 | `GET`  | `/api/usage` | 오늘 남은 생성 횟수 `{ used, limit:3, remaining }` | - |
-| `POST` | `/api/stories` | **소설 생성** `{ genre, keywords[] }` → 생성·저장·반환 | 차감 |
+| `POST` | `/api/stories` | **소설 생성** `{ genre, premise }` → 생성·저장·반환 (premise=간략 줄거리) | 차감 |
 | `POST` | `/api/stories/stream` | (선택) SSE 스트리밍 생성 | 차감 |
 | `GET`  | `/api/stories` | 공개 피드 목록(`?sort=recent|popular&cursor=`) | - |
 | `GET`  | `/api/stories/:id` | 단건 열람(조회수 +1) | - |
@@ -218,8 +219,11 @@ CREATE TABLE IF NOT EXISTS story.bookmarks (
 
 원형 Flutter 앱의 3단계 플로우를 **웹으로 계승**하되 UI/UX를 더 다듬는다.
 
-- 플로우: `홈 → 장르 선택 → 키워드 입력 → (생성 중) → 리더` + `피드(남의 글)` 탭.
-- 테마: 다크 + 웜브라운(`#8B7355`) 포인트, 본문 **명조 계열**(가독성), 넉넉한 행간.
+- 플로우: `홈 → 장르 선택 → 줄거리 입력 → (생성 중) → 리더` + `피드(남의 글)` 탭.
+- **입력 방식**: 단어 키워드 대신 **간략한 줄거리(premise) 자유 입력**(textarea). 장르에 맞춰 그 줄거리를 살려 소설 생성.
+- **폰트**: UI는 **Pretendard(산세리프)**, 소설 본문만 **나눔명조(serif)** — UI 가독성 + 독서 몰입 분리.
+- **이모지 최소화**: 장르 아이콘·장식 이모지 제거, 타이포 중심의 차분한 카드.
+- 테마: 다크 + 웜브라운(`#8B7355`) 포인트, 넉넉한 행간.
 - 모바일 우선: 단일 컬럼, 큰 터치 타깃(56px 버튼), 하단 고정 CTA, 세이프에어리어.
 - 리더: 폰트 크기 조절, 진행률, 키워드 칩, "새 이야기/저장(북마크)".
 - 생성 중: **SSE 스트리밍**으로 본문이 써지는 연출(체감 지연↓) — 옵션, 미구현 시 스피너 + 진행 단계 표시.

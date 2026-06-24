@@ -65,70 +65,59 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
   return (
     <main className="flex flex-1 flex-col px-6 pb-10 pt-6">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <Link href="/feed" className="text-sm text-gray-400">
           ← 피드
         </Link>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleBookmark}
-            className={`flex h-8 items-center gap-1 rounded-lg px-2 text-sm ${
-              bookmarked ? 'bg-brand text-white' : 'bg-card text-gray-300'
+            className={`flex h-8 items-center rounded-lg border px-3 text-xs font-medium transition ${
+              bookmarked ? 'border-brand bg-brand/15 text-brand' : 'border-line text-gray-300'
             }`}
-            aria-label="북마크"
           >
-            {bookmarked ? '♥ 저장됨' : '♡ 저장'}
+            {bookmarked ? '저장됨' : '저장'}
           </button>
           <button
             onClick={() => setFontSize((s) => Math.max(13, s - 2))}
-            className="h-8 w-8 rounded-lg bg-card text-sm"
+            className="h-8 w-8 rounded-lg border border-line text-sm text-gray-300"
           >
             가-
           </button>
           <button
             onClick={() => setFontSize((s) => Math.min(26, s + 2))}
-            className="h-8 w-8 rounded-lg bg-card text-base"
+            className="h-8 w-8 rounded-lg border border-line text-base text-gray-300"
           >
             가+
           </button>
         </div>
       </div>
 
-      <span className="text-xs text-brand">{GENRE_NAME[story.genre] ?? story.genre}</span>
-      <h1 className="mt-1 text-2xl font-bold leading-snug">{story.title}</h1>
+      <span className="text-xs font-medium text-brand">{GENRE_NAME[story.genre] ?? story.genre}</span>
+      <h1 className="mt-1.5 font-serif text-[1.7rem] font-bold leading-snug">{story.title}</h1>
       {story.logline && <p className="mt-2 text-sm leading-6 text-gray-400">{story.logline}</p>}
 
-      {story.keywords?.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {story.keywords.map((k) => (
-            <span key={k} className="rounded-md bg-brand/15 px-2 py-0.5 text-xs text-brand">
-              {k}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      <article className="mt-6 space-y-8">
+      <article className="mt-8 space-y-9">
         {chapters.map((c, i) => (
           <section key={i}>
-            {c.title && <h2 className="mb-3 text-lg font-bold text-brand">{c.title}</h2>}
-            <p className="whitespace-pre-wrap leading-8" style={{ fontSize }}>
+            {c.title && <h2 className="mb-3 font-serif text-lg font-bold text-brand">{c.title}</h2>}
+            <p className="whitespace-pre-wrap font-serif leading-[1.9]" style={{ fontSize }}>
               {c.body}
             </p>
           </section>
         ))}
       </article>
 
-      <div className="safe-bottom mt-10 flex gap-3">
+      <div className="safe-bottom mt-12 flex gap-3">
         <Link
           href="/genre"
-          className="flex h-12 flex-1 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white"
+          className="flex h-12 flex-1 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
         >
           새 이야기 만들기
         </Link>
         <Link
           href="/feed"
-          className="flex h-12 flex-1 items-center justify-center rounded-xl border border-brand/60 text-sm font-bold text-brand"
+          className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
         >
           다른 이야기
         </Link>
@@ -137,7 +126,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       <button
         onClick={report}
         disabled={reported}
-        className="mt-6 self-center text-xs text-gray-500 underline disabled:no-underline"
+        className="mt-6 self-center text-xs text-gray-600 underline disabled:no-underline"
       >
         {reported ? '신고가 접수되었어요' : '이 이야기 신고하기'}
       </button>

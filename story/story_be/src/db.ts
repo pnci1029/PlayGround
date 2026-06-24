@@ -61,6 +61,7 @@ async function createSchema(db: Db): Promise<void> {
       logline     TEXT,
       genre       VARCHAR(30) NOT NULL,
       keywords    TEXT[] NOT NULL DEFAULT '{}',
+      premise     TEXT,
       content     TEXT NOT NULL,
       chapters    JSONB,
       model       VARCHAR(40),
@@ -70,6 +71,9 @@ async function createSchema(db: Db): Promise<void> {
       created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `)
+
+  // 기존 테이블 마이그레이션 — premise 컬럼 보강 (CREATE TABLE IF NOT EXISTS는 컬럼 추가 안 함)
+  await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS premise TEXT`)
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS story.daily_usage (
