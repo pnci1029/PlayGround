@@ -14,6 +14,10 @@ PlayGround 모노레포 소속 (공용 PostgreSQL `story` 스키마 사용).
 - [배포 배선 (M4)](docs/deploy.md) — Docker/Caddy/Vercel/CI 등록 + 수동 운영 단계
 - [로드맵: 장편·속편](docs/roadmap-longform-sequel.md) — 확장 기능 가능성·방법·작업량 진단
 - [로드맵: 로그인/계정](docs/roadmap-auth.md) — 익명 uid 한계 + 소셜로그인·머지 설계
+- [로드맵: 피드 필터·인기글](docs/roadmap-feed.md) — 장르 필터·조회수 인기/랭킹
+- [로드맵: 직접 작성·AI 글 수정](docs/roadmap-editing.md) — 수동 작성 / 생성물 편집
+- [로드맵: 성인(19금) 모드](docs/roadmap-mature-content.md) — 가능성·정책·법규 제약
+- [소설 품질 개선](docs/quality-improvements.md) — 고증·가독성 개선(프롬프트·temp·자기검수)
 
 ## 구조
 ```
