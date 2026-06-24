@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# build
+dist/
+.next/
+out/
+
+# local PGlite data (임베디드 DB)
+.pgdata/
+
+# misc
+*.log
+.DS_Store
