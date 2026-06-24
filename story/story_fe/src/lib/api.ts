@@ -1,19 +1,10 @@
 import { getDeviceId } from './device'
 import type { GeneratedStory, StoryDetail, StoryListItem, Usage } from './types'
 
-// API base 해석 (Vercel env 누락에도 안전):
-// 1) NEXT_PUBLIC_API_URL 있으면 그대로
-// 2) 브라우저 + localhost 아니면 '/api' (상대경로 → vercel.json이 story-api로 rewrite)
-// 3) 그 외(로컬 dev) → localhost:8004
-function apiBase(): string {
-  const env = process.env.NEXT_PUBLIC_API_URL
-  if (env) return env
-  if (typeof window !== 'undefined') {
-    const h = window.location.hostname
-    if (h !== 'localhost' && h !== '127.0.0.1') return '/api'
-  }
-  return 'http://localhost:8004/api'
-}
+// API base (stock_screener 방식): 항상 상대경로 '/api'.
+// 프록시는 next.config.js rewrites가 처리(API_PROXY_TARGET ?? story-api.chhong.kr).
+// → Vercel env에 의존하지 않아 누락돼도 안 깨짐.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '/api'
 
 export class ApiError extends Error {
   constructor(
@@ -42,7 +33,7 @@ export function messageOf(code: string): string {
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${apiBase()}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -60,10 +51,16 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   getUsage: () => req<Usage>('/usage'),
 
-  generateStory: (genre: string, premise: string) =>
+  generateStory: (genre: string, premise: string, subGenre?: string) =>
     req<GeneratedStory>('/stories', {
       method: 'POST',
-      body: JSON.stringify({ genre, premise }),
+      body: JSON.stringify({ genre, premise, subGenre: subGenre || undefined }),
+    }),
+
+  generateSequel: (parentId: string, premise?: string) =>
+    req<GeneratedStory>(`/stories/${parentId}/sequel`, {
+      method: 'POST',
+      body: JSON.stringify({ premise: premise || undefined }),
     }),
 
   getFeed: (sort: 'recent' | 'popular' = 'recent') =>
@@ -82,5 +79,11 @@ export const api = {
     req<{ reported: boolean }>(`/stories/${id}/report`, {
       method: 'POST',
       body: JSON.stringify({ reason }),
+    }),
+
+  setVisibility: (id: string, isPublic: boolean) =>
+    req<{ isPublic: boolean }>(`/stories/${id}/visibility`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isPublic }),
     }),
 }

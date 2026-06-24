@@ -2,6 +2,7 @@ export interface Usage {
   used: number
   limit: number
   remaining: number
+  unlimited?: boolean
 }
 
 export interface Chapter {
@@ -32,6 +33,7 @@ export interface StoryDetail {
   keywords?: string[] // 레거시
   content: string
   chapters: Chapter[] | null
+  is_public: boolean
   view_count: number
   created_at: string
   bookmarked?: boolean

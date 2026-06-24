@@ -18,6 +18,15 @@ export function QuotaBadge({ usage }: { usage?: Usage }) {
 
   if (!u) return null
 
+  // 베타: 작성 수 무제한
+  if (u.unlimited) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-brand/20 px-3 py-1 text-xs font-bold text-brand">
+        베타 · 무제한
+      </span>
+    )
+  }
+
   const out = u.remaining <= 0
   return (
     <span

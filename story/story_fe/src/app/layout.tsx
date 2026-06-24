@@ -24,9 +24,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
         />
-        {/* 본문 폰트: 나눔명조 (소설 읽기용) */}
+        {/* 본문 폰트: 고운바탕 (소설 읽기용, 부드러운 serif) */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
