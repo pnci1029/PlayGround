@@ -20,6 +20,7 @@ export const config = {
     moodbite: process.env.NEXT_PUBLIC_MOODBITE_URL || 'https://moodbite.chhong.kr',
     trend: process.env.NEXT_PUBLIC_TREND_URL || 'https://trend.chhong.kr',
     blog: process.env.NEXT_PUBLIC_BLOG_URL || 'https://blog.chhong.kr',
+    story: process.env.NEXT_PUBLIC_STORY_URL || 'https://story.chhong.kr',
   },
 } as const
 
