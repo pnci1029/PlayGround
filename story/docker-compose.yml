@@ -1,0 +1,31 @@
+services:
+  # Story 백엔드 서비스 (Node.js + TypeScript + Fastify)
+  story:
+    build:
+      context: ./story_be
+      dockerfile: Dockerfile
+    image: story-backend:latest
+    container_name: story
+    ports:
+      - "8004:8004"  # HTTP API (WebSocket 없음)
+    env_file:
+      - /root/playground/.env
+    environment:
+      - NODE_ENV=production
+      - STORY_PORT=8004
+      # 운영은 공용 PostgreSQL story 스키마 사용 (로컬 .env의 pglite를 덮어씀)
+      - STORY_DB_DRIVER=pg
+      - STORY_DB_HOST=postgres
+      - STORY_DB_PORT=5432
+      - STORY_DB_SCHEMA=story
+      - POSTGRES_DB=${POSTGRES_DB:-playground}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - playground_network
+
+networks:
+  playground_network:
+    external: true
+    name: playground_playground_network

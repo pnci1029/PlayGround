@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://story-api.chhong.kr/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://story-api.chhong.kr/health"
+    }
+  ]
+}
