@@ -36,8 +36,14 @@ export const config = {
   openai: {
     apiKey: required('STORY_OPENAI_API_KEY'),
     model: process.env.STORY_OPENAI_MODEL ?? 'gpt-4.1-mini',
+    // 산문 모델만 별도 지정 가능(기본=일반 모델). 3단계 품질 업 시 STORY_PROSE_MODEL=gpt-4.1.
+    proseModel:
+      process.env.STORY_PROSE_MODEL ?? process.env.STORY_OPENAI_MODEL ?? 'gpt-4.1-mini',
     moderationModel: process.env.STORY_OPENAI_MODERATION_MODEL ?? 'omni-moderation-latest',
   },
+
+  // 자기검수(생성 후 논리·고증·가독성 교정 패스). 기본 on.
+  selfCritique: (process.env.STORY_SELF_CRITIQUE ?? 'true') !== 'false',
 
   // 창작 앱 = 완화. 하드블록 카테고리에 적중할 때만 차단. (근거: generation-pipeline.md §2.1)
   moderationBlock: (process.env.STORY_MODERATION_BLOCK ?? 'sexual/minors,self-harm/instructions')

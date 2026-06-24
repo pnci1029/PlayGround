@@ -7,7 +7,9 @@ import {
   outlineSystemPrompt,
   sequelOutlineSystemPrompt,
   proseSystemPrompt,
+  reviseSystemPrompt,
   premiseUserBlock,
+  proseToText,
   type Outline,
   type Prose,
 } from './prompts.js'
@@ -83,11 +85,11 @@ export async function generateSequelOutline(
   return parsed
 }
 
-// 2단계: 산문 (높은 temp + 반복 억제)
+// 2단계: 산문 (temp 0.8 — 일관성↑ + 반복 억제)
 export async function generateProse(genre: Genre, outline: Outline): Promise<Prose> {
   const completion = await client.beta.chat.completions.parse({
-    model: config.openai.model,
-    temperature: 0.95,
+    model: config.openai.proseModel,
+    temperature: 0.8,
     frequency_penalty: 0.5,
     presence_penalty: 0.4,
     max_completion_tokens: 5000,
@@ -99,5 +101,22 @@ export async function generateProse(genre: Genre, outline: Outline): Promise<Pro
   })
   const parsed = completion.choices[0]?.message.parsed
   if (!parsed) throw new Error('prose parse failed')
+  return parsed
+}
+
+// 2.5단계: 자기검수·수정 (논리·고증·가독성 교정 후 재작성). 낮은 temp로 '교정'에 집중.
+export async function reviseProse(genre: Genre, prose: Prose): Promise<Prose> {
+  const completion = await client.beta.chat.completions.parse({
+    model: config.openai.proseModel,
+    temperature: 0.4,
+    max_completion_tokens: 5000,
+    messages: [
+      { role: 'system', content: reviseSystemPrompt(genre) },
+      { role: 'user', content: proseToText(prose.chapters) },
+    ],
+    response_format: zodResponseFormat(ProseSchema, 'prose'),
+  })
+  const parsed = completion.choices[0]?.message.parsed
+  if (!parsed) throw new Error('revise parse failed')
   return parsed
 }

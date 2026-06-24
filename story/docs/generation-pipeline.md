@@ -44,8 +44,9 @@
 3) 입력 모더레이션: premise(줄거리) → **하드블록 카테고리** 적중 시 422 UNSAFE_INPUT
 4) [생성 A] 아웃라인(JSON, Structured Outputs) — gpt-4.1-mini, temp 0.5 — premise를 바탕으로
        → { title, logline, pov, tone, beats:[{heading, summary}] }  (= story bible)
-5) [생성 B] 산문(JSON, Structured Outputs) — gpt-4.1-mini, temp 0.95, freq_penalty 0.5, max_tokens ~4000
-       → { chapters:[{title, body}] }   (3~4개, 비트 기반)
+5) [생성 B] 산문(JSON, Structured Outputs) — 모델 STORY_PROSE_MODEL(기본 gpt-4.1-mini), **temp 0.8**, freq_penalty 0.5, max_tokens ~5000
+       → { chapters:[{title, body}] }   (4개, 비트 기반)
+5.5) [자기검수 B] reviseProse — 논리·물리/고증 오류·플롯 구멍·모호함 교정 후 재작성(줄거리·구조 유지). STORY_SELF_CRITIQUE(기본 on), 실패 시 원본 유지. (품질: quality-improvements.md)
 6) 출력 모더레이션: 전체 본문 → **하드블록 카테고리** 적중 시 422 UNSAFE_OUTPUT (저장/차감 안 함)
 7) 저장: story.stories INSERT (id=randomUUID, content=챕터 합본, chapters=JSONB)
 8) 쿼터 +1: incrementUsage(uid)  (성공 시에만)

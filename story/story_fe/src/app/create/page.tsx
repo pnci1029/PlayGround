@@ -50,7 +50,7 @@ function CreateInner() {
     return (
       <main className="flex flex-1 flex-col items-center justify-center px-6">
         <Spinner label={isSequel ? '다음 이야기를 쓰고 있어요…' : 'AI가 이야기를 쓰고 있어요…'} />
-        <p className="text-xs text-gray-500">보통 10~20초 정도 걸려요</p>
+        <p className="text-xs text-gray-500">보통 30초~1분 정도 걸려요 (검수까지 거쳐요)</p>
       </main>
     )
   }

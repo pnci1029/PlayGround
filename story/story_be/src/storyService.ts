@@ -9,6 +9,7 @@ import {
   generateOutline,
   generateSequelOutline,
   generateProse,
+  reviseProse,
 } from './openai.js'
 import type { Prose } from './prompts.js'
 
@@ -89,6 +90,15 @@ export async function generateStory(
       prose = await generateProse(genre, outline)
     } catch {
       throw new StoryGenError('GENERATION_FAILED', 502)
+    }
+  }
+
+  // 자기검수·수정 패스 (실패 시 원본 유지 — 생성 자체는 안 깨짐)
+  if (config.selfCritique) {
+    try {
+      prose = await reviseProse(genre, prose)
+    } catch {
+      /* 원본 유지 */
     }
   }
 
@@ -174,6 +184,15 @@ export async function generateSequel(
       prose = await generateProse(genre, outline)
     } catch {
       throw new StoryGenError('GENERATION_FAILED', 502)
+    }
+  }
+
+  // 자기검수·수정 패스 (실패 시 원본 유지 — 생성 자체는 안 깨짐)
+  if (config.selfCritique) {
+    try {
+      prose = await reviseProse(genre, prose)
+    } catch {
+      /* 원본 유지 */
     }
   }
 
