@@ -1,7 +1,9 @@
 // 관리자 API 클라이언트
-const API_BASE = process.env.NODE_ENV === 'production' 
-  ? 'https://api.yourdomain.com' 
-  : 'http://localhost:8085'
+// 앱 공통 설정과 동일한 베이스 사용(기본 상대경로 '/api' → middleware/next rewrite 가 백엔드로 프록시).
+// 기존의 하드코딩된 'https://api.yourdomain.com' placeholder 는 운영에서 오작동하므로 제거.
+import { config } from './config'
+
+const API_BASE = config.api.clientBaseUrl
 
 export class AdminAPI {
   private static getToken(): string | null {
@@ -26,7 +28,7 @@ export class AdminAPI {
     endpoint: string, 
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${API_BASE}/api${endpoint}`
+    const url = `${API_BASE}${endpoint}`
     
     const response = await fetch(url, {
       ...options,

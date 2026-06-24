@@ -7,15 +7,12 @@ export function middleware(request: NextRequest) {
   // 서브도메인 감지 (포트 제거)
   const hostParts = hostname.split(':')[0].split('.')
   const subdomain = hostParts[0]
-  
-  console.log('🔍 Middleware Debug:', { hostname, subdomain, pathname })
-  
+
   // localhost 개발환경 처리
   if (hostname.includes('localhost')) {
     // admin.localhost:3002 -> /admin
     if (subdomain === 'admin') {
       const rewriteUrl = `/admin${pathname === '/' ? '' : pathname}`
-      console.log('👑 Admin rewrite:', rewriteUrl)
       return NextResponse.rewrite(new URL(rewriteUrl, request.url))
     }
     

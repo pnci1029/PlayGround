@@ -103,24 +103,6 @@ export default function AdminLogin() {
               {loading ? '로그인 중...' : '로그인'}
             </button>
           </form>
-
-          {/* Demo Info */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
-              🧪 개발용 계정
-            </h3>
-            <div className="bg-gray-50 rounded p-3 text-sm">
-              <p className="text-gray-700 mb-1">
-                <strong>사용자명:</strong> admin
-              </p>
-              <p className="text-gray-700">
-                <strong>비밀번호:</strong> admin123
-              </p>
-              <p className="text-yellow-400 text-xs mt-2">
-                ⚠️ 프로덕션에서는 반드시 비밀번호를 변경하세요!
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
