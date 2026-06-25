@@ -3,8 +3,19 @@ import type { FastifyInstance, FastifyRequest } from 'fastify'
 import { GENRES } from '../genres.js'
 import { getUsage } from '../usage.js'
 import { getDb } from '../db.js'
-import { GenerateRequestSchema, SequelRequestSchema } from '../prompts.js'
-import { generateStory, generateSequel, StoryGenError } from '../storyService.js'
+import {
+  GenerateRequestSchema,
+  SequelRequestSchema,
+  ManualStorySchema,
+  UpdateStorySchema,
+} from '../prompts.js'
+import {
+  generateStory,
+  generateSequel,
+  createManualStory,
+  updateStory,
+  StoryGenError,
+} from '../storyService.js'
 
 const LIST_COLS = 'id, title, logline, genre, view_count, created_at, is_public'
 
@@ -77,6 +88,32 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     }
   })
 
+  // 직접 작성 (AI 없이) — 입력 모더레이션만, 쿼터 차감 없음 (roadmap-editing.md P1-a)
+  app.post('/api/stories/manual', async (req, reply) => {
+    const uid = getUid(req)
+    if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })
+
+    const parsed = ManualStorySchema.safeParse(req.body)
+    if (!parsed.success) {
+      return reply.code(400).send({ success: false, error: 'INVALID_INPUT', detail: parsed.error.issues })
+    }
+    try {
+      const story = await createManualStory(uid, {
+        title: parsed.data.title,
+        content: parsed.data.content,
+        genre: parsed.data.genre,
+        isPublic: parsed.data.isPublic,
+      })
+      return { success: true, data: story }
+    } catch (err) {
+      if (err instanceof StoryGenError) {
+        return reply.code(err.httpStatus).send({ success: false, error: err.code })
+      }
+      app.log.error(err)
+      return reply.code(500).send({ success: false, error: 'SAVE_FAILED' })
+    }
+  })
+
   // 내 글 (정적 경로 — :id 보다 먼저 매칭됨)
   app.get('/api/stories/mine', async (req, reply) => {
     const uid = getUid(req)
@@ -136,6 +173,28 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     if (rows[0].author_uid !== uid) return reply.code(403).send({ success: false, error: 'FORBIDDEN' })
     await getDb().query(`UPDATE story.stories SET is_public = $1 WHERE id = $2`, [isPublic, id])
     return { success: true, data: { isPublic } }
+  })
+
+  // AI 글 수정 (작성자만) — 제목/본문 통짜 편집 + 출력 모더레이션 재검 (roadmap-editing.md P1-b)
+  app.patch('/api/stories/:id', async (req, reply) => {
+    const uid = getUid(req)
+    if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })
+    const { id } = req.params as { id: string }
+
+    const parsed = UpdateStorySchema.safeParse(req.body)
+    if (!parsed.success) {
+      return reply.code(400).send({ success: false, error: 'INVALID_INPUT', detail: parsed.error.issues })
+    }
+    try {
+      const result = await updateStory(uid, id, parsed.data)
+      return { success: true, data: result }
+    } catch (err) {
+      if (err instanceof StoryGenError) {
+        return reply.code(err.httpStatus).send({ success: false, error: err.code })
+      }
+      app.log.error(err)
+      return reply.code(500).send({ success: false, error: 'SAVE_FAILED' })
+    }
   })
 
   // 신고

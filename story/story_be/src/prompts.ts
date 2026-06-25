@@ -18,6 +18,29 @@ export const SequelRequestSchema = z.object({
   premise: z.string().trim().max(500).optional(),
 })
 
+// 직접 작성(AI 없이): 제목+본문 직접 입력 (roadmap-editing.md P1-a)
+export const ManualStorySchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  content: z.string().trim().min(20).max(20000),
+  genre: z.string(),
+  subGenre: z
+    .union([z.string().trim().max(20), z.array(z.string().trim().max(20)).max(5)])
+    .optional(),
+  isPublic: z.boolean().optional(),
+})
+export type ManualStoryRequest = z.infer<typeof ManualStorySchema>
+
+// AI 글 수정(작성자): 제목/본문 통짜 편집 (roadmap-editing.md P1-b)
+export const UpdateStorySchema = z
+  .object({
+    title: z.string().trim().min(1).max(200).optional(),
+    content: z.string().trim().min(20).max(20000).optional(),
+  })
+  .refine((v) => v.title !== undefined || v.content !== undefined, {
+    message: '수정할 title 또는 content가 필요합니다',
+  })
+export type UpdateStoryRequest = z.infer<typeof UpdateStorySchema>
+
 // ── Structured Outputs 스키마 ──
 export const OutlineSchema = z.object({
   title: z.string(),

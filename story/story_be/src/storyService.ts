@@ -17,6 +17,7 @@ export type GenErrorCode =
   | 'INVALID_GENRE'
   | 'INVALID_PREMISE'
   | 'NOT_FOUND'
+  | 'FORBIDDEN'
   | 'DAILY_LIMIT'
   | 'UNSAFE_INPUT'
   | 'UNSAFE_OUTPUT'
@@ -135,6 +136,94 @@ export async function generateStory(
     createdAt: new Date().toISOString(),
     usage: usageOf(newCount),
   }
+}
+
+// 직접 작성 (AI 없이) — 제목+본문 직접 입력 (roadmap-editing.md P1-a)
+// OpenAI 비용 0 → 쿼터 차감 안 함. 입력 모더레이션만 거친다.
+export interface ManualStoryResult {
+  id: string
+  title: string
+  genre: string
+  isPublic: boolean
+  createdAt: string
+}
+
+export async function createManualStory(
+  uid: string,
+  input: { title: string; content: string; genre: string; isPublic?: boolean },
+): Promise<ManualStoryResult> {
+  const genre = findGenre(input.genre)
+  if (!genre) throw new StoryGenError('INVALID_GENRE', 400)
+
+  // 입력 모더레이션 (제목+본문, 하드블록 카테고리만 차단)
+  const mod = await moderate(`${input.title}\n\n${input.content}`)
+  const hit = blockedCategory(mod.categories)
+  if (hit) {
+    console.warn(`[moderation] 직접작성 입력 차단 — category=${hit}`)
+    throw new StoryGenError('UNSAFE_INPUT', 422)
+  }
+
+  const id = randomUUID()
+  const isPublic = input.isPublic === true
+  const now = new Date()
+  // edited_at은 '수정' 표식 → 직접작성 신규 글엔 넣지 않는다(model='manual'로 구분).
+  await getDb().query(
+    `INSERT INTO story.stories
+       (id, author_uid, title, logline, genre, premise, content, chapters, model, is_public)
+     VALUES ($1, $2, $3, NULL, $4, NULL, $5, NULL, 'manual', $6)`,
+    [id, uid, input.title, input.genre, input.content, isPublic],
+  )
+
+  return { id, title: input.title, genre: input.genre, isPublic, createdAt: now.toISOString() }
+}
+
+// AI 글 수정 (작성자) — 제목/본문 통짜 편집 (roadmap-editing.md P1-b)
+// content 수정 시: 출력 모더레이션 재검 + chapters=NULL(통짜 본문 전환) + edited_at 기록.
+export interface UpdateStoryResult {
+  id: string
+  title: string
+  editedAt: string
+}
+
+export async function updateStory(
+  uid: string,
+  id: string,
+  patch: { title?: string; content?: string },
+): Promise<UpdateStoryResult> {
+  const { rows } = await getDb().query<{ author_uid: string; title: string }>(
+    `SELECT author_uid, title FROM story.stories WHERE id = $1`,
+    [id],
+  )
+  const row = rows[0]
+  if (!row) throw new StoryGenError('NOT_FOUND', 404)
+  if (row.author_uid !== uid) throw new StoryGenError('FORBIDDEN', 403)
+
+  // 본문 수정 시 출력 모더레이션 재검 (하드블록만)
+  if (patch.content !== undefined) {
+    const mod = await moderate(patch.content)
+    const hit = blockedCategory(mod.categories)
+    if (hit) {
+      console.warn(`[moderation] 수정 본문 차단 — category=${hit}`)
+      throw new StoryGenError('UNSAFE_OUTPUT', 422)
+    }
+  }
+
+  const now = new Date()
+  const sets: string[] = ['edited_at = $2']
+  const params: unknown[] = [id, now]
+  if (patch.title !== undefined) {
+    params.push(patch.title)
+    sets.push(`title = $${params.length}`)
+  }
+  if (patch.content !== undefined) {
+    // 통짜 본문으로 전환 — 리더가 단일 블록으로 렌더하도록 chapters 제거
+    params.push(patch.content)
+    sets.push(`content = $${params.length}`)
+    sets.push(`chapters = NULL`)
+  }
+  await getDb().query(`UPDATE story.stories SET ${sets.join(', ')} WHERE id = $1`, params)
+
+  return { id, title: patch.title ?? row.title, editedAt: now.toISOString() }
 }
 
 // 속편 생성 — 원작 기반 다음 편 (스펙: docs/roadmap-longform-sequel.md §2)
