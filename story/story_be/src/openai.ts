@@ -10,6 +10,7 @@ import {
   reviseSystemPrompt,
   premiseUserBlock,
   proseToText,
+  seedPremiseSystemPrompt,
   type Outline,
   type Prose,
 } from './prompts.js'
@@ -40,6 +41,22 @@ export async function moderate(input: string): Promise<ModerationResult> {
 // 하드블록 카테고리에 적중하면 그 카테고리명 반환, 아니면 null.
 export function blockedCategory(categories: string[]): string | null {
   return categories.find((c) => config.moderationBlock.includes(c)) ?? null
+}
+
+// 데일리 AI(P3): 장르/세부장르만으로 시드 premise 자체 생성 (높은 temp로 매번 다르게)
+export async function generateSeedPremise(genre: Genre, subGenres?: string[]): Promise<string> {
+  const completion = await client.chat.completions.create({
+    model: config.openai.model,
+    temperature: 1.0,
+    max_completion_tokens: 200,
+    messages: [
+      { role: 'system', content: seedPremiseSystemPrompt(genre, subGenres) },
+      { role: 'user', content: '흥미로운 한 줄 줄거리(premise) 하나만 출력하라.' },
+    ],
+  })
+  const text = completion.choices[0]?.message.content?.trim()
+  if (!text) throw new Error('seed premise generation failed')
+  return text.slice(0, 480) // premise 최대 500자 안전 마진
 }
 
 // 1단계: 아웃라인/비트 (낮은 temp, 구조 안정) — premise(줄거리) 기반

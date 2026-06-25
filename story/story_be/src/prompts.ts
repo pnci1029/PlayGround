@@ -124,6 +124,16 @@ export function premiseUserBlock(premise: string): string {
   return `<premise>\n${premise}\n</premise>`
 }
 
+// 데일리 AI 큐레이션(P3): 장르/세부장르만으로 '한 줄 줄거리(premise)'를 AI가 자체 생성
+export function seedPremiseSystemPrompt(genre: Genre, subGenres?: string[]): string {
+  const sub = subGenres && subGenres.length ? ` 세부 결: ${subGenres.join(', ')}.` : ''
+  return `당신은 ${genre.name} 장르 단편 소설의 아이디어를 내는 작가다.
+${genre.name} 장르의 흥미로운 한국어 단편 소설 '한 줄 줄거리(premise)'를 하나만 지어라.${sub}
+- 30~120자의 자연스러운 한 문장.
+- 구체적 설정·갈등이 드러나게. 진부한 클리셰는 피한다.
+- 줄거리 문장만 출력하라. 따옴표·번호·머리말·설명은 붙이지 마라.`
+}
+
 // 자기검수·수정 패스 — 초고의 논리·고증·가독성을 고쳐 재작성 (B)
 export function reviseSystemPrompt(genre: Genre): string {
   return `당신은 ${genre.name} 소설 편집자다. 아래 초고를 검토해 아래 문제들을 고쳐 '개선된 완성본'으로 다시 쓴다.

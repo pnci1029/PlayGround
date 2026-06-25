@@ -78,6 +78,8 @@ async function createSchema(db: Db): Promise<void> {
   await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS parent_id UUID`)
   // 편집 기능(P1): 직접작성/수정 시각 기록 (null = 미수정). docs/TODO.md (P1)
   await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS edited_at TIMESTAMPTZ`)
+  // 데일리 AI 큐레이션(P3): 시스템(AI)이 자동 생성한 글 표식. docs/TODO.md (P3)
+  await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS is_ai BOOLEAN NOT NULL DEFAULT FALSE`)
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS story.daily_usage (

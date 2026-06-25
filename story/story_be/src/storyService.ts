@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto'
 import { config } from './config.js'
 import { getDb } from './db.js'
-import { findGenre } from './genres.js'
+import { findGenre, GENRES } from './genres.js'
 import { getUsage, incrementUsage } from './usage.js'
 import {
   moderate,
   blockedCategory,
+  generateSeedPremise,
   generateOutline,
   generateSequelOutline,
   generateProse,
@@ -137,6 +138,45 @@ export async function generateStory(
     createdAt: new Date().toISOString(),
     usage: usageOf(newCount),
   }
+}
+
+// 데일리 AI 큐레이션 (P3) — 랜덤 장르+세부장르 → premise 자체생성 → 파이프라인 재사용.
+// author_uid='ai-curator', is_ai=TRUE, 바로 공개, 쿼터 무관. (docs/TODO.md P3)
+export async function generateDailyAi(): Promise<string> {
+  const genre = GENRES[Math.floor(Math.random() * GENRES.length)]
+  const subs = genre.subs ?? []
+  // 세부장르 0~2개 랜덤 추첨
+  const n = subs.length === 0 ? 0 : Math.random() < 0.5 ? 1 : 2
+  const picked = [...subs].sort(() => Math.random() - 0.5).slice(0, Math.min(n, subs.length))
+
+  // premise를 AI가 자체 생성 → 입력 모더레이션
+  const premise = await generateSeedPremise(genre, picked)
+  const inMod = await moderate(premise)
+  if (blockedCategory(inMod.categories)) throw new StoryGenError('UNSAFE_INPUT', 422)
+
+  // 기존 파이프라인 재사용 (아웃라인 → 산문 → 자기검수)
+  const outline = await generateOutline(genre, premise, picked)
+  let prose = await generateProse(genre, outline)
+  if (config.selfCritique) {
+    try {
+      prose = await reviseProse(genre, prose)
+    } catch {
+      /* 원본 유지 */
+    }
+  }
+
+  const content = prose.chapters.map((c) => `${c.title}\n\n${c.body}`).join('\n\n')
+  const outMod = await moderate(content)
+  if (blockedCategory(outMod.categories)) throw new StoryGenError('UNSAFE_OUTPUT', 422)
+
+  const id = randomUUID()
+  await getDb().query(
+    `INSERT INTO story.stories
+       (id, author_uid, title, logline, genre, premise, content, chapters, model, is_public, is_ai)
+     VALUES ($1, 'ai-curator', $2, $3, $4, $5, $6, $7, $8, TRUE, TRUE)`,
+    [id, outline.title, outline.logline, genre.id, premise, content, JSON.stringify(prose.chapters), config.openai.model],
+  )
+  return id
 }
 
 // 직접 작성 (AI 없이) — 제목+본문 직접 입력 (docs/TODO.md P1)

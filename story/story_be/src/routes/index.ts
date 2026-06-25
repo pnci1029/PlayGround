@@ -17,7 +17,7 @@ import {
   StoryGenError,
 } from '../storyService.js'
 
-const LIST_COLS = 'id, title, logline, genre, view_count, created_at, is_public'
+const LIST_COLS = 'id, title, logline, genre, view_count, created_at, is_public, is_ai'
 
 // 익명 디바이스 ID 추출. (FE가 모든 요청에 X-Story-Uid 헤더 첨부)
 function getUid(req: FastifyRequest): string | null {
