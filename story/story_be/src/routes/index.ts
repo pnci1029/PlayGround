@@ -234,6 +234,13 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     const { rows } = await getDb().query(`SELECT * FROM story.stories WHERE id = $1`, [id])
     if (!rows[0]) return reply.code(404).send({ success: false, error: 'NOT_FOUND' })
 
+    // 시리즈 네비: 직속 속편(자식) id. parent_id(prev)는 행에 이미 포함됨.
+    const childRes = await getDb().query<{ id: string }>(
+      `SELECT id FROM story.stories WHERE parent_id = $1 ORDER BY created_at ASC LIMIT 1`,
+      [id],
+    )
+    const next_id = childRes.rows[0]?.id ?? null
+
     let bookmarked = false
     if (uid) {
       const bm = await getDb().query(
@@ -242,6 +249,6 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
       )
       bookmarked = bm.rows.length > 0
     }
-    return { success: true, data: { ...rows[0], bookmarked } }
+    return { success: true, data: { ...rows[0], next_id, bookmarked } }
   })
 }

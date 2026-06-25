@@ -18,6 +18,7 @@ export type GenErrorCode =
   | 'INVALID_PREMISE'
   | 'NOT_FOUND'
   | 'FORBIDDEN'
+  | 'SEQUEL_EXISTS'
   | 'DAILY_LIMIT'
   | 'UNSAFE_INPUT'
   | 'UNSAFE_OUTPUT'
@@ -243,6 +244,13 @@ export async function generateSequel(
 
   const genre = findGenre(parent.genre)
   if (!genre) throw new StoryGenError('INVALID_GENRE', 400)
+
+  // 속편 중복 방지: 한 편당 직속 속편 1개(선형 시리즈 1→2→3). 이미 자식이 있으면 거부.
+  const existingChild = await getDb().query(
+    `SELECT 1 FROM story.stories WHERE parent_id = $1 LIMIT 1`,
+    [parentId],
+  )
+  if (existingChild.rows.length > 0) throw new StoryGenError('SEQUEL_EXISTS', 409)
 
   const usage = await getUsage(uid)
   if (!config.unlimited && usage.remaining <= 0) throw new StoryGenError('DAILY_LIMIT', 429)
