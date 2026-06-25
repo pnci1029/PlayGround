@@ -17,6 +17,7 @@ async function main(): Promise<void> {
 
   await app.listen({ port: config.port, host: '0.0.0.0' })
   app.log.info(`story_be 기동 — port ${config.port}, db driver ${config.db.driver}`)
+  console.log(`[boot] story_be up — env=${process.env.NODE_ENV ?? 'dev'}, port=${config.port}`)
 }
 
 main().catch((err) => {
