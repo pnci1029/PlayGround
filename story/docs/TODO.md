@@ -16,7 +16,12 @@
 ### P3. 데일리 AI 큐레이션 생성  ✅ 완료(2026-06-25)
 - 매일 **10~16시(KST) 사이 랜덤 시각에 하루 1편** AI 자동 생성. 랜덤 장르+세부장르(0~2개) → premise도 AI 자체생성 → 기존 파이프라인 재사용. `author_uid='ai-curator'`, 바로 공개, 쿼터 무관.
 - **AI 표식**: `is_ai` 컬럼 + `LIST_COLS` 포함 → 피드/`StoryCard`·리더에 "AI 생성" 배지.
-- 스케줄: `scheduler.ts` — 외부 의존성 없이 `setInterval`(15분) + KST 윈도우 + '남은 틱 확률(1/remaining)'로 윈도우 내 1회 보장 + 매일 다른 시각. 재시작 안전(DB의 `is_ai`+KST 날짜로 '오늘 생성됨' 판단).
+- 스케줄: `scheduler.ts` — 외부 의존성 없이 `setInterval`(15분)로 점검. 예약 시각을 메모리에 두지 않고 **매 틱마다 DB에 물어보는** 방식.
+- **발동/멈춤 로직** (틱마다):
+  1. KST가 10~16시 윈도우인가? 아니면 패스.
+  2. **"오늘 이미 만들었나?"** — `SELECT 1 FROM stories WHERE is_ai AND (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date`. **있으면 즉시 종료** → 그날 남은 틱은 전부 no-op(= 더 이상 생성 안 함).
+  3. 없으면 **확률 `1/남은_틱수`로 발동**. 시간이 갈수록 확률↑, 마지막 틱(15:45)은 100% → **윈도우 내 정확히 1회 보장 + 매일 다른 시각**.
+  - **재시작 안전**: '오늘 생성됨'을 메모리가 아니라 **DB(생성된 글)**로 판단 → 배포로 컨테이너 재기동돼도 중복 0. (날짜 경계 = KST 자정)
 - 설정: `ENABLE_STORY_DAILY_AI`(production 기본 on, 로컬 off), `STORY_DAILY_AI_COUNT`(기본 1).
 
 ### (완료) 속편 생성
