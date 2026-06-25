@@ -1,5 +1,24 @@
+# ── 보안 헤더 스니펫 (전 사이트 공통) ─────────────────────────────────
+# 각 사이트 블록 안에서 `import security_headers` 로 적용한다.
+#  - Strict-Transport-Security : HTTPS 강제(다운그레이드/스트립 방지)
+#  - X-Content-Type-Options    : MIME 스니핑 차단
+#  - X-Frame-Options           : 클릭재킹(iframe 삽입) 차단
+#  - Referrer-Policy           : 외부로 전체 URL 유출 방지
+#  - -Server                   : 서버 소프트웨어 노출 제거
+# 주의: CSP 는 정적 프론트(salehero 등) 깨짐 위험이 있어 사이트별 튜닝 필요 → 여기 미포함.
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
 # API 서브도메인 - 백엔드 + WebSocket (Contabo)
 api.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# WebSocket 요청
@@ -54,6 +73,7 @@ localhost {
 
 # MoodBite API 서브도메인 (Contabo)
 moodbite-api.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# WebSocket 요청
@@ -82,6 +102,7 @@ moodbite-api.chhong.kr {
 
 # Trend 서브도메인
 trend.chhong.kr, trend.localhost {
+	import security_headers
 	# SSL 인증서 자동 발급 (HTTP Challenge)
 	tls internal
 
@@ -109,6 +130,7 @@ trend.chhong.kr, trend.localhost {
 
 # Blog API 서브도메인 (Contabo)
 blog-api.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# WebSocket 요청
@@ -137,8 +159,9 @@ blog-api.chhong.kr {
 
 # SaleHero 프론트엔드 서빙
 salehero.kr, www.salehero.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# API 요청은 백엔드로
 	handle /api/* {
 		reverse_proxy salehero-container:8880 {
@@ -146,7 +169,7 @@ salehero.kr, www.salehero.kr {
 			max_fails 3
 		}
 	}
-	
+
 	# 정적 파일 서빙 (프론트엔드)
 	handle {
 		root * /usr/share/nginx/html
@@ -157,8 +180,9 @@ salehero.kr, www.salehero.kr {
 
 # SaleHero n8n 서브도메인
 n8n.salehero.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# n8n 웹 인터페이스
 	reverse_proxy n8n:5678 {
 		fail_duration 10s
@@ -168,8 +192,9 @@ n8n.salehero.kr {
 
 # Blog 도메인 - 프론트엔드는 Vercel, API는 백엔드
 blog.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# API 요청
 	handle /api/* {
 		reverse_proxy blog:8003 {
@@ -183,8 +208,6 @@ blog.chhong.kr {
 		reverse_proxy blog:8013 {
 			header_up Upgrade {http.request.header.Upgrade}
 			header_up Connection {http.request.header.Connection}
-			header_up Sec-WebSocket-Key {http.request.header.Sec-WebSocket-Key}
-			header_up Sec-WebSocket-Version {http.request.header.Sec-WebSocket-Version}
 		}
 	}
 
@@ -192,13 +215,14 @@ blog.chhong.kr {
 	handle /health {
 		reverse_proxy blog:8003
 	}
-	
+
 	# 프론트엔드는 Vercel에서 처리
 	respond "Blog Frontend at Vercel" 404
 }
 
 # Story API 서브도메인 (Contabo) — WebSocket 없음(SSE/HTTP만)
 story-api.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# API 요청
@@ -217,6 +241,7 @@ story-api.chhong.kr {
 
 # Story 도메인 - 프론트엔드는 Vercel, API는 백엔드
 story.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
 
 	# API 요청
@@ -238,6 +263,7 @@ story.chhong.kr {
 
 # Stock Screener API 서브도메인 (Contabo)
 stock-api.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급 (Let's Encrypt)
 
 	# 모든 요청을 stock_screener 백엔드로 전달
@@ -249,6 +275,7 @@ stock-api.chhong.kr {
 
 # Stock Screener 서브도메인 - 프론트엔드는 Vercel, API는 백엔드
 stock.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
 
 	# API 요청
@@ -265,8 +292,9 @@ stock.chhong.kr {
 
 # 메인 도메인 - 프론트엔드는 Vercel, API는 백엔드
 chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# API 요청
 	handle /api/* {
 		reverse_proxy playground:8000 {
@@ -291,13 +319,14 @@ chhong.kr {
 	handle /health {
 		reverse_proxy playground:8000
 	}
-	
+
 	# 프론트엔드는 Vercel에서 처리
 	respond "PlayGround - Frontend at Vercel" 404
 }
 
 # WeddingFit API 서브도메인 (Contabo)
 wedding-api.chhong.kr {
+	import security_headers
 	handle /api/* {
 		reverse_proxy weddingfit_backend:8777 {
 			fail_duration 10s
@@ -312,8 +341,9 @@ wedding-api.chhong.kr {
 
 # WeddingFit 서브도메인 (백엔드만)
 wedding.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# API 요청
 	handle /api/* {
 		reverse_proxy weddingfit_backend:8777 {
@@ -326,15 +356,16 @@ wedding.chhong.kr {
 	handle /health {
 		reverse_proxy weddingfit_backend:8777
 	}
-	
+
 	# 프론트엔드는 Vercel에서 처리
 	respond "WeddingFit - Frontend at Vercel" 404
 }
 
 # 404 전용 서브도메인
 404.chhong.kr {
+	import security_headers
 	# SSL 인증서 자동 발급
-	
+
 	# 404 페이지 서빙
 	handle {
 		root * /usr/share/caddy/404

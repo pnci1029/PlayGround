@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"   # 외부 비공개 — 호스트 로컬/SSH 터널만
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]

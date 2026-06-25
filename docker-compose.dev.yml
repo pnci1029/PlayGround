@@ -13,7 +13,7 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./playground/be/src/database/migrations:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"   # 외부 비공개 — 호스트 로컬/SSH 터널만
     networks:
       - playground_dev
     restart: unless-stopped
