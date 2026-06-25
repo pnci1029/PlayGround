@@ -76,7 +76,7 @@ async function createSchema(db: Db): Promise<void> {
   // 기존 테이블 마이그레이션 — 컬럼 보강 (CREATE TABLE IF NOT EXISTS는 컬럼 추가 안 함)
   await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS premise TEXT`)
   await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS parent_id UUID`)
-  // 편집 기능(P1): 직접작성/수정 시각 기록 (null = 미수정). roadmap-editing.md
+  // 편집 기능(P1): 직접작성/수정 시각 기록 (null = 미수정). docs/TODO.md (P1)
   await db.query(`ALTER TABLE story.stories ADD COLUMN IF NOT EXISTS edited_at TIMESTAMPTZ`)
 
   await db.query(`

@@ -18,7 +18,7 @@ export const SequelRequestSchema = z.object({
   premise: z.string().trim().max(500).optional(),
 })
 
-// 직접 작성(AI 없이): 제목+본문 직접 입력 (roadmap-editing.md P1-a)
+// 직접 작성(AI 없이): 제목+본문 직접 입력 (docs/TODO.md P1)
 export const ManualStorySchema = z.object({
   title: z.string().trim().min(1).max(200),
   content: z.string().trim().min(20).max(20000),
@@ -30,7 +30,7 @@ export const ManualStorySchema = z.object({
 })
 export type ManualStoryRequest = z.infer<typeof ManualStorySchema>
 
-// AI 글 수정(작성자): 제목/본문 통짜 편집 (roadmap-editing.md P1-b)
+// AI 글 수정(작성자): 제목/본문 통짜 편집 (docs/TODO.md P1)
 export const UpdateStorySchema = z
   .object({
     title: z.string().trim().min(1).max(200).optional(),

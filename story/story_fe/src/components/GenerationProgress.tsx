@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 // P2 옵션 A — 생성 대기 중 진행 단계 표시 (순수 FE 추정 타이머).
 // 생성 POST는 완료까지 블로킹되는 단일 요청이라 실제 단계 신호가 없다.
 // → 경과 시간 기준으로 단계/진행률을 '추정'해 연출한다. (실시간 신호는 옵션 B=SSE)
-// 근거: docs/roadmap-generation-ux.md
+// 근거: docs/TODO.md (P2)
 
 // 각 단계 시작 시각(초). 생성 파이프라인(아웃라인→산문→자기검수)과 매칭.
 const STEP_STARTS = [0, 12, 45]

@@ -88,7 +88,7 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     }
   })
 
-  // 직접 작성 (AI 없이) — 입력 모더레이션만, 쿼터 차감 없음 (roadmap-editing.md P1-a)
+  // 직접 작성 (AI 없이) — 입력 모더레이션만, 쿼터 차감 없음 (docs/TODO.md P1)
   app.post('/api/stories/manual', async (req, reply) => {
     const uid = getUid(req)
     if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })
@@ -175,7 +175,7 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
     return { success: true, data: { isPublic } }
   })
 
-  // AI 글 수정 (작성자만) — 제목/본문 통짜 편집 + 출력 모더레이션 재검 (roadmap-editing.md P1-b)
+  // AI 글 수정 (작성자만) — 제목/본문 통짜 편집 + 출력 모더레이션 재검 (docs/TODO.md P1)
   app.patch('/api/stories/:id', async (req, reply) => {
     const uid = getUid(req)
     if (!uid) return reply.code(400).send({ success: false, error: 'MISSING_UID' })

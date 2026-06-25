@@ -138,7 +138,7 @@ export async function generateStory(
   }
 }
 
-// 직접 작성 (AI 없이) — 제목+본문 직접 입력 (roadmap-editing.md P1-a)
+// 직접 작성 (AI 없이) — 제목+본문 직접 입력 (docs/TODO.md P1)
 // OpenAI 비용 0 → 쿼터 차감 안 함. 입력 모더레이션만 거친다.
 export interface ManualStoryResult {
   id: string
@@ -177,7 +177,7 @@ export async function createManualStory(
   return { id, title: input.title, genre: input.genre, isPublic, createdAt: now.toISOString() }
 }
 
-// AI 글 수정 (작성자) — 제목/본문 통짜 편집 (roadmap-editing.md P1-b)
+// AI 글 수정 (작성자) — 제목/본문 통짜 편집 (docs/TODO.md P1)
 // content 수정 시: 출력 모더레이션 재검 + chapters=NULL(통짜 본문 전환) + edited_at 기록.
 export interface UpdateStoryResult {
   id: string
@@ -226,7 +226,7 @@ export async function updateStory(
   return { id, title: patch.title ?? row.title, editedAt: now.toISOString() }
 }
 
-// 속편 생성 — 원작 기반 다음 편 (스펙: docs/roadmap-longform-sequel.md §2)
+// 속편 생성 — 원작 기반 다음 편 (docs/TODO.md 속편/장편)
 export async function generateSequel(
   uid: string,
   parentId: string,
