@@ -45,6 +45,15 @@ export const config = {
   // 자기검수(생성 후 논리·고증·가독성 교정 패스). 기본 on.
   selfCritique: (process.env.STORY_SELF_CRITIQUE ?? 'true') !== 'false',
 
+  // 데일리 AI 큐레이션(P3): 매일 10~16시(KST) 사이 랜덤 시각에 하루 count편 자동 생성.
+  // 운영(production)에선 기본 on, 로컬/개발에선 기본 off(OpenAI 호출 방지). ENABLE_STORY_DAILY_AI로 강제 토글.
+  dailyAi: {
+    enabled:
+      (process.env.ENABLE_STORY_DAILY_AI ??
+        ((process.env.NODE_ENV ?? 'development') === 'production' ? 'true' : 'false')) !== 'false',
+    count: Math.max(1, parseInt(process.env.STORY_DAILY_AI_COUNT ?? '1', 10) || 1),
+  },
+
   // 창작 앱 = 완화. 하드블록 카테고리에 적중할 때만 차단. (근거: generation-pipeline.md §2.1)
   moderationBlock: (process.env.STORY_MODERATION_BLOCK ?? 'sexual/minors,self-harm/instructions')
     .split(',')

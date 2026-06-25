@@ -3,6 +3,7 @@ import cors from '@fastify/cors'
 import { config } from './config.js'
 import { initDb } from './db.js'
 import { registerRoutes } from './routes/index.js'
+import { startDailyAiScheduler } from './scheduler.js'
 
 // story_be 엔트리포인트. (전체 설계: ../docs/PLANNING.md)
 async function main(): Promise<void> {
@@ -18,6 +19,9 @@ async function main(): Promise<void> {
   await app.listen({ port: config.port, host: '0.0.0.0' })
   app.log.info(`story_be 기동 — port ${config.port}, db driver ${config.db.driver}`)
   console.log(`[boot] story_be up — env=${process.env.NODE_ENV ?? 'dev'}, port=${config.port}`)
+
+  // 데일리 AI 큐레이션 스케줄러 (P3) — production 기본 on
+  startDailyAiScheduler()
 }
 
 main().catch((err) => {
