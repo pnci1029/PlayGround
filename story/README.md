@@ -7,6 +7,7 @@ PlayGround 모노레포 소속 (공용 PostgreSQL `story` 스키마 사용).
 **설계 합의 단계 (M0)** — 디렉토리 골격 + 기획서만 존재. 구현 전.
 
 ## 문서
+- [TODO / 백로그 (우선순위)](docs/TODO.md) — 다음 작업: 편집 → 생성UX → 피드필터 → 로그인
 - [기획서 (PLANNING.md)](docs/PLANNING.md) — 요구사항·아키텍처·DB·API·파이프라인·미정사항
 - [생성 파이프라인 스펙 (M2)](docs/generation-pipeline.md) — 프롬프트·스키마·에러·처리순서
 - [프론트엔드 스펙 (M3)](docs/frontend-spec.md) — 라우트·디자인·API 클라이언트
