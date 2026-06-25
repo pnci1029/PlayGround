@@ -46,13 +46,13 @@ export function blockedCategory(categories: string[]): string | null {
 export async function generateOutline(
   genre: Genre,
   premise: string,
-  subGenre?: string,
+  subGenres?: string[],
 ): Promise<Outline> {
   const completion = await client.beta.chat.completions.parse({
     model: config.openai.model,
     temperature: 0.5,
     messages: [
-      { role: 'system', content: outlineSystemPrompt(genre, subGenre) },
+      { role: 'system', content: outlineSystemPrompt(genre, subGenres) },
       { role: 'user', content: premiseUserBlock(premise) },
     ],
     response_format: zodResponseFormat(OutlineSchema, 'outline'),

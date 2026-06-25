@@ -56,7 +56,7 @@ export async function generateStory(
   uid: string,
   genreId: string,
   premise: string,
-  subGenre?: string,
+  subGenres?: string[],
 ): Promise<GeneratedStory> {
   const genre = findGenre(genreId)
   if (!genre) throw new StoryGenError('INVALID_GENRE', 400)
@@ -78,13 +78,13 @@ export async function generateStory(
   let title: string
   let logline: string
   try {
-    const outline = await generateOutline(genre, premise, subGenre)
+    const outline = await generateOutline(genre, premise, subGenres)
     title = outline.title
     logline = outline.logline
     prose = await generateProse(genre, outline)
   } catch {
     try {
-      const outline = await generateOutline(genre, premise, subGenre)
+      const outline = await generateOutline(genre, premise, subGenres)
       title = outline.title
       logline = outline.logline
       prose = await generateProse(genre, outline)

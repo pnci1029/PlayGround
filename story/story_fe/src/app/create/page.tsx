@@ -22,7 +22,7 @@ function CreateInner() {
   const isSequel = !!parentId
 
   const [premise, setPremise] = useState('')
-  const [subGenre, setSubGenre] = useState<string | null>(null)
+  const [subGenres, setSubGenres] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,7 +38,7 @@ function CreateInner() {
     try {
       const story = isSequel
         ? await api.generateSequel(parentId!, trimmed || undefined)
-        : await api.generateStory(genre, trimmed, subGenre ?? undefined)
+        : await api.generateStory(genre, trimmed, subGenres)
       router.push(`/reader/${story.id}`)
     } catch (e) {
       setError(e instanceof ApiError ? messageOf(e.code) : messageOf('UNKNOWN'))
@@ -73,14 +73,16 @@ function CreateInner() {
 
       {subs.length > 0 && (
         <div className="mt-5">
-          <p className="mb-2 text-xs text-gray-500">세부 장르 (선택)</p>
+          <p className="mb-2 text-xs text-gray-500">세부 장르 (복수 선택 가능)</p>
           <div className="flex flex-wrap gap-2">
             {subs.map((s) => {
-              const on = subGenre === s
+              const on = subGenres.includes(s)
               return (
                 <button
                   key={s}
-                  onClick={() => setSubGenre(on ? null : s)}
+                  onClick={() =>
+                    setSubGenres(on ? subGenres.filter((x) => x !== s) : [...subGenres, s])
+                  }
                   className={`rounded-full border px-3 py-1.5 text-sm transition ${
                     on ? 'border-brand bg-brand/15 text-brand' : 'border-line text-gray-300'
                   }`}

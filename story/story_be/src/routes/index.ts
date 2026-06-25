@@ -40,8 +40,12 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
       return reply.code(400).send({ success: false, error: 'INVALID_PREMISE', detail: parsed.error.issues })
     }
 
+    // subGenre: 문자열 또는 배열 → 배열로 정규화
+    const sg = parsed.data.subGenre
+    const subGenres = sg === undefined ? undefined : Array.isArray(sg) ? sg : [sg]
+
     try {
-      const story = await generateStory(uid, parsed.data.genre, parsed.data.premise, parsed.data.subGenre)
+      const story = await generateStory(uid, parsed.data.genre, parsed.data.premise, subGenres)
       return { success: true, data: story }
     } catch (err) {
       if (err instanceof StoryGenError) {

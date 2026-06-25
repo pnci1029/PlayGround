@@ -51,10 +51,14 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   getUsage: () => req<Usage>('/usage'),
 
-  generateStory: (genre: string, premise: string, subGenre?: string) =>
+  generateStory: (genre: string, premise: string, subGenres?: string[]) =>
     req<GeneratedStory>('/stories', {
       method: 'POST',
-      body: JSON.stringify({ genre, premise, subGenre: subGenre || undefined }),
+      body: JSON.stringify({
+        genre,
+        premise,
+        subGenre: subGenres && subGenres.length ? subGenres : undefined,
+      }),
     }),
 
   generateSequel: (parentId: string, premise?: string) =>
