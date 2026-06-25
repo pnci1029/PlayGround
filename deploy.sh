@@ -14,6 +14,7 @@ STOCK_SCREENER_CHANGED=${STOCK_SCREENER_CHANGED:-"false"}
 STORY_CHANGED=${STORY_CHANGED:-"false"}
 DOCKER_CHANGED=${DOCKER_CHANGED:-"false"}
 CADDY_CHANGED=${CADDY_CHANGED:-"false"}
+DB_CONFIG_CHANGED=${DB_CONFIG_CHANGED:-"false"}
 
 # DB 및 공용 서비스가 실행 중인지 확인
 echo "🔍 DB 상태 확인..."
@@ -24,6 +25,35 @@ if ! docker ps | grep -q postgres; then
     sleep 10
 else
     echo "✅ DB 서비스 이미 실행 중"
+
+    # ── postgres 포트 바인딩 변경 적용 (안전 가드) ──────────────────────────
+    # 포트 바인딩(0.0.0.0 → 127.0.0.1 등)은 컨테이너 recreate 가 있어야만 바뀐다.
+    # 평소 배포는 일부러 DB 를 건드리지 않으므로, 'docker-compose.db.yml 이 실제로
+    # 바뀐 경우(DB_CONFIG_CHANGED=true)'에만 점검한다. 그리고 recreate 는 짧은
+    # 다운타임이 있으니, 현재 바인딩이 이미 원하는 값이면 건너뛴다(=idempotent).
+    # → 포트가 바뀐 그 한 번만 재생성되고, 이후 배포에선 DB 를 건드리지 않는다.
+    # (데이터는 named volume `postgres_data` 에 유지되므로 손실 없음)
+    if [[ "$DB_CONFIG_CHANGED" == "true" ]]; then
+        echo "🔍 DB compose 변경 감지 - postgres 포트 바인딩 점검..."
+        DESIRED_BIND="127.0.0.1"
+        CURRENT_BIND=$(docker inspect postgres \
+            --format '{{range $p, $conf := .HostConfig.PortBindings}}{{range $conf}}{{.HostIp}} {{end}}{{end}}' \
+            2>/dev/null || echo "")
+        if echo "$CURRENT_BIND" | grep -q "$DESIRED_BIND"; then
+            echo "✅ postgres 이미 ${DESIRED_BIND} 바인딩 - recreate 불필요"
+        else
+            echo "🔄 postgres 바인딩 변경 적용 - 컨테이너 recreate (데이터는 볼륨 유지)..."
+            docker compose -f docker-compose.db.yml --env-file .env up -d --force-recreate postgres
+            echo "⏳ postgres 준비 대기..."
+            for i in $(seq 1 15); do
+                if docker exec postgres pg_isready -U postgres >/dev/null 2>&1; then
+                    echo "✅ postgres 준비 완료"
+                    break
+                fi
+                sleep 2
+            done
+        fi
+    fi
 fi
 
 # Caddy가 실행 중인지 확인

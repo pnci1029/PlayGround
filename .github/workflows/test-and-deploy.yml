@@ -172,6 +172,9 @@ jobs:
         echo "story_backend=$(echo "$CHANGED_FILES" | grep -qE '^story/(story_be/|docker-compose)' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "caddy_config=$(echo "$CHANGED_FILES" | grep -q '^caddy/' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
         echo "docker_config=$(echo "$CHANGED_FILES" | grep -q '^docker-compose' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+        # DB/Caddy 스택 compose(docker-compose.db.yml)가 바뀐 경우만 별도 표시.
+        # → deploy.sh 가 이때만 postgres 포트 바인딩을 점검/재생성한다(평소엔 DB 미접촉).
+        echo "db_config=$(echo "$CHANGED_FILES" | grep -qE '^docker-compose\.db\.yml$' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
     - name: Deploy to Contabo
       run: |
@@ -200,6 +203,7 @@ jobs:
            STOCK_SCREENER_CHANGED='${{ steps.changes.outputs.stock_screener }}' \
            STORY_CHANGED='${{ steps.changes.outputs.story_backend }}' \
            DOCKER_CHANGED='${{ steps.changes.outputs.docker_config }}' \
+           DB_CONFIG_CHANGED='${{ steps.changes.outputs.db_config }}' \
            CADDY_CHANGED='${{ steps.changes.outputs.caddy_config }}' \
            ./deploy.sh"
 

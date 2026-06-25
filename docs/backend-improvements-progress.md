@@ -73,6 +73,24 @@
 - [ ] **모든 백엔드 컨테이너가 root 실행**(blog_fe 제외 전 BE Dockerfile에 `USER` 없음) → 비-root 유저 추가 — **보류**(사용자 지시, 2026-06-25: 구조 변경이라 나중에)
 - [x] **Caddy 보안헤더 전무** → **`(security_headers)` 스니펫 추가 + 전 사이트 import**(2026-06-25). HSTS/X-Content-Type-Options/X-Frame-Options/Referrer-Policy 적용 + `-Server` 헤더 제거. **CSP는 의도적 보류**(잘못 걸면 salehero 프론트 등 정적사이트가 깨질 수 있어 사이트별 튜닝 필요). dev `localhost` 블록은 제외. ✅
 
+#### 📦 배포 적용 메커니즘 — postgres 포트 변경은 어떻게 운영에 반영되나 (2026-06-25)
+
+> 배경: `deploy.sh`는 **평소 DB 컨테이너를 일부러 건드리지 않는다**(백엔드만 재배포, DB는 유지).
+> 그런데 포트 바인딩(`0.0.0.0`→`127.0.0.1`)은 **컨테이너 recreate 가 있어야만** 바뀐다.
+> 그래서 그냥 push 하면 Caddy 헤더는 자동 적용되지만 **postgres 포트 변경은 적용되지 않는다.**
+
+**선택: B(파이프라인 자동화 + 안전 가드)** — 사용자 결정(2026-06-25). push 한 번으로 적용되게 함.
+
+동작 (2026-06-25 구현):
+1. **CI** (`.github/workflows/test-and-deploy.yml`): 변경 파일에 `docker-compose.db.yml`이 포함되면 `db_config=true` → `DB_CONFIG_CHANGED` 로 `deploy.sh`에 전달.
+2. **`deploy.sh`** (DB 실행 중 분기 안): `DB_CONFIG_CHANGED=true` 일 때만 postgres 포트 바인딩 점검.
+   - `docker inspect`로 현재 `HostIp` 확인 → **이미 `127.0.0.1`이면 건너뜀**(idempotent).
+   - 아니면 `docker compose -f docker-compose.db.yml --env-file .env up -d --force-recreate postgres` → `pg_isready` 로 기동 확인.
+
+**안전 가드의 의미**: ① `docker-compose.db.yml`이 바뀐 배포에서만 동작(평소 백엔드 배포는 DB 무접촉), ② 이미 적용돼 있으면 recreate 생략 → **포트가 바뀌는 단 한 번만 DB 재시작(~10초), 이후엔 안 건드림**. 데이터는 named volume `postgres_data` 유지 → 손실 없음.
+
+> 참고: 일회성 수동 적용 대안은 `docker compose -f docker-compose.db.yml --env-file .env up -d --force-recreate postgres` (서버에서 직접). B 자동화로 이제 불필요.
+
 **🟠 Medium**
 - [ ] 백엔드 API/WS 포트들이 `0.0.0.0` 공개 — Caddy가 내부망으로 프록시하므로 불필요, TLS 우회 노출 → loopback 바인드/제거
 - [ ] 대부분 백엔드 **멀티스테이지 빌드/.dockerignore 없음** — 빌드툴·소스·devDeps가 prod 이미지에 적재(일부는 repo 루트를 빌드 컨텍스트로)
