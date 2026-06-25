@@ -254,12 +254,38 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           </article>
 
           <div className="safe-bottom mt-12 flex flex-col gap-3">
-            <Link
-              href={`/create?parent=${story.id}`}
-              className="flex h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
-            >
-              이 이야기의 속편 쓰기
-            </Link>
+            {/* 시리즈 네비 — 이전/다음 화 */}
+            {(story.parent_id || story.next_id) && (
+              <div className="flex gap-3">
+                {story.parent_id && (
+                  <Link
+                    href={`/reader/${story.parent_id}`}
+                    className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
+                  >
+                    ← 이전 화
+                  </Link>
+                )}
+                {story.next_id && (
+                  <Link
+                    href={`/reader/${story.next_id}`}
+                    className="flex h-12 flex-1 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
+                  >
+                    다음 화 보기 →
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* 속편 쓰기 — 마지막 화(다음 화 없음)에만 노출. 중복 방지 */}
+            {!story.next_id && (
+              <Link
+                href={`/create?parent=${story.id}`}
+                className="flex h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
+              >
+                이 이야기의 속편 쓰기
+              </Link>
+            )}
+
             <div className="flex gap-3">
               <Link
                 href="/genre"

@@ -37,6 +37,8 @@ export interface StoryDetail {
   view_count: number
   created_at: string
   edited_at?: string | null
+  parent_id?: string | null // 시리즈: 이전 화(원작) id
+  next_id?: string | null // 시리즈: 다음 화(직속 속편) id
   bookmarked?: boolean
 }
 

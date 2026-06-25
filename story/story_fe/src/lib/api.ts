@@ -38,6 +38,8 @@ export function messageOf(code: string): string {
       return '내가 쓴 글만 수정할 수 있어요.'
     case 'SAVE_FAILED':
       return '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
+    case 'SEQUEL_EXISTS':
+      return '이미 다음 편이 있어요. 마지막 편에서 이어 써주세요.'
     case 'GENERATION_FAILED':
       return '생성에 실패했어요. 잠시 후 다시 시도해 주세요.'
     default:
