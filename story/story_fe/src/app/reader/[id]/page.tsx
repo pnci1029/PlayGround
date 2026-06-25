@@ -168,7 +168,12 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         </div>
       </div>
 
-      <span className="text-xs font-medium text-brand">{GENRE_NAME[story.genre] ?? story.genre}</span>
+      <span className="flex items-center gap-1.5 text-xs font-medium text-brand">
+        {GENRE_NAME[story.genre] ?? story.genre}
+        {story.is_ai && (
+          <span className="rounded bg-brand/20 px-1.5 py-0.5 text-[10px] text-brand">AI 생성</span>
+        )}
+      </span>
 
       {editing ? (
         <div className="mt-3 flex flex-col">

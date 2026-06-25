@@ -13,6 +13,12 @@
 - `GenerationProgress`: 추정 타이머로 "구상(~12s)→집필(~45s)→다듬기" 3단계 + 진행바(추정 ~58s, 응답 전 95%에서 멈춤). create 스피너 대체. BE 무변경.
 - 옵션 B(SSE 실시간 스트리밍 — BE SSE 라우트 + 본문 토큰 스트림)는 추후.
 
+### P3. 데일리 AI 큐레이션 생성  ✅ 완료(2026-06-25)
+- 매일 **10~16시(KST) 사이 랜덤 시각에 하루 1편** AI 자동 생성. 랜덤 장르+세부장르(0~2개) → premise도 AI 자체생성 → 기존 파이프라인 재사용. `author_uid='ai-curator'`, 바로 공개, 쿼터 무관.
+- **AI 표식**: `is_ai` 컬럼 + `LIST_COLS` 포함 → 피드/`StoryCard`·리더에 "AI 생성" 배지.
+- 스케줄: `scheduler.ts` — 외부 의존성 없이 `setInterval`(15분) + KST 윈도우 + '남은 틱 확률(1/remaining)'로 윈도우 내 1회 보장 + 매일 다른 시각. 재시작 안전(DB의 `is_ai`+KST 날짜로 '오늘 생성됨' 판단).
+- 설정: `ENABLE_STORY_DAILY_AI`(production 기본 on, 로컬 off), `STORY_DAILY_AI_COUNT`(기본 1).
+
 ### (완료) 속편 생성
 - `POST /api/stories/:id/sequel` 구현됨(원작 컨텍스트 주입 → 기존 파이프라인 재사용, `parent_id` 저장). 리더 "속편 쓰기" 버튼.
 
@@ -23,13 +29,6 @@
 ---
 
 ## 우선순위 (다음 작업)
-
-### P3. 데일리 AI 큐레이션 생성 (신규)
-- 목적: 초기 콘텐츠 부족 보완 — 매일 AI가 1~2편 자동 생성해 피드를 채움.
-- 동작: 랜덤 장르+세부장르 선택 → premise도 AI 자체생성 → 기존 파이프라인(outline→prose→자기검수→모더레이션) 재사용. `author_uid='ai-curator'`, 바로 공개, 쿼터 무관.
-- **AI 표식(필수)**: `is_ai BOOLEAN DEFAULT FALSE` 컬럼 추가 → `LIST_COLS`에 포함 → 피드/`StoryCard`에 "AI 생성" 배지(+리더 표식). model만으론 구분 불가(사용자 글도 AI 생성).
-- 결정 필요: ①스케줄 — **node-cron**(컨테이너 내부, `ENABLE_STORY_DAILY_AI` 플래그) 추천 / GH Actions 스케줄→관리자 엔드포인트 / crontab. ②하루 편수(기본 1). ③premise AI자체생성 vs 시드풀. ④배지 문구("AI 생성").
-- 작업량: 중간(컬럼 + 서비스 `generateDailyAi` + 트리거 + FE 배지).
 
 ### P4. 피드 필터·인기글
 - 현재: `?sort=recent|popular`(인기=`view_count DESC`)는 이미 지원. 없는 것 = 장르 필터, 기간별 인기, 트렌딩.
@@ -63,4 +62,4 @@
 - **운영/품질**: 기본 테스트, 신고 누적 시 자동 숨김, OpenAI 예산 캡.
 
 ## 상태
-- P1·P2 완료·배포. 다음 = **P3 데일리 AI 큐레이션**(설계 완료, 구현 결정 대기).
+- P1·P2·P3 완료·배포. 다음 = **P4 피드 필터·인기글**.

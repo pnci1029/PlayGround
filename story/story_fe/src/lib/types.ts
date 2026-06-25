@@ -39,6 +39,7 @@ export interface StoryDetail {
   edited_at?: string | null
   parent_id?: string | null // 시리즈: 이전 화(원작) id
   next_id?: string | null // 시리즈: 다음 화(직속 속편) id
+  is_ai?: boolean // 데일리 AI 큐레이션이 생성한 글
   bookmarked?: boolean
 }
 
@@ -67,4 +68,5 @@ export interface StoryListItem {
   view_count: number
   created_at: string
   is_public: boolean
+  is_ai?: boolean
 }

@@ -11,6 +11,9 @@ export function StoryCard({ story }: { story: StoryListItem }) {
       <div className="mb-1.5 flex items-center justify-between">
         <span className="flex items-center gap-1.5 text-xs font-medium text-brand">
           {GENRE_NAME[story.genre] ?? story.genre}
+          {story.is_ai && (
+            <span className="rounded bg-brand/20 px-1.5 py-0.5 text-[10px] text-brand">AI 생성</span>
+          )}
           {!story.is_public && (
             <span className="rounded bg-gray-700 px-1.5 py-0.5 text-[10px] text-gray-300">비공개</span>
           )}
