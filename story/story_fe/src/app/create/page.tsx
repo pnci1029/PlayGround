@@ -7,6 +7,7 @@ import { api, ApiError, messageOf } from '@/lib/api'
 import { GENRE_NAME, findGenre } from '@/lib/genres'
 import { QuotaBadge } from '@/components/QuotaBadge'
 import { Spinner } from '@/components/Spinner'
+import { GenerationProgress } from '@/components/GenerationProgress'
 
 const EXAMPLES: Record<string, string> = {
   scifi: '예) 기억을 사고파는 가게에서 일하는 청년이, 팔려나간 자신의 기억과 마주친다.',
@@ -49,8 +50,7 @@ function CreateInner() {
   if (busy) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center px-6">
-        <Spinner label={isSequel ? '다음 이야기를 쓰고 있어요…' : 'AI가 이야기를 쓰고 있어요…'} />
-        <p className="text-xs text-gray-500">보통 30초~1분 정도 걸려요 (검수까지 거쳐요)</p>
+        <GenerationProgress isSequel={isSequel} />
       </main>
     )
   }
