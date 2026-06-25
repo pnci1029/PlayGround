@@ -1,5 +1,12 @@
 import { getDeviceId } from './device'
-import type { GeneratedStory, StoryDetail, StoryListItem, Usage } from './types'
+import type {
+  GeneratedStory,
+  ManualSaveResult,
+  StoryDetail,
+  StoryListItem,
+  UpdateResult,
+  Usage,
+} from './types'
 
 // API base (stock_screener 방식): 항상 상대경로 '/api'.
 // 프록시는 next.config.js rewrites가 처리(API_PROXY_TARGET ?? story-api.chhong.kr).
@@ -25,6 +32,12 @@ export function messageOf(code: string): string {
       return '안전 정책에 의해 생성할 수 없는 내용이에요. 다른 키워드로 시도해 주세요.'
     case 'INVALID_PREMISE':
       return '줄거리는 5자 이상 500자 이내로 적어주세요.'
+    case 'INVALID_INPUT':
+      return '제목(1자 이상)과 본문(20자 이상)을 확인해 주세요.'
+    case 'FORBIDDEN':
+      return '내가 쓴 글만 수정할 수 있어요.'
+    case 'SAVE_FAILED':
+      return '저장에 실패했어요. 잠시 후 다시 시도해 주세요.'
     case 'GENERATION_FAILED':
       return '생성에 실패했어요. 잠시 후 다시 시도해 주세요.'
     default:
@@ -89,5 +102,19 @@ export const api = {
     req<{ isPublic: boolean }>(`/stories/${id}/visibility`, {
       method: 'PATCH',
       body: JSON.stringify({ isPublic }),
+    }),
+
+  // 직접 작성 (AI 없이)
+  createManual: (input: { title: string; content: string; genre: string; isPublic?: boolean }) =>
+    req<ManualSaveResult>('/stories/manual', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  // AI 글 수정 (작성자)
+  updateStory: (id: string, patch: { title?: string; content?: string }) =>
+    req<UpdateResult>(`/stories/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(patch),
     }),
 }

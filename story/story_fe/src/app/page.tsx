@@ -37,6 +37,9 @@ export default function Home() {
             내 이야기
           </Link>
         </div>
+        <Link href="/write" className="mt-1 self-center text-sm text-gray-500 underline">
+          AI 없이 직접 쓰기
+        </Link>
       </div>
     </main>
   )

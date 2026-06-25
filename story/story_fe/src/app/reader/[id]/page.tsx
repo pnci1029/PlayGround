@@ -18,6 +18,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [isPublic, setIsPublic] = useState(false)
   const [isAuthor, setIsAuthor] = useState(false)
   const [shareMsg, setShareMsg] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState('')
+  const [editBody, setEditBody] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [editErr, setEditErr] = useState<string | null>(null)
 
   useEffect(() => {
     api
@@ -46,6 +51,35 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setBookmarked(r.bookmarked)
     } catch {
       /* 무시 */
+    }
+  }
+
+  function startEdit() {
+    if (!story) return
+    setEditTitle(story.title)
+    setEditBody(story.content)
+    setEditErr(null)
+    setEditing(true)
+  }
+
+  async function saveEdit() {
+    const t = editTitle.trim()
+    const b = editBody.trim()
+    if (t.length < 1 || b.length < 20) {
+      setEditErr('제목(1자 이상)과 본문(20자 이상)을 확인해 주세요.')
+      return
+    }
+    setSaving(true)
+    setEditErr(null)
+    try {
+      await api.updateStory(id, { title: t, content: b })
+      const fresh = await api.getStory(id) // chapters=null로 갱신된 본문 재조회
+      setStory(fresh)
+      setEditing(false)
+    } catch (e) {
+      setEditErr(e instanceof ApiError ? messageOf(e.code) : messageOf('UNKNOWN'))
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -135,71 +169,122 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       <span className="text-xs font-medium text-brand">{GENRE_NAME[story.genre] ?? story.genre}</span>
-      <h1 className="mt-1.5 font-serif text-[1.7rem] font-bold leading-snug">{story.title}</h1>
-      {story.logline && <p className="mt-2 text-sm leading-6 text-gray-400">{story.logline}</p>}
 
-      {isAuthor && (
-        <div className="mt-5 flex items-center justify-between rounded-xl border border-line bg-card px-4 py-3">
-          <div>
-            <p className="text-sm font-medium">{isPublic ? '공개됨' : '나만 볼 수 있어요'}</p>
-            <p className="mt-0.5 text-xs text-gray-500">
-              {isPublic ? '피드에 노출되고 있어요' : '공개하면 다른 사람도 읽을 수 있어요'}
-            </p>
+      {editing ? (
+        <div className="mt-3 flex flex-col">
+          <label className="mb-2 text-xs text-gray-500">제목</label>
+          <input
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            maxLength={200}
+            className="h-12 rounded-xl border border-line bg-card px-4 text-[15px] text-white outline-none focus:border-brand/60"
+          />
+          <label className="mb-2 mt-5 text-xs text-gray-500">본문</label>
+          <textarea
+            value={editBody}
+            onChange={(e) => setEditBody(e.target.value)}
+            maxLength={20000}
+            rows={16}
+            className="w-full resize-none rounded-2xl border border-line bg-card p-4 text-[15px] leading-7 text-white outline-none focus:border-brand/60"
+          />
+          <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+            <span>{editBody.trim().length < 20 ? '본문은 20자 이상' : '준비됐어요'}</span>
+            <span>{editBody.length}/20000</span>
           </div>
+          {editErr && <p className="mt-3 text-sm text-red-400">{editErr}</p>}
+          <div className="safe-bottom mt-5 flex gap-3">
+            <button
+              onClick={() => setEditing(false)}
+              disabled={saving}
+              className="h-12 flex-1 rounded-xl border border-line text-sm font-medium text-gray-300 disabled:opacity-50"
+            >
+              취소
+            </button>
+            <button
+              onClick={saveEdit}
+              disabled={saving}
+              className="h-12 flex-1 rounded-xl bg-brand text-sm font-semibold text-[#1a1410] disabled:opacity-50"
+            >
+              {saving ? '저장 중…' : '저장'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <h1 className="mt-1.5 font-serif text-[1.7rem] font-bold leading-snug">{story.title}</h1>
+          {story.logline && <p className="mt-2 text-sm leading-6 text-gray-400">{story.logline}</p>}
+          {story.edited_at && <p className="mt-1.5 text-xs text-gray-600">수정된 글이에요</p>}
+
+          {isAuthor && (
+            <div className="mt-5 flex flex-col gap-3 rounded-xl border border-line bg-card px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">{isPublic ? '공개됨' : '나만 볼 수 있어요'}</p>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    {isPublic ? '피드에 노출되고 있어요' : '공개하면 다른 사람도 읽을 수 있어요'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setVisibility(!isPublic)}
+                  className={`h-9 shrink-0 rounded-lg px-4 text-sm font-semibold transition ${
+                    isPublic ? 'border border-line text-gray-300' : 'bg-brand text-[#1a1410]'
+                  }`}
+                >
+                  {isPublic ? '비공개로' : '공개하기'}
+                </button>
+              </div>
+              <button
+                onClick={startEdit}
+                className="h-9 rounded-lg border border-line text-sm font-medium text-gray-300"
+              >
+                글 수정하기
+              </button>
+            </div>
+          )}
+
+          <article className="mt-8 space-y-9">
+            {chapters.map((c, i) => (
+              <section key={i}>
+                {c.title && <h2 className="mb-3 font-serif text-lg font-bold text-brand">{c.title}</h2>}
+                <p className="whitespace-pre-wrap font-serif leading-[1.9]" style={{ fontSize }}>
+                  {c.body}
+                </p>
+              </section>
+            ))}
+          </article>
+
+          <div className="safe-bottom mt-12 flex flex-col gap-3">
+            <Link
+              href={`/create?parent=${story.id}`}
+              className="flex h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
+            >
+              이 이야기의 속편 쓰기
+            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/genre"
+                className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
+              >
+                새 이야기
+              </Link>
+              <Link
+                href="/feed"
+                className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
+              >
+                피드
+              </Link>
+            </div>
+          </div>
+
           <button
-            onClick={() => setVisibility(!isPublic)}
-            className={`h-9 shrink-0 rounded-lg px-4 text-sm font-semibold transition ${
-              isPublic
-                ? 'border border-line text-gray-300'
-                : 'bg-brand text-[#1a1410]'
-            }`}
+            onClick={report}
+            disabled={reported}
+            className="mt-6 self-center text-xs text-gray-600 underline disabled:no-underline"
           >
-            {isPublic ? '비공개로' : '공개하기'}
+            {reported ? '신고가 접수되었어요' : '이 이야기 신고하기'}
           </button>
-        </div>
+        </>
       )}
-
-      <article className="mt-8 space-y-9">
-        {chapters.map((c, i) => (
-          <section key={i}>
-            {c.title && <h2 className="mb-3 font-serif text-lg font-bold text-brand">{c.title}</h2>}
-            <p className="whitespace-pre-wrap font-serif leading-[1.9]" style={{ fontSize }}>
-              {c.body}
-            </p>
-          </section>
-        ))}
-      </article>
-
-      <div className="safe-bottom mt-12 flex flex-col gap-3">
-        <Link
-          href={`/create?parent=${story.id}`}
-          className="flex h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-[#1a1410]"
-        >
-          이 이야기의 속편 쓰기
-        </Link>
-        <div className="flex gap-3">
-          <Link
-            href="/genre"
-            className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
-          >
-            새 이야기
-          </Link>
-          <Link
-            href="/feed"
-            className="flex h-12 flex-1 items-center justify-center rounded-xl border border-line text-sm font-medium text-gray-300"
-          >
-            피드
-          </Link>
-        </div>
-      </div>
-
-      <button
-        onClick={report}
-        disabled={reported}
-        className="mt-6 self-center text-xs text-gray-600 underline disabled:no-underline"
-      >
-        {reported ? '신고가 접수되었어요' : '이 이야기 신고하기'}
-      </button>
 
       {shareMsg && (
         <div className="pointer-events-none fixed inset-x-0 bottom-8 z-50 flex justify-center">

@@ -45,9 +45,15 @@ export default function GenrePage() {
       <button
         disabled={!selected}
         onClick={() => router.push(`/create?genre=${selected}`)}
-        className="safe-bottom mt-6 flex h-14 items-center justify-center rounded-xl bg-brand text-base font-semibold text-[#1a1410] transition active:scale-[0.99] disabled:bg-line disabled:text-gray-500"
+        className="mt-6 flex h-14 items-center justify-center rounded-xl bg-brand text-base font-semibold text-[#1a1410] transition active:scale-[0.99] disabled:bg-line disabled:text-gray-500"
       >
         다음
+      </button>
+      <button
+        onClick={() => router.push(selected ? `/write?genre=${selected}` : '/write')}
+        className="safe-bottom mt-3 self-center text-sm text-gray-500 underline"
+      >
+        AI 없이 직접 쓰기
       </button>
     </main>
   )

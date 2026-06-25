@@ -36,7 +36,24 @@ export interface StoryDetail {
   is_public: boolean
   view_count: number
   created_at: string
+  edited_at?: string | null
   bookmarked?: boolean
+}
+
+// POST /api/stories/manual 응답
+export interface ManualSaveResult {
+  id: string
+  title: string
+  genre: string
+  isPublic: boolean
+  createdAt: string
+}
+
+// PATCH /api/stories/:id 응답
+export interface UpdateResult {
+  id: string
+  title: string
+  editedAt: string
 }
 
 // 목록 아이템 (본문 제외)
